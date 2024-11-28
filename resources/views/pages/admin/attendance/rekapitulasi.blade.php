@@ -66,8 +66,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {{-- @foreach ($data as $index => $d) --}}
-                                        @foreach ($data as $d)
+                                        {{-- @foreach ($data as $d)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>@php
@@ -120,10 +119,45 @@
                                                 @endphp
                                                     {{ $cuti }}</td>
                                             </tr>
+                                        @endforeach --}}
+                                        @foreach ($calon as $index => $pegawai)
+                                            @php
+                                                $ids = $pegawai->id;
+                                                $name = $pegawai->name;
+
+                                                $countMasuk = \App\Models\Attendance::where('enhancer', $ids)
+                                                    ->where('status', '0')
+                                                    ->count();
+
+                                                $countPulang = \App\Models\Attendance::where('enhancer', $ids)
+                                                    ->where('status', '1')
+                                                    ->count();
+
+                                                $lebihAwal = \App\Models\Attendance::where('enhancer', $ids)
+                                                    ->where('status', '1')
+                                                    ->whereTime('created_at', '<', '16:00:00')
+                                                    ->count();
+
+                                                $terlambat = \App\Models\Attendance::where('enhancer', $ids)
+                                                    ->where('status', '0')
+                                                    ->whereTime('created_at', '>', '08:00:00')
+                                                    ->count();
+
+                                                $cuti = \App\Models\Leave::where('enhancer', $ids)
+                                                    ->where('status', '0')
+                                                    ->count();
+                                            @endphp
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $name }}</td>
+                                                <td>{{ $countMasuk }}</td>
+                                                <td>{{ $countPulang }}</td>
+                                                <td>{{ $lebihAwal }}</td>
+                                                <td>{{ $terlambat }}</td>
+                                                <td>0</td> {{-- Default tidak hadir --}}
+                                                <td>{{ $cuti }}</td>
+                                            </tr>
                                         @endforeach
-
-                                        {{-- @endforeach --}}
-
                                     </tbody>
                                 </table>
                             </div>
@@ -239,7 +273,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($data as $index => $d)
+                                {{-- @foreach ($data as $index => $d) --}}
+                                @foreach ($calon as $index => $pegawai)
                                     @foreach ($usersWithLateCount as $ul)
                                         @if ($ul['user_id'] == $d->enhancer)
                                             <!-- Ensure that the user_id matches the enhancer -->
