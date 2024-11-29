@@ -131,7 +131,7 @@ class EmployeController extends Controller
             'name' => 'required|string|max:80',
             'role' => 'required|integer|exists:roles,id',
             'email' => 'required|string|email|max:80|unique:users,email,' . $id,
-            'password' => 'nullable|string|min:8',
+            'password' => 'nullable|min:8|regex:/[A-Z]/|regex:/[a-z]/|regex:/[0-9]/|regex:/[@$!%*?&]/',
             // 'status' => 'required|boolean',
             'schedule' => 'required|integer|exists:schedules,id',
 
@@ -180,7 +180,7 @@ class EmployeController extends Controller
         $data->save();
 
         // Redirect with a success message
-        return redirect()->route('admin.kelolapegawai')->with('success', 'Pegawai berhasil diedit.');
+        return redirect()->route('admin.kelolapegawai')->with('success', 'Pegawai berhasil diperbaharui.');
     }
 
 

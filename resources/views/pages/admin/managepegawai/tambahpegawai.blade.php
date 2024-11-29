@@ -104,11 +104,58 @@
     </div><!-- .nk-content -->
 
     <script>
-        document.getElementById('name').addEventListener('input', function(event) {
-            const input = event.target;
-            // Hanya izinkan huruf dan spasi
-            input.value = input.value.replace(/[^A-Za-z\s]/g, '');
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+
+            form.addEventListener('submit', function(e) {
+                let errorMessage = '';
+
+                // Validasi nama
+                if (!nameInput.value.trim()) {
+                    errorMessage += 'Nama tidak boleh kosong.<br>';
+                }
+
+                // Validasi email
+                if (!emailInput.value.trim()) {
+                    errorMessage += 'Email tidak boleh kosong.<br>';
+                } else if (!emailInput.value.includes('@')) {
+                    errorMessage += 'Email harus mengandung karakter "@" yang valid.<br>';
+                }
+
+                // Validasi password
+                const password = passwordInput.value.trim();
+                const passwordRegex =
+                    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+                if (!password) {
+                    errorMessage += 'Password tidak boleh kosong.<br>';
+                } else if (!passwordRegex.test(password)) {
+                    errorMessage +=
+                        'Password harus minimal 8 karakter dan mengandung kombinasi huruf besar, huruf kecil, angka, dan simbol.<br>';
+                }
+
+                // Tampilkan error menggunakan SweetAlert
+                if (errorMessage) {
+                    e.preventDefault(); // Cegah pengiriman formulir
+                    Swal.fire({
+                        title: 'Data Tidak Lengkap atau Tidak Valid!',
+                        html: errorMessage,
+                        icon: 'warning',
+                        confirmButtonColor: '#364a63'
+                    });
+                }
+            });
+
+            // Validasi input nama hanya huruf dan spasi
+            nameInput.addEventListener('input', function(event) {
+                const input = event.target;
+                input.value = input.value.replace(/[^A-Za-z\s]/g, '');
+            });
         });
     </script>
+
+
 
 @endsection

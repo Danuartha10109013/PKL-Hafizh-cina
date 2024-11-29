@@ -22,6 +22,15 @@
                     <div class="nk-block nk-block-lg">
                         <div class="card card-bordered card-preview">
                             <div class="card-inner">
+                                @if ($errors->any())
+                                    <script>
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Oops...',
+                                            text: 'Pastikan semua kolom terisi dengan benar!',
+                                        });
+                                    </script>
+                                @endif
                                 <form action="{{ route('admin.editpegawaiupdate', $item->id) }}" method="POST"
                                     enctype="multipart/form-data">
                                     @csrf
@@ -226,4 +235,6 @@
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @endsection
