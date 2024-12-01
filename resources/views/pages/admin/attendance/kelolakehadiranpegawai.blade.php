@@ -57,8 +57,6 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($attendances as $attendance)
-                                        
-
                                         @php
                                             $orang = \App\Models\User::where('id', $attendance->enhancer)->value(
                                                 'schedule',
@@ -217,7 +215,8 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
-                            <form id="printForm" action="#" method="GET">
+                            <form id="printForm" action="{{ route('admin.print-kelolakehadiranpegawai') }}" target="_blank"
+                                method="GET">
                                 <div class="modal-body">
                                     <!-- Dropdown Pilihan Cetak -->
                                     <div class="form-group">
@@ -249,9 +248,6 @@
                                         <label class="form-label">Bulan</label>
                                         <div class="form-control-wrap">
                                             <input type="month" class="form-control" name="month">
-                                            {{-- <div class="form-icon form-icon-right">
-                                                <em class="icon ni ni-calendar"></em>
-                                            </div> --}}
                                         </div>
                                     </div>
 
@@ -259,24 +255,9 @@
                                     <div class="form-group" id="yearInput" style="display:none;">
                                         <label class="form-label">Tahun</label>
                                         <div class="form-control-wrap">
-                                            <input type="year" class="form-control" name="year"
-                                                placeholder="Tahun">
-                                            {{-- <div class="form-icon form-icon-right">
-                                                <em class="icon ni ni-calendar"></em>
-                                            </div> --}}
+                                            <input type="number" class="form-control" name="year"
+                                                placeholder="Tahun" min="1900" max="{{ now()->year }}">
                                         </div>
-                                    </div>
-
-
-                                    <!-- Ceetak Status Kehadiran -->
-                                    <div class="form-group">
-                                        <label for="status">Status Kehadiran</label>
-                                        <select name="status" id="status1"
-                                            class="form-select js-select2 select2-hidden-accesible valid">
-                                            <option value="Semua">Semua</option>
-                                            <option value="Tepat Waktu">Tepat Waktu</option>
-                                            <option value="Terlambat">Terlambat</option>
-                                        </select>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
@@ -376,11 +357,23 @@
         });
 
         // Fungsi untuk menampilkan input berdasarkan opsi cetak
+        // Fungsi untuk menampilkan input yang sesuai dengan pilihan opsi cetak
         function toggleDateInputs() {
-            var printOption = document.getElementById("printOption").value;
-            document.getElementById("dateInput").style.display = (printOption === "byDate") ? "block" : "none";
-            document.getElementById("monthInput").style.display = (printOption === "byMonth") ? "block" : "none";
-            document.getElementById("yearInput").style.display = (printOption === "byYear") ? "block" : "none";
+            var printOption = document.getElementById('printOption').value;
+
+            // Sembunyikan semua input
+            document.getElementById('dateInput').style.display = 'none';
+            document.getElementById('monthInput').style.display = 'none';
+            document.getElementById('yearInput').style.display = 'none';
+
+            // Tampilkan input yang sesuai dengan pilihan
+            if (printOption === 'byDate') {
+                document.getElementById('dateInput').style.display = 'block';
+            } else if (printOption === 'byMonth') {
+                document.getElementById('monthInput').style.display = 'block';
+            } else if (printOption === 'byYear') {
+                document.getElementById('yearInput').style.display = 'block';
+            }
         }
     </script>
 @endsection

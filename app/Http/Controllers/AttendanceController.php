@@ -244,14 +244,39 @@ class AttendanceController extends Controller
     public function filtertanggal() {}
 
 
-    public function cetakkehadiran()
+    public function cetakKehadiran(Request $request)
     {
-        $attendances = Attendance::whereHas('user', function ($query) {
-            $query->where('role', '2'); // Gantilah 'pegawai' dengan ID role untuk pegawai jika menggunakan angka.
-        })->get();
+        // Validasi input
+        $request->validate([
+            'date' => 'nullable|date',
+            'month' => 'nullable|date_format:Y-m',
+            'year' => 'nullable|numeric|min:1900|max:' . now()->year,
+        ]);
 
+        // Pilihan cetak
+        $printOption = $request->input('printOption');
+        $query = Attendance::with('user')->whereHas('user', function ($query) {
+            $query->where('role', '2'); // Assuming '2' is the role ID for 'pegawai'
+        });
+
+        // Apply filter based on print option
+        if ($printOption == 'byDate' && $request->has('date')) {
+            $query->whereDate('date', $request->input('date'));
+        } elseif ($printOption == 'byMonth' && $request->has('month')) {
+            $month = $request->input('month');
+            $query->whereMonth('date', date('m', strtotime($month)))
+                ->whereYear('date', date('Y', strtotime($month)));
+        } elseif ($printOption == 'byYear' && $request->has('year')) {
+            $query->whereYear('date', $request->input('year'));
+        }
+
+        $attendances = $query->orderBy('date', 'asc')->orderBy('time', 'asc')->get();
+
+        // Return view with data
         return view('pages.admin.attendance.printkehadiranpegawai', compact('attendances'));
     }
+
+
 
     // Tampilkan daftar kehadiran
     public function index()
