@@ -12,7 +12,28 @@
                             <h3 class="nk-block-title page-title">Kehadiran Pegawai</h3>
                         </div><!-- .nk-block-head-content -->
                         <div class="nk-block-head-content">
-
+                            @if (session('success'))
+                                <script>
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Success',
+                                        text: '{{ session('success') }}',
+                                        timer: 3000,
+                                        showConfirmButton: false
+                                    });
+                                </script>
+                            @endif
+                            @if (session('error'))
+                                <script>
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: '{{ session('error') }}',
+                                        timer: 3000,
+                                        showConfirmButton: false
+                                    });
+                                </script>
+                            @endif
                             <div class="toggle-wrap nk-block-tools-toggle">
                                 <a href="#" class="btn btn-icon btn-trigger toggle-expand me-n1"
                                     data-target="pageMenu"><em class="icon ni ni-menu-alt-r"></em></a>

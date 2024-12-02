@@ -43,7 +43,7 @@ class DeletedController extends Controller
         }
 
 
-        return redirect()->back()->with('succes', 'user telah di hapus, dan dimasukan ke deleted user');
+        return redirect()->back()->with('success', 'Pegawai berhasil dihapus, dan dimasukan ke dalam trash');
     }
 
     public function destroyuser($id)
@@ -59,7 +59,7 @@ class DeletedController extends Controller
             // Permanently delete the user
             $data->forceDelete();
 
-            return redirect()->back()->with('success', 'Usertelahdihapus secara permanen');
+            return redirect()->back()->with('success', 'Pegawai telah dihapus secara permanen');
         }
 
         return redirect()->back()->with('error', 'User tidak ditemukan.');
@@ -74,7 +74,7 @@ class DeletedController extends Controller
         Leave::withTrashed('enhancer', $id)->restore();
         // dd($id);
         $data->restore();
-        return redirect()->back()->with('succes', 'user telah dipulihkan');
+        return redirect()->back()->with('success', 'Pegawai telah dipulihkan');
     }
 
     public function index()

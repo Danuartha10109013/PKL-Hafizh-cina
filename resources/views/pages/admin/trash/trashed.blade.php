@@ -9,6 +9,26 @@
                 <div class="nk-block-head nk-block-head-sm mb-4">
                     <h4 class="nk-block-title">Daftar Pegawai yang Dihapus</h4>
                 </div>
+                @if (session('success'))
+                    <script>
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: '{{ session('success') }}'
+                        });
+                    </script>
+                @endif
+
+                @if (session('error'))
+                    <script>
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: '{{ session('error') }}'
+                        });
+                    </script>
+                @endif
+
                 <div class="card card-bordered card-preview">
                     <div class="card-inner">
                         <table class="datatable-init table">
