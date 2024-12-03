@@ -88,6 +88,7 @@ class LeavesController extends Controller
 
     public function update(Request $request, $id)
     {
+
         // dd($request->all());
         // Validasi data input
         $request->validate([

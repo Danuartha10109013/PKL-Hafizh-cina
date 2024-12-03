@@ -105,12 +105,12 @@ class ScheduleController extends Controller
         }
 
 
-        return redirect()->route('admin.kelolajadwal')->with('success', 'Schedule updated successfully.');
+        return redirect()->route('admin.kelolajadwal')->with('success', 'Jadwal berhasil diperbaharui!');
     }
 
     public function destroy(Schedule $schedule)
     {
-        // Hapus jadwal
+        // Hapus jadwal with('success','Jadwal berhasil dihapus dan dimasukkan ke dalam trash')
     }
 
     public function print()

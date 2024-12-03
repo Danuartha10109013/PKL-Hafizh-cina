@@ -175,23 +175,24 @@
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $d->name }}</td>
                                                 <td>
-                                                    <select name="schedule" class="form-select schedule-select" data-id="{{ $d->id }}">
+                                                    <select name="schedule" class="form-select schedule-select"
+                                                        data-id="{{ $d->id }}">
                                                         @foreach ($day as $dd)
-                                                            <option value="{{ $dd->id }}" 
-                                                                @if($dd->id == old('schedule', $d->schedule)) selected @endif>
+                                                            <option value="{{ $dd->id }}"
+                                                                @if ($dd->id == old('schedule', $d->schedule)) selected @endif>
                                                                 {{ $dd->shift_name }}
                                                             </option>
                                                         @endforeach
                                                     </select>
-                                                    
-                                                   
+
+
                                                 </td>
-                                                    
+
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
-                                
+
                             </div>
                         </div><!-- .card-preview -->
                     </div> <!-- nk-block -->
@@ -218,7 +219,7 @@
                                             Swal.fire({
                                                 icon: 'success',
                                                 title: 'Berhasil!',
-                                                text: 'Data jadwal berhasil diupdate!',
+                                                text: 'Jadwal pegawai berhasil diubah',
                                                 timer: 2000,
                                                 showConfirmButton: false
                                             });
@@ -264,11 +265,13 @@
                                         },
                                         success: function(response) {
                                             if (!response.success) {
-                                                allSchedulesUpdated = false; // If any schedule fails, update the flag
+                                                allSchedulesUpdated =
+                                                false; // If any schedule fails, update the flag
                                             }
                                         },
                                         error: function(xhr) {
-                                            allSchedulesUpdated = false; // If AJAX fails, update the flag
+                                            allSchedulesUpdated =
+                                            false; // If AJAX fails, update the flag
                                         },
                                         complete: function() {
                                             // Once all AJAX requests are done, show success or error message
