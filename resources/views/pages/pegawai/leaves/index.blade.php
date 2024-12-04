@@ -17,8 +17,8 @@
                                     data-target="pageMenu"><em class="icon ni ni-menu-alt-r"></em></a>
                                 <div class="toggle-expand-content" data-content="pageMenu">
                                     <ul class="nk-block-tools g-3">
-                                        <li><a href="#filter" class="btn btn-secondary" target="_blank"
-                                                data-bs-toggle="modal" data-bs-target="#filterModal"><em
+                                        <li><a href="#filter" class="btn btn-secondary"" data-bs-toggle="modal"
+                                                data-bs-target="#filterModal"><em
                                                     class="icon ni ni-filter"></em><span>Filter</span></a>
                                         </li>
                                         <li><a href="{{ route('pegawai.print-cuti') }}" class="btn btn-secondary"

@@ -101,7 +101,7 @@
                                             </thead>
                                             <tbody>
                                                 {{-- @foreach ($hadir as $index => $pegawai) --}}
-                                                @foreach ($telatHariIni as $tel)
+                                                @foreach ($tepatHariIni as $tel)
                                                     <tr>
                                                         <td>{{ $loop->iteration }}</td>
                                                         <td>
