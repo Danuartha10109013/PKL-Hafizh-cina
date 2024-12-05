@@ -18,7 +18,7 @@ class EmployeController extends Controller
     public function index()
     {
         $data = User::select('users.*', 'schedules.shift_name')
-            ->join('schedules', 'users.schedule', '=', 'schedules.id')
+            ->leftjoin('schedules', 'users.schedule', '=', 'schedules.id')
             ->where('users.role', 2)
             ->get();
         // Mengambil data pegawai dari database

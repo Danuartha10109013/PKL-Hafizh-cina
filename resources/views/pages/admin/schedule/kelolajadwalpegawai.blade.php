@@ -177,6 +177,9 @@
                                                 <td>
                                                     <select name="schedule" class="form-select schedule-select"
                                                         data-id="{{ $d->id }}">
+                                                        <option value=""
+                                                            {{ $d->schedule == null ? 'selected' : '' }}>Belum ada jadwal
+                                                        </option>
                                                         @foreach ($day as $dd)
                                                             <option value="{{ $dd->id }}"
                                                                 @if ($dd->id == old('schedule', $d->schedule)) selected @endif>
@@ -184,6 +187,7 @@
                                                             </option>
                                                         @endforeach
                                                     </select>
+
 
 
                                                 </td>
@@ -266,12 +270,12 @@
                                         success: function(response) {
                                             if (!response.success) {
                                                 allSchedulesUpdated =
-                                                false; // If any schedule fails, update the flag
+                                                    false; // If any schedule fails, update the flag
                                             }
                                         },
                                         error: function(xhr) {
                                             allSchedulesUpdated =
-                                            false; // If AJAX fails, update the flag
+                                                false; // If AJAX fails, update the flag
                                         },
                                         complete: function() {
                                             // Once all AJAX requests are done, show success or error message

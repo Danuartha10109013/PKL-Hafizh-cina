@@ -136,12 +136,16 @@
                                                         <select
                                                             class="form-select js-select2 select2-hidden-accesible valid"
                                                             id="schedule" name="schedule">
+                                                            <option value=""
+                                                                {{ $item->schedule == null ? 'selected' : '' }}>Belum ada
+                                                                jadwal</option>
                                                             @foreach ($schedules as $schedule)
                                                                 <option value="{{ $schedule->id }}"
                                                                     {{ $schedule->id == $item->schedule ? 'selected' : '' }}>
                                                                     {{ $schedule->shift_name }}
                                                                 </option>
                                                             @endforeach
+
                                                         </select>
                                                     </div>
                                                 </div>

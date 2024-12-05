@@ -278,23 +278,44 @@ class AttendanceController extends Controller
 
 
     // Tampilkan daftar kehadiran
+    // public function index()
+    // {
+
+    //     $userid = Auth::user()->id;
+    //     $user = User::find($userid);
+    //     $schedule = Schedule::find($user->schedule);
+    //     $jadwal = ScheduleDayM::where('schedule_id', $schedule->id)->get();
+    //     // dd($jadwal);
+
+    //     $id = Auth::user()->id;
+    //     // dd($id);
+    //     $orang = Auth::user()->schedule;
+    //     $jadwal = Schedule::where('id', $orang)->value('id');
+    //     $jadwal_detail = ScheduleDayM::where('schedule_id', $jadwal)->get();
+    //     $attendances = Attendance::where('enhancer', $id)->get();
+    //     return view('pages.pegawai.attendance.index', compact('attendances', 'jadwal', 'jadwal_detail'));
+    // }
     public function index()
     {
-
         $userid = Auth::user()->id;
         $user = User::find($userid);
-        $schedule = Schedule::find($user->schedule);
-        $jadwal = ScheduleDayM::where('schedule_id', $schedule->id)->get();
-        // dd($jadwal);
+
+        // Tambahan cek jika user belum memiliki jadwal
+        $schedule = $user->schedule ? Schedule::find($user->schedule) : null;
+        $jadwal = $schedule ? ScheduleDayM::where('schedule_id', $schedule->id)->get() : collect();
 
         $id = Auth::user()->id;
-        // dd($id);
         $orang = Auth::user()->schedule;
-        $jadwal = Schedule::where('id', $orang)->value('id');
-        $jadwal_detail = ScheduleDayM::where('schedule_id', $jadwal)->get();
+
+        // Pastikan jadwal ada atau gunakan nilai default
+        $jadwal = $orang ? Schedule::where('id', $orang)->value('id') : null;
+        $jadwal_detail = $jadwal ? ScheduleDayM::where('schedule_id', $jadwal)->get() : collect();
+
         $attendances = Attendance::where('enhancer', $id)->get();
+
         return view('pages.pegawai.attendance.index', compact('attendances', 'jadwal', 'jadwal_detail'));
     }
+
 
     // Tampilkan halaman presensi
     public function create()
