@@ -195,8 +195,7 @@ class AttendanceController extends Controller
     public function cetakrekap()
     {
         // Mengambil semua pengguna aktif
-        $users = User::where('available', 10)->get();
-
+        $users = User::where('role', '!=', 1)->get();
         // Membuat data rekapitulasi
         $rekapData = $users->map(function ($user) {
             // Mengambil absensi user berdasarkan enhancer (id user)
@@ -381,7 +380,7 @@ class AttendanceController extends Controller
 
             return redirect()->back()->with('success', 'Email Telah Dikirim');
         } else {
-            return redirect()->back()->with('error', 'User not found');
+            return redirect()->back()->with('error', 'Pegawai tidak ditemukan');
         }
     }
 }

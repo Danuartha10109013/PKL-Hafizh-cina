@@ -41,8 +41,9 @@
                                     <th>Nama Pegawai</th>
                                     <th>Masuk</th>
                                     <th>Pulang</th>
-                                    <th>Lebih Awal</th>
-                                    <th>Terlambat</th>
+                                    <th>Pulang Lebih Awal</th>
+                                    <th>Masuk Terlambat</th>
+                                    <th>Tidak Masuk</th>
                                     <th>Cuti</th>
                                     <th>Sanksi</th>
                                 </tr>
@@ -56,6 +57,7 @@
                                         <td>{{ $data['pulang'] }}</td>
                                         <td>{{ $data['lebih_awal'] }}</td>
                                         <td>{{ $data['terlambat'] }}</td>
+                                        <td>0</td>
                                         <td>{{ $data['cuti'] }}</td>
                                         <td>
                                             <span
