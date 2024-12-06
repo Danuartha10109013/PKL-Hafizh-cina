@@ -60,15 +60,14 @@
                                     <div class="card-inner">
                                         <div class="card-title-group align-start mb-3">
                                             <div class="card-title">
-                                                <h6 class="title">Jabatan Anda</h6>
+                                                <h6 class="title">Waktu Sekarang</h6>
                                             </div>
                                         </div>
                                         <div class="user-activity-group g-4">
                                             <div class="user-activity">
-                                                <em class="icon ni ni-user"></em>
+                                                <em class="icon ni ni-clock-fill"></em>
                                                 <div class="info">
-                                                    <span class="amount">Web Developer</span>
-                                                    <span class="title"></span>
+                                                    <span id="current-time" class="amount"></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -175,4 +174,22 @@
             </div><!-- .container-xl -->
         </div><!-- .nk-content-fluid -->
     </div><!-- .nk-content -->
+
+    <script>
+        // Function to update the time
+        function updateTime() {
+            const currentTimeElement = document.getElementById('current-time');
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            currentTimeElement.textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        // Call the function initially
+        updateTime();
+
+        // Update the time every second
+        setInterval(updateTime, 1000);
+    </script>
 @endsection
