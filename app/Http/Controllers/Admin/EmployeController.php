@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Excel;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel as FacadesExcel;
 
 class EmployeController extends Controller
 {
@@ -230,7 +231,7 @@ class EmployeController extends Controller
     public function input(Request $request)
     {
         // dd($request->all());
-        Excel::import(new PegawaiImport, $request->file('pegawaiexcel'));
+        FacadesExcel::import(new PegawaiImport, $request->file('pegawaiexcel'));
         return redirect()->route('admin.kelolapegawai')->with('success', 'pegawai telah berhasil ditambahkan');
     }
 }
