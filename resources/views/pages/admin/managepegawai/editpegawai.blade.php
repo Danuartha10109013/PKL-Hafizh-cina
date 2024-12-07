@@ -22,6 +22,15 @@
                     <div class="nk-block nk-block-lg">
                         <div class="card card-bordered card-preview">
                             <div class="card-inner">
+                                @if ($errors->any())
+                                    <script>
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Oops...',
+                                            text: 'Pastikan semua kolom terisi dengan benar!',
+                                        });
+                                    </script>
+                                @endif
                                 <form action="{{ route('admin.editpegawaiupdate', $item->id) }}" method="POST"
                                     enctype="multipart/form-data">
                                     @csrf
@@ -127,12 +136,16 @@
                                                         <select
                                                             class="form-select js-select2 select2-hidden-accesible valid"
                                                             id="schedule" name="schedule">
+                                                            <option value=""
+                                                                {{ $item->schedule == null ? 'selected' : '' }}>Belum ada
+                                                                jadwal</option>
                                                             @foreach ($schedules as $schedule)
                                                                 <option value="{{ $schedule->id }}"
                                                                     {{ $schedule->id == $item->schedule ? 'selected' : '' }}>
                                                                     {{ $schedule->shift_name }}
                                                                 </option>
                                                             @endforeach
+
                                                         </select>
                                                     </div>
                                                 </div>
@@ -226,4 +239,6 @@
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @endsection

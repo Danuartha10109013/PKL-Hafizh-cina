@@ -33,80 +33,6 @@
                                 </div>
                             </div><!-- .card-preview -->
                         </div>
-                        {{-- <div class="col-xl-4 col-md-6">
-                            <div class="card card-bordered card-full">
-                                <div class="card-inner">
-                                    <div class="card-title-group align-start mb-3">
-                                        <div class="card-title">
-                                            <h6 class="title">Total Pegawai</h6>
-                                        </div>
-                                    </div>
-                                    <div class="user-activity-group g-4">
-                                        <div class="user-activity">
-                                            <em class="icon ni ni-users"></em>
-                                            <div class="info">
-                                                <span class="amount">{{ count($data) }}</span>
-                                                <span class="title">Direct Join</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div><!-- .card -->
-                        </div><!-- .col --> --}}
-
-                        {{-- <div class="col-xl-4 col-md-6">
-                            <div class="card card-bordered card-full">
-                                <div class="card-inner">
-                                    <div class="card-title-group align-start mb-3">
-                                        <div class="card-title">
-                                            <h6 class="title">Total Cuti dan Izin</h6>
-                                        </div>
-                                    </div>
-                                    <div class="user-activity-group g-4">
-                                        <div class="user-activity">
-                                            <em class="icon ni ni-calendar-alt"></em>
-                                            <div class="info">
-                                                <span class="amount">{{ count($cuti) }}</span>
-                                                <span class="title">Pegawai yang melakukan Cuti/Izin</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div><!-- .card -->
-                        </div><!-- .col --> --}}
-
-                        {{-- <div class="col-xl-4 col-md-6">
-                            <div class="card card-bordered card-full">
-                                <div class="card-inner">
-                                    <div class="card-title-group align-start mb-3">
-                                        <div class="card-title">
-                                            <h6 class="title">Total Hadir & Terlambat</h6>
-                                        </div>
-                                    </div>
-                                    <div class="user-activity-group g-4">
-                                        <div class="user-activity">
-                                            <em class="icon ni ni-check-circle"></em>
-                                            <div class="info">
-                                                <span class="amount">
-                                                    {{ $totalTepat }}
-                                                </span>
-                                                <span class="title">Total Hadir</span>
-                                            </div>
-                                        </div>
-                                        <div class="user-activity">
-                                            <em class="icon ni ni-alert-circle"></em>
-                                            <div class="info">
-                                                <span class="amount">
-                                                    {{ $totalTelat }}
-                                                </span>
-                                                <span class="title">Total Terlambat</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div><!-- .card -->
-                        </div><!-- .col --> --}}
-
                         <div class="col-md-6">
                             <div class="card card-bordered card-full">
                                 <div class="card-inner">
@@ -175,21 +101,23 @@
                                             </thead>
                                             <tbody>
                                                 {{-- @foreach ($hadir as $index => $pegawai) --}}
-                                                @foreach ($tepatHariIni as $tep)
+                                                @foreach ($tepatHariIni as $tel)
                                                     <tr>
                                                         <td>{{ $loop->iteration }}</td>
                                                         <td>
                                                             @php
                                                                 $name = \App\Models\User::where(
                                                                     'id',
-                                                                    $tep->enhancer,
+                                                                    $tel->enhancer,
                                                                 )->value('name');
                                                             @endphp
-                                                            {{ $name }}</td>
-                                                        <td>{{ \Carbon\Carbon::parse($tep->time)->format('H:i') }}</td>
-                                                        <td><span class="badge bg-success">Sudah Absen</span></td>
+                                                            {{ $name }}
+                                                        </td>
+                                                        <td>{{ \Carbon\Carbon::parse($tel->time)->format('H:i') }}</td>
+                                                        <td><span class="badge bg-danger">Absen Terlambat</span></td>
                                                     </tr>
                                                 @endforeach
+
                                                 {{-- @endforeach --}}
                                             </tbody>
                                         </table>
@@ -231,14 +159,22 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            // Pastikan data dari controller sudah dikirim
+            const maleCount = @json($maleCount);
+            const femaleCount = @json($femaleCount);
+            const attendanceStats = @json($attendanceStats); // Periksa apakah ini mengandung data yang benar
+
+            console.log(attendanceStats); // Debug untuk melihat apakah data diterima di frontend
+
+            // Chart untuk Gender
             var ctx = document.getElementById('pieChartData').getContext('2d');
             var pieChart = new Chart(ctx, {
                 type: 'pie',
                 data: {
-                    labels: ['Laki-Laki', 'Perempuan'], // Sesuaikan label
+                    labels: ['Laki-Laki', 'Perempuan'],
                     datasets: [{
-                        data: [10, 2], // Sesuaikan data
-                        backgroundColor: ['#b695ff', '#f4aaa4'], // Sesuaikan warna
+                        data: [maleCount, femaleCount],
+                        backgroundColor: ['#b695ff', '#f4aaa4'],
                     }]
                 },
                 options: {
@@ -260,30 +196,25 @@
                             bodySpacing: 4,
                             padding: 10,
                             displayColors: false,
-                            callbacks: {
-                                title: function(tooltipItem) {
-                                    return tooltipItem[0].label;
-                                },
-                                label: function(tooltipItem) {
-                                    return tooltipItem.raw + ' BTC';
-                                }
-                            }
                         }
                     },
                 }
             });
-        });
-        document.addEventListener("DOMContentLoaded", function() {
-            var ctx = document.getElementById('pieChartData2').getContext('2d');
-            var pieChart = new Chart(ctx, {
+
+            // Chart untuk Statistik Kehadiran
+            var ctx2 = document.getElementById('pieChartData2').getContext('2d');
+            var pieChart2 = new Chart(ctx2, {
                 type: 'pie',
                 data: {
-                    labels: ['Cuti', 'Tidak Hadir', 'Masuk', 'Pulang', 'Absen'], // Sesuaikan label
+                    labels: ['Cuti', 'Masuk', 'Pulang', 'Absen'],
                     datasets: [{
-                        data: [10, 2, 200, 200, 400], // Sesuaikan data
-                        backgroundColor: ['#b695ff', '#f4aaa4', '#39e369', '#cce339',
-                            '#5fc2b5'
-                        ], // Sesuaikan warna
+                        data: [
+                            attendanceStats.cuti,
+                            attendanceStats.masuk,
+                            attendanceStats.pulang,
+                            attendanceStats.absen
+                        ],
+                        backgroundColor: ['#b695ff', '#39e369', '#cce339', '#5fc2b5'],
                     }]
                 },
                 options: {
@@ -305,14 +236,6 @@
                             bodySpacing: 4,
                             padding: 10,
                             displayColors: false,
-                            callbacks: {
-                                title: function(tooltipItem) {
-                                    return tooltipItem[0].label;
-                                },
-                                label: function(tooltipItem) {
-                                    return tooltipItem.raw + ' BTC';
-                                }
-                            }
                         }
                     },
                 }

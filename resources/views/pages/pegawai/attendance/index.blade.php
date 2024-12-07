@@ -62,7 +62,7 @@
                                     <!-- Tombol Cetak -->
                                     <li>
                                         <a href="#" class="btn btn-secondary d-inline-block" data-bs-toggle="modal"
-                                            data-bs-target="#printModal">
+                                            data-bs-target="#printModal" target="_blank">
                                             <em class="icon ni ni-printer"></em> Cetak
                                         </a>
                                     </li>
@@ -168,16 +168,16 @@
                             <div class="form-group">
                                 <label class="form-label">Bulan</label>
                                 <div class="form-control-wrap">
-                                    <input type="month" class="form-control" name="month" required>
+                                    <input type="month" class="form-control month-picker" name="month" required>
                                 </div>
                             </div>
 
                             <!-- Input Tahun -->
-                            <div class="form-group">
+                            <div class="form-group mt-3">
                                 <label class="form-label">Tahun</label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control" name="year" placeholder="Tahun"
-                                        pattern="\d{4}" required>
+                                    <input type="number" class="form-control year-picker" name="year"
+                                        placeholder="Masukkan Tahun" min="1900" max="2099" step="1" required>
                                 </div>
                             </div>
                         </div>
@@ -189,7 +189,6 @@
                 </div>
             </div>
         </div>
-
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {

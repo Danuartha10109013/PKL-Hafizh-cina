@@ -9,11 +9,9 @@
     <meta name="description"
         content="A powerful and conceptual apps base dashboard template that especially build for developers and programmers.">
     <!-- Fav Icon  -->
-    <link rel="shortcut icon" href="{{ asset('demo5/src/images/logo-shorcut-kehadiran.png') }}">
+    <link rel="shortcut icon" href="{{ asset('demo5/src/images/faviconlogo.png') }}">
     <!-- Page Title  -->
-    <title>
-        Cetak Rekapitulasi Pegawai
-    </title>
+    <title>Cetak Rekapitulasi</title>
     <!-- StyleSheets  -->
     <link rel="stylesheet" href="{{ asset('demo5/src/assets/css/dashlite.css?ver=3.0.3') }}">
     <link id="skin-default" rel="stylesheet" href="{{ asset('demo5/src/assets/css/theme.css?ver=3.0.3') }}">
@@ -24,8 +22,7 @@
         <div class="invoice invoice-print">
             <div class="invoice-wrap">
                 <div class="invoice-brand text-center">
-                    <img src="{{ asset('demo5/src/images/kehadiranmantap.png') }}"
-                        srcset="{{ asset('demo5/src/images/kehadiranmantap.png') }}" alt="">
+                    <img src="{{ asset('demo5/src/images/logonew1.png') }}" alt="Attendance Logo">
                 </div>
                 <div class="invoice-head">
                     <div class="invoice-contact">
@@ -44,60 +41,32 @@
                                     <th>Nama Pegawai</th>
                                     <th>Masuk</th>
                                     <th>Pulang</th>
-                                    <th>Lebih Awal</th>
-                                    <th>Terlambat</th>
+                                    <th>Pulang Lebih Awal</th>
+                                    <th>Masuk Terlambat</th>
                                     <th>Tidak Masuk</th>
                                     <th>Cuti</th>
                                     <th>Sanksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Example rows, hardcoded -->
-                                <tr>
-                                    <td>1</td>
-                                    <td>Hafizh Alfaris</td>
-                                    <td>20</td>
-                                    <td>20</td>
-                                    <td>2</td>
-                                    <td>1</td>
-                                    <td>0</td>
-                                    <td>3</td>
-                                    <td><span class="badge bg-success">Aman</span></td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>Ali Rahman</td>
-                                    <td>18</td>
-                                    <td>18</td>
-                                    <td>1</td>
-                                    <td>2</td>
-                                    <td>1</td>
-                                    <td>2</td>
-                                    <td><span class="badge bg-success">Aman</span></td>
-                                </tr>
-                                <tr>
-                                    <td>3</td>
-                                    <td>Siti Nurhayati</td>
-                                    <td>16</td>
-                                    <td>16</td>
-                                    <td>0</td>
-                                    <td>4</td>
-                                    <td>3</td>
-                                    <td>0</td>
-                                    <td><span class="badge bg-warning">Perlu Perhatian</span></td>
-                                </tr>
-                                <tr>
-                                    <td>4</td>
-                                    <td>Indra Wijaya</td>
-                                    <td>14</td>
-                                    <td>14</td>
-                                    <td>3</td>
-                                    <td>5</td>
-                                    <td>4</td>
-                                    <td>1</td>
-                                    <td><span class="badge bg-danger">Sanksi</span></td>
-                                </tr>
+                                @foreach ($rekapData as $index => $data)
+                                    <tr>
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ $data['nama'] }}</td>
+                                        <td>{{ $data['masuk'] }}</td>
+                                        <td>{{ $data['pulang'] }}</td>
+                                        <td>{{ $data['lebih_awal'] }}</td>
+                                        <td>{{ $data['terlambat'] }}</td>
+                                        <td>0</td>
+                                        <td>{{ $data['cuti'] }}</td>
+                                        <td>
+                                            <span
+                                                class="badge bg-{{ $data['sanksi'] }}">{{ $data['sanksi_label'] }}</span>
+                                        </td>
+                                    </tr>
+                                @endforeach
                             </tbody>
+
                         </table>
                     </div>
                 </div><!-- .invoice-bills -->

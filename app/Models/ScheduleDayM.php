@@ -12,7 +12,7 @@ class ScheduleDayM extends Model
     protected $fillable = [
         'schedule_id',
         'clock_in',
-        'brake',
+        'break',
         'clock_out',
         'days',
     ];

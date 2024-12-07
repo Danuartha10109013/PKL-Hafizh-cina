@@ -34,7 +34,33 @@
         });
     </script>
 
+    <style>
+        .img-placeholder {
+            width: 100px;
+            /* Lebar lingkaran */
+            height: 100px;
+            /* Tinggi lingkaran */
+            background-color: #2c3e50;
+            /* Warna latar belakang */
+            border-radius: 50%;
+            /* Membentuk lingkaran */
+            display: flex;
+            /* Flexbox */
+            align-items: center;
+            /* Pusatkan konten secara vertikal */
+            justify-content: center;
+            /* Pusatkan konten secara horizontal */
+            margin: 0 auto;
+            /* Pusatkan lingkaran secara horizontal dalam card-body */
+        }
 
+        .img-placeholder::before {
+            content: "No Image";
+            color: #ffff;
+            font-size: 14px;
+            text-align: center;
+        }
+    </style>
 
 </head>
 

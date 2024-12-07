@@ -138,8 +138,26 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.querySelector('form');
+            const usernameInput = document.querySelector('input[name="username"]');
+            const passwordInput = document.querySelector('input[name="password"]');
             const loginButton = document.querySelector('button[type="submit"]');
 
+            loginForm.addEventListener('submit', function(e) {
+                // Validasi frontend: periksa apakah input kosong
+                if (!usernameInput.value.trim() || !passwordInput.value.trim()) {
+                    e.preventDefault(); // Mencegah form submit
+                    Swal.fire({
+                        title: 'Data tidak boleh kosong',
+                        text: 'Harap isi username atau password anda.',
+                        icon: 'warning',
+                        confirmButtonColor: '#364a63'
+                    });
+                    return; // Hentikan eksekusi
+                }
+            });
+
+            // Validasi backend: gunakan pesan dari session
             @if ($message = Session::get('succes'))
                 Swal.fire({
                     title: '{{ $message }}',
@@ -163,6 +181,7 @@
             @endif
         });
     </script>
+
 </body>
 
 </html>

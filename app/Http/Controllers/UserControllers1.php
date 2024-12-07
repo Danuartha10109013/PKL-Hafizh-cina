@@ -108,6 +108,6 @@ class UserControllers1 extends Controller
         $user->save();
 
 
-        return redirect()->back()->with('success', 'Avatar updated successfully!');
+        return redirect()->back()->with('success', 'Avatar berhasil diperbaharui!');
     }
 }

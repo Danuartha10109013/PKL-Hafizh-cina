@@ -89,8 +89,9 @@
                                                 <td>{{ $d->email }}</td>
                                                 <td>{{ $d->created_at->format('d M Y') }}</td>
                                                 <td>
-                                                    {{ $d->shift_name }}
+                                                    {{ $d->shift_name ?? 'Belum mempunyai jadwal' }}
                                                 </td>
+
                                                 <td>
                                                     <div class="user-card">
                                                         <div class="user-avatar bg-secondary">

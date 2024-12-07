@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('schedules', function (Blueprint $table) {
+        Schema::create('schedule_day', function (Blueprint $table) {
             $table->id();
-            $table->dateTime('shift_name');
-            $table->dateTime('singkatan');
+            $table->unsignedBigInteger('schedule_id');
+            $table->time('clock_in');
+            $table->time('break');
+            $table->time('clock_out');
+            $table->varchar(255);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -25,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('schedules');
+        Schema::dropIfExists('schedule_day');
     }
 };

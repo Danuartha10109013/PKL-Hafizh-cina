@@ -19,6 +19,10 @@ return new class extends Migration
             $table->enum('status', [0, 1]);
             $table->string('reason', 255);
             $table->string('reason_verification', 255);
+            $table->string('about', 255);
+            $table->string('category', 255);
+            $table->string('subcategory', 255);
+            $table->string('leave_letter', 255);
             $table->timestamps();
             $table->softDeletes();
         });
