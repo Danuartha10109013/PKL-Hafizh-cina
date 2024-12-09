@@ -104,8 +104,37 @@ class LeaveController extends Controller
     public function filtercuti() {}
 
 
-    public function destroy()
+    public function delete($id)
     {
-        //
+        // Find the schedule to be deleted
+        $schedule = Leave::findOrFail($id);
+        $schedule->deleted_by = Auth::user()->id;
+        $schedule->save();
+        $schedule->delete();
+        
+        return redirect()->back()->with('success', 'Cuti telah dihapus');
+    }
+    
+    
+    public function restore($id)
+    {
+        
+        $att = Leave::withTrashed()->find($id);
+        $att->deleted_by= null;
+        $att->save();
+        // Restore the specific Schedule record with the given id
+        Leave::withTrashed()->where('id', $id)->restore();
+    
+        return redirect()->back()->with('success', 'Cuti telah dipulihkan');
+    }
+    
+
+    public function forceDelete($id)
+    {
+        $att = Leave::withTrashed()->findOrFail($id);
+        $att->forceDelete();
+    
+        // Redirect back with a success message
+        return redirect()->back()->with('success', 'Cuti telah dihapus secara permanen');
     }
 }

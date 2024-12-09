@@ -19,6 +19,8 @@ class Attendance extends Model
         'time',
         'status',
         'coordinate',
+        'deleted_by',
+        'deleted_at',
     ];
 
     // Relasi ke model User

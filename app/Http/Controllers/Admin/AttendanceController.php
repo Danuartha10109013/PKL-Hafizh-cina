@@ -34,7 +34,7 @@ class AttendanceController extends Controller
         //
     }
 
-    public function destroy()
+    public function delete()
     {
         //
     }

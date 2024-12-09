@@ -18,12 +18,13 @@ class AttendanceController extends Controller
 {
     public function kehadiran()
     {
-        $user = User::where('role', '!=', 1)->pluck('id')->toArray();
-        $userid = Auth::user()->id;
-        $user = User::find($userid);
-        $schedule = Schedule::find($user->schedule);
+        $user = Auth::user();
+        $userid = $user->id;
+        
+        // Use optional() to handle null values
+        $schedule = optional(Schedule::find($user->schedule));
         $jadwal = ScheduleDayM::where('schedule_id', $schedule->id)->get();
-
+    
         // Retrieve all attendances for display
         $attendances = Attendance::with('user')
             ->whereHas('user', function ($query) {
@@ -31,11 +32,21 @@ class AttendanceController extends Controller
             })
             ->orderBy('date', 'asc')
             ->orderBy('time', 'asc')
-            ->get();
-
-
+            ->get()
+            ->map(function ($attendance) {
+                // Replace null values with "N/A"
+                $attendance->date = $attendance->date ?? 'N/A';
+                $attendance->time = $attendance->time ?? 'N/A';
+                $attendance->user_name = optional($attendance->user)->name ?? 'N/A';
+                return $attendance;
+            });
+    
+        // If $jadwal is empty, set it to a default value (e.g., empty collection or 'N/A')
+        $jadwal = $jadwal->isEmpty() ? collect(['N/A']) : $jadwal;
+    
         return view('pages.admin.attendance.kelolakehadiranpegawai', compact('attendances', 'jadwal'));
     }
+    
 
 
 
@@ -404,4 +415,39 @@ class AttendanceController extends Controller
             return redirect()->back()->with('error', 'Pegawai tidak ditemukan');
         }
     }
+
+    public function delete($id)
+    {
+        // Find the schedule to be deleted
+        $schedule = Attendance::findOrFail($id);
+        $schedule->deleted_by = Auth::user()->id;
+        $schedule->save();
+        $schedule->delete();
+        
+        return redirect()->back()->with('success', 'Absensi telah dihapus');
+    }
+    
+    
+    public function restore($id)
+    {
+        
+        $att = Attendance::withTrashed()->find($id);
+        $att->deleted_by= null;
+        $att->save();
+        // Restore the specific Schedule record with the given id
+        Attendance::withTrashed()->where('id', $id)->restore();
+    
+        return redirect()->back()->with('success', 'Absensi telah dipulihkan');
+    }
+    
+
+    public function forceDelete($id)
+    {
+        $att = Attendance::withTrashed()->findOrFail($id);
+        $att->forceDelete();
+    
+        // Redirect back with a success message
+        return redirect()->back()->with('success', 'Absensi telah dihapus secara permanen');
+    }
+    
 }

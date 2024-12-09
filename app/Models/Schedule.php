@@ -14,6 +14,10 @@ class Schedule extends Model
     protected $fillable = [
         'shift_name',
         'singkatan',
+        'deleted_by',
+        'deleted_at',
+        'deleted_by',
+        'deleted_at',
 
     ];
 

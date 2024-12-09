@@ -92,25 +92,39 @@
                                     <th>No</th>
                                     <th>Tanggal</th>
                                     <th>Nama Pegawai</th>
-                                    <th>Waktu</th>
+                                    <th>Status</th>
                                     <th>Dihapus Oleh</th>
                                     <th class="text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr></tr>
-                                {{-- @foreach ($deletedAttendances as $attendance)
+                                @foreach ($deletedAttendances as $attendance)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $attendance->tanggal }}</td>
-                                        <td>{{ $attendance->pegawai->name }}</td>
-                                        <td>{{ $attendance->deletedBy->name }}</td>
+                                        <td>{{ $attendance->date }}</td>
+                                        <td>@php
+                                            $names = \App\Models\User::where('id',$attendance->enhancer)->value('name')
+                                        @endphp
+                                        {{$names}}</td>
+                                        <td>
+                                            @if ($attendance->status == 0)
+                                                    <span class="badge bg-success">Masuk</span>
+                                                @elseif ($attendance->status == 1)
+                                                    <span class="badge bg-danger">Pulang</span>
+                                                @endif
+                                        </td>   
+                                        <td>@php
+                                            $name = \App\Models\User::where('id',$attendance->deleted_by)->value('name')
+                                        @endphp
+                                        {{$name}}</td>
+                                        
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center">
-                                                <a href="{{ route('admin.attendancerestore', $attendance->id) }}"
+                                                <a href="{{route('admin.kelolakehadiranpegawai.restore',$attendance->id)}}"
                                                     class="btn btn-sm btn-success me-2"> <em
                                                         class="icon ni ni-undo"></em><span>Restore</span></a>
-                                                <form action="{{ route('admin.attendancedestroyed', $attendance->id) }}"
+                                                <form action="{{route('admin.kelolakehadiranpegawai.forcedelete',$attendance->id)}}"
                                                     method="POST" class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
@@ -121,7 +135,7 @@
                                             </div>
                                         </td>
                                     </tr>
-                                @endforeach --}}
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -142,18 +156,54 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {{-- @foreach ($schedules as $schedule)
+                                @foreach ($schedules as $schedule)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $schedule->pegawai->name }}</td>
-                                        <td>{{ $schedule->tanggal }}</td>
-                                        <td>{{ $schedule->shift }}</td>
+                                        <td>{{ $schedule->shift_name }}</td>
+                                        <td>
+                                            @php
+                                                // Retrieve the schedule days
+                                                $datasd = \App\Models\ScheduleDayM::withTrashed()->where('schedule_id', $schedule->id)->get();
+                                                // dd($datasd);
+                                                // Initialize the total hours
+                                                $total = 0;
+
+                                                if ($datasd->isEmpty()) {
+                                                    // If $datasd is empty, set total to "N/A"
+                                                    $total = 'N/A';
+                                                } else {
+                                                    foreach ($datasd as $data) {
+                                                        // Convert clock_in and clock_out to Carbon instances, and handle null values
+                                                        $clockIn = $data->clock_in ? \Carbon\Carbon::parse($data->clock_in) : null;
+                                                        $clockOut = $data->clock_out ? \Carbon\Carbon::parse($data->clock_out) : null;
+
+                                                        // Calculate the difference in hours if both times are available
+                                                        if ($clockIn && $clockOut) {
+                                                            $hours = $clockOut->diffInHours($clockIn);
+                                                            $total += $hours;
+                                                        }
+                                                    }
+                                                }
+                                            @endphp
+
+                                            {{ is_numeric($total) ? number_format(abs($total), 2, '.', '') : $total }} Jam
+
+
+                                        </td>
+                                        
+                                        
+                                        <td>
+                                            @php
+                                                $name = \App\Models\User::where('id',$schedule->deleted_by)->value('name')
+                                            @endphp
+                                            {{$name}}
+                                        </td>
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center">
-                                                <a href="{{ route('admin.schedulerestore', $schedule->id) }}"
+                                                <a href="{{ route('admin.restore-jadwal', $schedule->id) }}"
                                                     class="btn btn-sm btn-success me-2"> <em
                                                         class="icon ni ni-undo"></em><span>Restore</span></a>
-                                                <form action="{{ route('admin.scheduledestroyed', $schedule->id) }}"
+                                                <form action="{{ route('admin.forcedelete-jadwal', $schedule->id) }}"
                                                     method="POST" class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
@@ -164,7 +214,7 @@
                                             </div>
                                         </td>
                                     </tr>
-                                @endforeach --}}
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -188,19 +238,31 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {{-- @foreach ($leaves as $leave)
+                                @foreach ($leaves as $leave)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $leave->pegawai->name }}</td>
-                                        <td>{{ $leave->tanggal_mulai }}</td>
-                                        <td>{{ $leave->tanggal_selesai }}</td>
-                                        <td>{{ $leave->keterangan }}</td>
+                                        <td>
+                                            @php
+                                            $nam = \App\Models\User::where('id',$leave->enhancer)->value('name')
+                                        @endphp
+                                        {{$nam}}
+                                        </td>
+                                        <td>{{ $leave->reason }}</td>
+                                        <td>{{ $leave->category }}</td>
+                                        <td>{{ $leave->date }}</td>
+                                        <td>{{ $leave->end_date }}</td>
+                                        <td>
+                                            @php
+                                                $name = \App\Models\User::where('id',$leave->deleted_by)->value('name')
+                                            @endphp
+                                            {{$name}}
+                                        </td>
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center">
-                                                <a href="{{ route('admin.leaverestore', $leave->id) }}"
+                                                <a href="{{route('admin.restore-satuancuti',$leave->id)}}"
                                                     class="btn btn-sm btn-success me-2"> <em
                                                         class="icon ni ni-undo"></em><span>Restore</span></a>
-                                                <form action="{{ route('admin.leavedestroyed', $leave->id) }}"
+                                                <form action="{{route('admin.forcedelete-satuancuti',$leave->id)}}"
                                                     method="POST" class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
@@ -211,7 +273,7 @@
                                             </div>
                                         </td>
                                     </tr>
-                                @endforeach --}}
+                                @endforeach
                             </tbody>
                         </table>
                     </div>

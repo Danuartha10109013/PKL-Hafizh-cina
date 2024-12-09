@@ -143,7 +143,7 @@
                                                                         </a>
                                                                     </li>
                                                                     <li>
-                                                                        <a href="#" class="dropdown-item">
+                                                                        <a href="{{route('admin.delete-satuancuti',$item->id)}}" class="dropdown-item">
                                                                             <em class="icon ni ni-trash"></em>
                                                                             <span>Hapus</span>
                                                                         </a>
@@ -242,7 +242,7 @@
                                                                         </a>
                                                                     </li>
                                                                     <li>
-                                                                        <a href="#" class="dropdown-item">
+                                                                        <a href="{{route('admin.delete-satuancuti',$item->id)}}" class="dropdown-item">
                                                                             <em class="icon ni ni-trash"></em>
                                                                             <span>Hapus</span>
                                                                         </a>

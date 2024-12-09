@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Attendance;
 use App\Models\Leave;
+use App\Models\Schedule;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -86,10 +87,15 @@ class DeletedController extends Controller
         $deletedUsers = User::onlyTrashed()->get();
         $deleteby = User::onlyTrashed()->value('deleted_by');
         $nama = User::where('id', $deleteby)->value('name');
+        $schedules = Schedule::onlyTrashed()->get();
+        $deletedAttendances = Attendance::onlyTrashed()->get();
+        $leaves = Leave::onlyTrashed()->get();
+
+
 
         // dd($nama);
 
         // Menampilkan view dengan data pegawai
-        return view('pages.admin.trash.trashed', compact('data', 'deletedUsers', 'nama'));
+        return view('pages.admin.trash.trashed', compact('data', 'deletedUsers', 'nama','schedules','deletedAttendances','leaves'));
     }
 }

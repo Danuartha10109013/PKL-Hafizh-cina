@@ -206,7 +206,7 @@
                                                                     @endif
 
                                                                     <li>
-                                                                        <a href="#"><em
+                                                                        <a href="{{route('admin.kelolakehadiranpegawai.delete',$attendance->id)}}"><em
                                                                                 class="icon ni ni-trash"></em><span>Hapus</span></a>
                                                                     </li>
                                                                 </ul>

@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ScheduleDayM extends Model
 {
     use HasFactory;
+    use SoftDeletes;
     protected $table = 'schedule_day';
     protected $fillable = [
         'schedule_id',
@@ -15,5 +17,6 @@ class ScheduleDayM extends Model
         'break',
         'clock_out',
         'days',
+        
     ];
 }

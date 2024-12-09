@@ -87,6 +87,9 @@ Route::middleware([AutoLogout::class])->group(function () {
             Route::get('/print-selection', [AttendanceController::class, 'printSelection'])->name('print-selection');
             Route::post('/print-selected', [AttendanceController::class, 'printSelected'])->name('print-selected');
             Route::get('/send/{id}', [AttendanceController::class, 'send'])->name('kelolakehadiranpegawai.send');
+            Route::get('/delete/{id}', [AttendanceController::class, 'delete'])->name('kelolakehadiranpegawai.delete');
+            Route::get('/restore/{id}', [AttendanceController::class, 'restore'])->name('kelolakehadiranpegawai.restore');
+            Route::delete('/forcedelete/{id}', [AttendanceController::class, 'forcedelete'])->name('kelolakehadiranpegawai.forcedelete');
         });
 
         // Manage Schedules
@@ -98,6 +101,8 @@ Route::middleware([AutoLogout::class])->group(function () {
             Route::post('/updatejadwal/{id}', [ScheduleController::class, 'update'])->name('updatejadwal');
             Route::get('/printjadwal', [ScheduleController::class, 'print'])->name('print-jadwal');
             Route::get('/delete/{id}', [ScheduleController::class, 'delete'])->name('delete-jadwal');
+            Route::get('/restore/{id}', [ScheduleController::class, 'restore'])->name('restore-jadwal');
+            Route::delete('/forcedelete/{id}', [ScheduleController::class, 'forceDelete'])->name('forcedelete-jadwal');
             Route::post('/update-sch', [ScheduleController::class, 'update_sch'])->name('update.sch-jadwal');
         });
 
@@ -107,6 +112,9 @@ Route::middleware([AutoLogout::class])->group(function () {
             Route::post('/update/{id}', [LeaveController::class, 'update'])->name('update-cuti');
             Route::get('/printkelolacuti', [LeaveController::class, 'cetakcuti'])->name('print-kelolacuti');
             Route::get('/printsatuancuti', [LeaveController::class, 'cetaksatuancuti'])->name('print-satuancuti');
+            Route::get('/delete/{id}', [LeaveController::class, 'delete'])->name('delete-satuancuti');
+            Route::get('/restore/{id}', [LeaveController::class, 'restore'])->name('restore-satuancuti');
+            Route::delete('/forcedelete/{id}', [LeaveController::class, 'forcedelete'])->name('forcedelete-satuancuti');
         });
 
         Route::prefix('trashed.kelolasampah')->group(function () {
