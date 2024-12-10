@@ -20,11 +20,11 @@ class AttendanceController extends Controller
     {
         $user = Auth::user();
         $userid = $user->id;
-        
+
         // Use optional() to handle null values
         $schedule = optional(Schedule::find($user->schedule));
         $jadwal = ScheduleDayM::where('schedule_id', $schedule->id)->get();
-    
+
         // Retrieve all attendances for display
         $attendances = Attendance::with('user')
             ->whereHas('user', function ($query) {
@@ -40,13 +40,13 @@ class AttendanceController extends Controller
                 $attendance->user_name = optional($attendance->user)->name ?? 'N/A';
                 return $attendance;
             });
-    
+
         // If $jadwal is empty, set it to a default value (e.g., empty collection or 'N/A')
         $jadwal = $jadwal->isEmpty() ? collect(['N/A']) : $jadwal;
-    
+
         return view('pages.admin.attendance.kelolakehadiranpegawai', compact('attendances', 'jadwal'));
     }
-    
+
 
 
 
@@ -373,23 +373,23 @@ class AttendanceController extends Controller
             'month' => 'required|date_format:Y-m',
             'year' => 'required|integer|min:1900|max:2099',
         ]);
-    
+
         // Ambil bulan dan tahun dari request
         $month = date('m', strtotime($request->input('month')));
         $year = $request->input('year');
-    
+
         // Ambil ID user yang sedang login
         $id_user = Auth::id();
-    
+
         // Query untuk mengambil data absensi berdasarkan bulan, tahun, dan user
         $attendance = Attendance::where('enhancer', $id_user) // Ganti 'user_id' dengan 'enhancer'
             ->whereYear('date', $year)
             ->whereMonth('date', $month)
             ->get();
-    
+
         // Ambil nama user
         $name = User::where('id', $id_user)->value('name');
-    
+
         // Jika absensi ditemukan, proses koordinat untuk absensi pertama
         if ($attendance->isNotEmpty()) {
             $coordinates = explode(',', $attendance->first()->coordinate);
@@ -399,12 +399,12 @@ class AttendanceController extends Controller
             $latitude = null;
             $longitude = null;
         }
-    
+
         // Tampilkan tampilan print dengan data absensi
         return view('pages.pegawai.attendance.printcustom', compact('attendance', 'latitude', 'longitude', 'name'));
     }
-    
-    
+
+
 
 
 
@@ -464,31 +464,30 @@ class AttendanceController extends Controller
         $schedule->deleted_by = Auth::user()->id;
         $schedule->save();
         $schedule->delete();
-        
+
         return redirect()->back()->with('success', 'Absensi telah dihapus');
     }
-    
-    
+
+
     public function restore($id)
     {
-        
+
         $att = Attendance::withTrashed()->find($id);
-        $att->deleted_by= null;
+        $att->deleted_by = null;
         $att->save();
         // Restore the specific Schedule record with the given id
         Attendance::withTrashed()->where('id', $id)->restore();
-    
+
         return redirect()->back()->with('success', 'Absensi telah dipulihkan');
     }
-    
+
 
     public function forceDelete($id)
     {
         $att = Attendance::withTrashed()->findOrFail($id);
         $att->forceDelete();
-    
+
         // Redirect back with a success message
         return redirect()->back()->with('success', 'Absensi telah dihapus secara permanen');
     }
-    
 }

@@ -34,6 +34,26 @@
             opacity: 1;
         }
     </style>
+    <style>
+        /* Sembunyikan tahun dalam input "month" */
+        input[type="month"]::-webkit-datetime-edit-year-field {
+            display: none;
+        }
+
+        input[type="month"]::-webkit-datetime-edit-text {
+            display: none;
+        }
+
+        input[type="month"]::-webkit-datetime-edit-month-field {
+            text-align: center;
+        }
+
+        /* Untuk browser yang menggunakan gaya lain */
+        input[type="month"]::-ms-clear,
+        input[type="month"]::-ms-reveal {
+            display: none;
+        }
+    </style>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
