@@ -162,7 +162,7 @@
                         <h5 class="modal-title" id="printModalLabel">Cetak Kehadiran</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form id="printForm" action="#" method="GET">
+                    <form id="printForm" action="{{route('pegawai.printcustom-attendance')}}" method="GET">
                         <div class="modal-body">
                             <!-- Input Bulan -->
                             <div class="form-group">

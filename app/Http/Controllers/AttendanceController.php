@@ -366,6 +366,47 @@ class AttendanceController extends Controller
         // Tampilkan tampilan print
         return view('pages.pegawai.attendance.print', compact('attendance', 'latitude', 'longitude', 'name'));
     }
+    public function printcustom(Request $request)
+    {
+        // Validasi input form
+        $request->validate([
+            'month' => 'required|date_format:Y-m',
+            'year' => 'required|integer|min:1900|max:2099',
+        ]);
+    
+        // Ambil bulan dan tahun dari request
+        $month = date('m', strtotime($request->input('month')));
+        $year = $request->input('year');
+    
+        // Ambil ID user yang sedang login
+        $id_user = Auth::id();
+    
+        // Query untuk mengambil data absensi berdasarkan bulan, tahun, dan user
+        $attendance = Attendance::where('enhancer', $id_user) // Ganti 'user_id' dengan 'enhancer'
+            ->whereYear('date', $year)
+            ->whereMonth('date', $month)
+            ->get();
+    
+        // Ambil nama user
+        $name = User::where('id', $id_user)->value('name');
+    
+        // Jika absensi ditemukan, proses koordinat untuk absensi pertama
+        if ($attendance->isNotEmpty()) {
+            $coordinates = explode(',', $attendance->first()->coordinate);
+            $latitude = $coordinates[0] ?? null;
+            $longitude = $coordinates[1] ?? null;
+        } else {
+            $latitude = null;
+            $longitude = null;
+        }
+    
+        // Tampilkan tampilan print dengan data absensi
+        return view('pages.pegawai.attendance.printcustom', compact('attendance', 'latitude', 'longitude', 'name'));
+    }
+    
+    
+
+
 
     public function cetakkehadiranmasuk($id)
     {
