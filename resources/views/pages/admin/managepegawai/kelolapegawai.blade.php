@@ -163,68 +163,6 @@
                             </div>
                         </div><!-- .card-preview -->
                     </div> <!-- nk-block -->
-
-                    <!-- Button to trigger modal -->
-                    <button type="button" class="btn btn-secondary mt-3" data-bs-toggle="modal"
-                        data-bs-target="#deletedEmployeesModal">
-                        Show Deleted Employees
-                    </button>
-
-                    <!-- Deleted Employees Modal -->
-                    <div class="modal fade" id="deletedEmployeesModal" tabindex="-1"
-                        aria-labelledby="deletedEmployeesModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="deletedEmployeesModalLabel">Pegawai yang Dihapus</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <table class="datatable-init table table-hover table-bordered align-middle">
-                                        <thead class="thead-dark">
-                                            <tr>
-                                                <th class="text-center">No</th>
-                                                <th>Name</th>
-                                                <th>Deleted By</th>
-                                                <th class="text-center">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($deletedUsers as $userd)
-                                                <tr>
-                                                    <td class="text-center">{{ $loop->iteration }}</td>
-                                                    <td>{{ $userd->name }}</td>
-                                                    <td>
-                                                        @php
-                                                            $nama = \App\Models\User::where(
-                                                                'id',
-                                                                $userd->deleted_by,
-                                                            )->value('name');
-                                                        @endphp
-                                                        {{ $nama }}
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <div class="d-flex justify-content-center">
-                                                            <a href="{{ route('admin.userrestore', $userd->id) }}"
-                                                                class="btn btn-sm btn-success me-2">Restore</a>
-                                                            <form action="{{ route('admin.userdestroyed', $userd->id) }}"
-                                                                method="POST" class="d-inline">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="btn btn-sm btn-danger">Delete
-                                                                    Permanently</button>
-                                                            </form>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

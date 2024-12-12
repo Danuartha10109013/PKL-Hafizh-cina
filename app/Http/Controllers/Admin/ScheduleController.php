@@ -124,60 +124,60 @@ class ScheduleController extends Controller
     {
         // Find the schedule to be deleted
         $schedule = Schedule::findOrFail($id);
-        
+
         // Update related users' schedule field to NULL in one query
         User::where('schedule', $id)->update(['schedule' => null]);
         $schedule->deleted_by = Auth::user()->id;
         $schedule->save();
         // Delete the schedule
         $schedule->delete();
-    
+
         // Soft delete related ScheduleDayM records and mark them with deleted_by
-        $data= ScheduleDayM::where('schedule_id',$id)->get();
-        foreach ($data as $d){
+        $data = ScheduleDayM::where('schedule_id', $id)->get();
+        foreach ($data as $d) {
             $d->deleted_by = Auth::user()->id;
             $d->save();
         }
         ScheduleDayM::where('schedule_id', $id)->delete();
-        
-        return redirect()->back()->with('success', 'Jadwal telah dihapus');
+
+        return redirect()->back()->with('success', 'Jadwal berhasil dihapus dan dimasukkan ke dalam trash');
     }
-    
-    
+
+
     public function restore($id)
     {
-        $data= ScheduleDayM::withTrashed()->where('schedule_id',$id)->get();
-        foreach ($data as $d){
+        $data = ScheduleDayM::withTrashed()->where('schedule_id', $id)->get();
+        foreach ($data as $d) {
             $d->deleted_by = null;
             $d->save();
         }
         // Restore the specific ScheduleDayM record with the given schedule_id
         ScheduleDayM::withTrashed()->where('schedule_id', $id)->restore();
         $schedule = Schedule::withTrashed()->find($id);
-        $schedule->deleted_by= null;
+        $schedule->deleted_by = null;
         $schedule->save();
         // Restore the specific Schedule record with the given id
         Schedule::withTrashed()->where('id', $id)->restore();
-    
+
         return redirect()->back()->with('success', 'Jadwal telah dipulihkan');
     }
-    
+
 
     public function forceDelete($id)
     {
         // Find the schedule by id, including trashed records
         $schedule = Schedule::withTrashed()->findOrFail($id);
-    
+
         // Permanently delete the related ScheduleDayM records
         ScheduleDayM::where('schedule_id', $schedule->id)->forceDelete();
-    
+
         // Permanently delete the schedule
         $schedule->forceDelete();
-    
+
         // Redirect back with a success message
         return redirect()->back()->with('success', 'Jadwal telah dihapus secara permanen');
     }
-    
+
 
     public function update_sch(Request $request)
     {

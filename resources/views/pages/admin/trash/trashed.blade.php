@@ -98,33 +98,37 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr></tr>
                                 @foreach ($deletedAttendances as $attendance)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $attendance->date }}</td>
                                         <td>@php
-                                            $names = \App\Models\User::where('id',$attendance->enhancer)->value('name')
+                                            $names = \App\Models\User::where('id', $attendance->enhancer)->value(
+                                                'name',
+                                            );
                                         @endphp
-                                        {{$names}}</td>
+                                            {{ $names }}</td>
                                         <td>
                                             @if ($attendance->status == 0)
-                                                    <span class="badge bg-success">Masuk</span>
-                                                @elseif ($attendance->status == 1)
-                                                    <span class="badge bg-danger">Pulang</span>
-                                                @endif
-                                        </td>   
+                                                <span class="badge bg-success">Masuk</span>
+                                            @elseif ($attendance->status == 1)
+                                                <span class="badge bg-danger">Pulang</span>
+                                            @endif
+                                        </td>
                                         <td>@php
-                                            $name = \App\Models\User::where('id',$attendance->deleted_by)->value('name')
+                                            $name = \App\Models\User::where('id', $attendance->deleted_by)->value(
+                                                'name',
+                                            );
                                         @endphp
-                                        {{$name}}</td>
-                                        
+                                            {{ $name }}</td>
+
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center">
-                                                <a href="{{route('admin.kelolakehadiranpegawai.restore',$attendance->id)}}"
+                                                <a href="{{ route('admin.kelolakehadiranpegawai.restore', $attendance->id) }}"
                                                     class="btn btn-sm btn-success me-2"> <em
                                                         class="icon ni ni-undo"></em><span>Restore</span></a>
-                                                <form action="{{route('admin.kelolakehadiranpegawai.forcedelete',$attendance->id)}}"
+                                                <form
+                                                    action="{{ route('admin.kelolakehadiranpegawai.forcedelete', $attendance->id) }}"
                                                     method="POST" class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
@@ -163,7 +167,9 @@
                                         <td>
                                             @php
                                                 // Retrieve the schedule days
-                                                $datasd = \App\Models\ScheduleDayM::withTrashed()->where('schedule_id', $schedule->id)->get();
+                                                $datasd = \App\Models\ScheduleDayM::withTrashed()
+                                                    ->where('schedule_id', $schedule->id)
+                                                    ->get();
                                                 // dd($datasd);
                                                 // Initialize the total hours
                                                 $total = 0;
@@ -174,8 +180,12 @@
                                                 } else {
                                                     foreach ($datasd as $data) {
                                                         // Convert clock_in and clock_out to Carbon instances, and handle null values
-                                                        $clockIn = $data->clock_in ? \Carbon\Carbon::parse($data->clock_in) : null;
-                                                        $clockOut = $data->clock_out ? \Carbon\Carbon::parse($data->clock_out) : null;
+                                                        $clockIn = $data->clock_in
+                                                            ? \Carbon\Carbon::parse($data->clock_in)
+                                                            : null;
+                                                        $clockOut = $data->clock_out
+                                                            ? \Carbon\Carbon::parse($data->clock_out)
+                                                            : null;
 
                                                         // Calculate the difference in hours if both times are available
                                                         if ($clockIn && $clockOut) {
@@ -190,13 +200,15 @@
 
 
                                         </td>
-                                        
-                                        
+
+
                                         <td>
                                             @php
-                                                $name = \App\Models\User::where('id',$schedule->deleted_by)->value('name')
+                                                $name = \App\Models\User::where('id', $schedule->deleted_by)->value(
+                                                    'name',
+                                                );
                                             @endphp
-                                            {{$name}}
+                                            {{ $name }}
                                         </td>
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center">
@@ -243,9 +255,9 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td>
                                             @php
-                                            $nam = \App\Models\User::where('id',$leave->enhancer)->value('name')
-                                        @endphp
-                                        {{$nam}}
+                                                $nam = \App\Models\User::where('id', $leave->enhancer)->value('name');
+                                            @endphp
+                                            {{ $nam }}
                                         </td>
                                         <td>{{ $leave->reason }}</td>
                                         <td>{{ $leave->category }}</td>
@@ -253,16 +265,18 @@
                                         <td>{{ $leave->end_date }}</td>
                                         <td>
                                             @php
-                                                $name = \App\Models\User::where('id',$leave->deleted_by)->value('name')
+                                                $name = \App\Models\User::where('id', $leave->deleted_by)->value(
+                                                    'name',
+                                                );
                                             @endphp
-                                            {{$name}}
+                                            {{ $name }}
                                         </td>
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center">
-                                                <a href="{{route('admin.restore-satuancuti',$leave->id)}}"
+                                                <a href="{{ route('admin.restore-satuancuti', $leave->id) }}"
                                                     class="btn btn-sm btn-success me-2"> <em
                                                         class="icon ni ni-undo"></em><span>Restore</span></a>
-                                                <form action="{{route('admin.forcedelete-satuancuti',$leave->id)}}"
+                                                <form action="{{ route('admin.forcedelete-satuancuti', $leave->id) }}"
                                                     method="POST" class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
