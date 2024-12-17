@@ -93,9 +93,11 @@
                                                 <div class="form-group">
                                                     <label class="form-label">Jam Kerja</label>
                                                     <input type="text" class="form-control" id="schedule"
-                                                        name="schedule" value="{{ $schedule->shift_name }}" disabled>
+                                                        name="schedule" value="{{ optional($schedule)->shift_name }}"
+                                                        disabled>
                                                 </div>
                                             </div>
+
 
                                             <div class="col-md-6">
                                                 <div class="form-group">

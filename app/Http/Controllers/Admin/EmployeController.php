@@ -42,8 +42,15 @@ class EmployeController extends Controller
         $item = User::findOrFail($id);
         $roles = Role::all();
         $schedule = Schedule::where('id', $item->schedule)->first();
+
+        // Jika jadwal tidak ditemukan, set default null atau data dummy
+        if (!$schedule) {
+            $schedule = null; // atau buat objek kosong: $schedule = new Schedule();
+        }
+
         return view('pages.admin.managepegawai.detailkelolapegawai', compact('item', 'roles', 'schedule'));
     }
+
 
 
     public function create()
