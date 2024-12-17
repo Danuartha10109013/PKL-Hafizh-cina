@@ -220,7 +220,7 @@ class EmployeController extends Controller
     {
         // Menggunakan join antara tabel 'users', 'schedules', dan 'roles'
         $data = User::select('users.*', 'schedules.shift_name', 'roles.name as role_name')
-            ->join('schedules', 'users.schedule', '=', 'schedules.id')
+            ->leftjoin('schedules', 'users.schedule', '=', 'schedules.id')
             ->join('roles', 'users.role', '=', 'roles.id') // Join ke tabel roles untuk mengambil nama role
             ->where('users.role', 2)
             ->get();
