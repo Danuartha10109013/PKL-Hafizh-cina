@@ -124,7 +124,7 @@
                                                     <label class="form-label" for="avatar">Avatar</label>
                                                     <div class="form-control-wrap">
                                                         <input type="file" class="form-file-input" id="avatar"
-                                                            name="avatar" accept=".jpg,.jpeg,.png">
+                                                            name="avatar" accept=".jpg,.jpeg,.png" placeholder="">
                                                         <label class="form-file-label" for="avatar">Choose file</label>
                                                     </div>
                                                 </div>
@@ -145,7 +145,6 @@
                                                                     {{ $schedule->shift_name }}
                                                                 </option>
                                                             @endforeach
-
                                                         </select>
                                                     </div>
                                                 </div>
@@ -156,7 +155,7 @@
                                                     <div class="form-control-wrap">
                                                         <input type="text" class="form-control" id="place_of_birth"
                                                             name="place_of_birth" value="{{ $item->place_of_birth }}"
-                                                            required>
+                                                            placeholder="">
                                                     </div>
                                                 </div>
                                             </div>
@@ -170,7 +169,7 @@
                                                         <input type="text" class="form-control date-picker"
                                                             id="date_of_birth" name="date_of_birth"
                                                             data-date-format="yyyy-mm-dd"
-                                                            value="{{ $item->date_of_birth }}">
+                                                            value="{{ $item->date_of_birth }}" placeholder="">
                                                     </div>
                                                 </div>
                                             </div>
@@ -178,7 +177,7 @@
                                                 <div class="form-group">
                                                     <label class="form-label">Jenis Kelamin</label>
                                                     <input type="text" class="form-control" name="gender"
-                                                        value="{{ $item->gender }}">
+                                                        value="{{ $item->gender }}" placeholder="">
                                                 </div>
                                             </div>
                                             <div class="col-sm-6">
@@ -187,17 +186,8 @@
                                                     <div class="form-control-wrap">
                                                         <input type="text" class="form-control" id="telephone"
                                                             name="telephone" value="{{ $item->telephone }}"
-                                                            maxlength="13"
-                                                            oninput="this.value = this.value.slice(0, 13)"required>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-6">
-                                                <div class="form-group">
-                                                    <label class="form-label" for="email">Jabatan</label>
-                                                    <div class="form-control-wrap">
-                                                        <input type="text" class="form-control" id="position"
-                                                            name="position" value="" disabled>
+                                                            maxlength="13" oninput="this.value = this.value.slice(0, 13)"
+                                                            placeholder="">
                                                     </div>
                                                 </div>
                                             </div>
@@ -205,7 +195,7 @@
                                                 <div class="form-group">
                                                     <label class="form-label">Agama</label>
                                                     <input type="text" class="form-control" name="religion"
-                                                        value="{{ $item->religion }}">
+                                                        value="{{ $item->religion }}" placeholder="">
                                                 </div>
                                             </div>
                                             <div class="col-sm-6">
@@ -221,7 +211,7 @@
                                                 <div class="form-group">
                                                     <label class="form-label" for="address">Alamat</label>
                                                     <div class="form-control-wrap">
-                                                        <textarea type="text" class="form-control" id="address" name="address" required>{{ $item->address }}</textarea>
+                                                        <textarea type="text" class="form-control" id="address" name="address">{{ $item->address }}</textarea>
                                                     </div>
                                                 </div>
                                             </div>

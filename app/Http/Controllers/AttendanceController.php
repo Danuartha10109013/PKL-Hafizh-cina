@@ -56,7 +56,8 @@ class AttendanceController extends Controller
         $userid = Auth::user()->id;
         $user = User::find($userid);
         $schedule = Schedule::find($user->schedule);
-        $jadwal = ScheduleDayM::where('schedule_id', $schedule->id)->get();
+        // $jadwal = ScheduleDayM::where('schedule_id', $schedule->id)->get();
+
 
         // Ambil parameter filter tanggal dari request dan konversi formatnya
         $date = $request->input('date');
@@ -77,7 +78,7 @@ class AttendanceController extends Controller
             ->orderBy('time', 'asc')
             ->get();
 
-        return view('pages.admin.attendance.kelolakehadiranpegawai', compact('attendances', 'jadwal'));
+        return view('pages.admin.attendance.kelolakehadiranpegawai', compact('attendances'));
     }
 
 

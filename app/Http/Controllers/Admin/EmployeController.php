@@ -134,62 +134,47 @@ class EmployeController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Validate the request data
+        // Validasi input
         $validatedData = $request->validate([
-            'name' => 'required|string|max:80',
-            'role' => 'required|integer|exists:roles,id',
-            'email' => 'required|string|email|max:80|unique:users,email,' . $id,
+            'name' => 'nullable|string|max:80',
+            'email' => 'nullable|string|email|max:80|unique:users,email,' . $id,
             'password' => 'nullable|min:8|regex:/[A-Z]/|regex:/[a-z]/|regex:/[0-9]/|regex:/[@$!%*?&]/',
-            // 'status' => 'required|boolean',
-            'schedule' => 'required|integer|exists:schedules,id',
-
-            'telephone' => 'required|string|max:13',
-            'status' => 'required|in:0,1',
-            'place_of_birth' => 'required|string|max:255',
-            'date_of_birth' => 'required|date',
-            'gender' => 'required',
-            'religion' => 'required|string|max:50',
-            'address' => 'required|string|max:255',
-            'id_card' => 'required|string|max:16',
-
+            'schedule' => 'nullable|integer|exists:schedules,id',
+            'telephone' => 'nullable|string|max:13',
+            'status' => 'nullable|in:0,1',
+            'place_of_birth' => 'nullable|string|max:255',
+            'date_of_birth' => 'nullable|date',
+            'gender' => 'nullable|string',
+            'religion' => 'nullable|string|max:50',
+            'address' => 'nullable|string|max:255',
+            'id_card' => 'nullable|string|max:16',
         ]);
 
-        // Find the user with their associated role and schedule
-        $data = User::findOrFail($id);
+        // Cari user berdasarkan ID
+        $user = User::findOrFail($id);
 
-        // Update user data except for password if it's empty
-        $data->name = $validatedData['name'];
-        $data->role = $validatedData['role'];
-        $data->email = $validatedData['email'];
-        $data->status = $validatedData['status'];
-        $data->schedule = $validatedData['schedule'];
+        // Update hanya field yang dikirim
+        $user->fill(array_filter($validatedData));
 
-        $data->telephone = $validatedData['telephone'];
-        $data->place_of_birth = $validatedData['place_of_birth'];
-        $data->date_of_birth = $validatedData['date_of_birth'];
-        $data->gender = $validatedData['gender'];
-        $data->religion = $validatedData['religion'];
-        $data->address = $validatedData['address'];
-        $data->id_card = $validatedData['id_card'];
-
-
-        // Update password only if provided
+        // Update password jika diisi
         if ($request->filled('password')) {
-            $data->password = Hash::make($request->password);
+            $user->password = Hash::make($request->password);
         }
 
-        // Handle avatar upload if any
+        // Handle avatar upload jika ada
         if ($request->hasFile('avatar')) {
             $avatarPath = $request->file('avatar')->store('avatars', 'public');
-            $data->avatar = $avatarPath;
+            $user->avatar = $avatarPath;
         }
 
-        // Save the updated user
-        $data->save();
+        // Simpan perubahan
+        $user->save();
 
-        // Redirect with a success message
+        // Redirect dengan pesan sukses
         return redirect()->route('admin.kelolapegawai')->with('success', 'Pegawai berhasil diperbaharui.');
     }
+
+
 
 
 
