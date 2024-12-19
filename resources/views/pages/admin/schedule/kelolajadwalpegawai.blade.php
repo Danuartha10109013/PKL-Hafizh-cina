@@ -60,7 +60,8 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Shift</th>
-                                            <th>Waktu Kerja</th>
+                                            <th>Tanggal dibuat</th>
+                                            {{-- <th>Waktu Kerja (jadi di pindahkan ke dalam action view)</th> --}}
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -78,42 +79,8 @@
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $schedule->shift_name }}</td>
-                                                <td>
-                                                    @php
+                                                <td>{{ $schedule->created_at->translatedFormat('d F Y') }}</td>
 
-                                                        $datasd = \App\Models\ScheduleDayM::where(
-                                                            'schedule_id',
-                                                            $schedule->id,
-                                                        )->get();
-                                                        $total = 0;
-                                                    @endphp
-
-                                                    <table style="width: 100%;">
-                                                        @foreach ($datasd as $sd)
-                                                            <tr>
-                                                                <td>{{ $loop->iteration }}.</td>
-                                                                <td>{{ $sd->days }}</td>
-                                                                <td style="padding-left: 20px;">{{ $sd->clock_in }} -
-                                                                    {{ $sd->clock_out }}</td>
-                                                            </tr>
-
-                                                            @php
-                                                                // Convert clock_in and clock_out to Carbon instances
-                                                                $clockIn = \Carbon\Carbon::parse($sd->clock_in);
-                                                                $clockOut = \Carbon\Carbon::parse($sd->clock_out);
-
-                                                                // Calculate the difference in hours
-                                                                $hours = $clockOut->diffInHours($clockIn);
-
-                                                                // Add the hours to the total
-                                                                $total += $hours;
-                                                            @endphp
-                                                        @endforeach
-                                                    </table>
-                                                    <div style="padding-left: 20px;">: Total {{ abs($total) }} jam</div>
-
-
-                                                </td>
                                                 <td>
                                                     <ul class="nk-tb-actions gx-2">
                                                         <li>
@@ -125,6 +92,13 @@
                                                                 </a>
                                                                 <div class="dropdown-menu dropdown-menu-end">
                                                                     <ul class="link-list-opt no-bdr">
+                                                                        <li>
+                                                                            <a href="#" data-bs-toggle="modal"
+                                                                                data-bs-target="#viewModal{{ $schedule->id }}">
+                                                                                <em
+                                                                                    class="icon ni ni-eye"></em><span>View</span>
+                                                                            </a>
+                                                                        </li>
                                                                         <li>
                                                                             <a
                                                                                 href="{{ route('admin.editjadwal', ['id' => $schedule->id]) }}">
@@ -200,6 +174,58 @@
                             </div>
                         </div><!-- .card-preview -->
                     </div> <!-- nk-block -->
+                    @foreach ($schedules as $schedule)
+                        @php
+                            $datasd = \App\Models\ScheduleDayM::where('schedule_id', $schedule->id)->get();
+                            $totalHours = 0;
+
+                            foreach ($datasd as $sd) {
+                                $clockIn = \Carbon\Carbon::parse($sd->clock_in);
+                                $clockOut = \Carbon\Carbon::parse($sd->clock_out);
+                                $totalHours += $clockOut->diffInHours($clockIn);
+                            }
+                        @endphp
+
+                        <!-- Modal for View -->
+                        <div class="modal fade" id="viewModal{{ $schedule->id }}" tabindex="-1" role="dialog"
+                            aria-labelledby="viewModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="viewModalLabel">Detail Waktu Kerja</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>No</th>
+                                                    <th>Hari</th>
+                                                    <th>Waktu</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($datasd as $index => $sd)
+                                                    <tr>
+                                                        <td>{{ $index + 1 }}</td>
+                                                        <td>{{ $sd->days }}</td>
+                                                        <td>{{ $sd->clock_in }} - {{ $sd->clock_out }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                        <p>Total Jam Kerja: {{ $totalHours }} jam</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Tutup</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+
 
                     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
                     <script>

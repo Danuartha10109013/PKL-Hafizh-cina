@@ -36,7 +36,7 @@
                                     $now = Carbon::now();
 
                                     // Hitung batas waktu terlambat (clock-in + 1 jam)
-                                    $lateLimit = $clockin->copy()->addHour();
+                                    $lateLimit = $clockin->copy()->addHour(5);
 
                                     // Menampilkan tombol berdasarkan kondisi waktu
                                     if ($now <= $lateLimit) {

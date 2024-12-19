@@ -263,14 +263,14 @@
                         </div>
                     </div><!-- .card-preview -->
                 </div> <!-- nk-block -->
-                <div class="card mt-4 card-bordered card-preview">
+                {{-- <div class="card mt-4 card-bordered card-preview">
                     <div class="card-inner py-3 border-bottom border-light ">
                         <h4 class="card-title text-center">Calendar</h4>
                     </div>
                     <div class="card-body">
                         <div id="calendar"></div>
                     </div>
-                </div>
+                </div> --}}
 
 
 
