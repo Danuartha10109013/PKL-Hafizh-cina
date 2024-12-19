@@ -18,9 +18,9 @@
                                         data-target="pageMenu"><em class="icon ni ni-menu-alt-r"></em></a>
                                     <div class="toggle-expand-content" data-content="pageMenu">
                                         <ul class="nk-block-tools g-3">
-                                            <li><a href="{{ route('admin.print-jadwal') }}" class="btn btn-secondary"
+                                            {{-- <li><a href="{{ route('admin.print-jadwal') }}" class="btn btn-secondary"
                                                     target="_blank"><em
-                                                        class="icon ni ni-printer"></em><span>Cetak</span></a></li>
+                                                        class="icon ni ni-printer"></em><span>Cetak</span></a></li> --}}
                                             <a href="{{ route('admin.tambahjadwal') }}" class="btn btn-icon btn-secondary">
                                                 <em class="icon ni ni-plus"></em>
                                             </a>

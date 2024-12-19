@@ -21,33 +21,30 @@
                         <div class="nk-block-head-content">
                             <!-- Tombol Absen Masuk/Pulang -->
                             @php
+                                use Carbon\Carbon;
+
                                 // Mengambil data hari ini
-                                $today = \Carbon\Carbon::today();
-                                $days = \Carbon\Carbon::parse($today)->locale('id')->dayName;
+                                $today = Carbon::today();
+                                $days = Carbon::parse($today)->locale('id')->dayName;
 
                                 $jadwalin = $jadwal_detail->where('days', $days)->first();
 
                                 if ($jadwalin) {
-                                    // Mengambil jam clockin dan clockout sebagai objek Carbon
-                                    $clockin = \Carbon\Carbon::parse($jadwalin->clock_in); // Mengambil sebagai objek Carbon
-                                    $clockout = \Carbon\Carbon::parse($jadwalin->clock_out); // Mengambil sebagai objek Carbon
-                                    $now = \Carbon\Carbon::now();
+                                    // Mengambil jam clock-in dan clock-out sebagai objek Carbon
+                                    $clockin = Carbon::parse($jadwalin->clock_in);
+                                    $clockout = Carbon::parse($jadwalin->clock_out);
+                                    $now = Carbon::now();
 
-                                    // Cek apakah sudah lewat waktu clock-in dan belum mendekati waktu pulang
-                                    if ($now > $clockin && $now < $clockout) {
-                                        // Tampilkan pesan peringatan jika waktu lebih dari clock-in dan sebelum clock-out
-                                        echo '<script>
-                                            document.getElementById("message").style.display = "block";
-                                        </script>';
-                                    }
+                                    // Hitung batas waktu terlambat (clock-in + 1 jam)
+                                    $lateLimit = $clockin->copy()->addHour();
 
                                     // Menampilkan tombol berdasarkan kondisi waktu
-                                    if ($now <= $clockin) {
+                                    if ($now <= $lateLimit) {
                                         // Menampilkan tombol untuk absen masuk jika waktu belum lewat dari clock-in
                                         echo '<li><a id="attendance-btn" href="' .
                                             route('pegawai.tambah-attendance') .
-                                            '" class="btn btn-secondary d-inline-block">Absen Masuk</a></li>';
-                                    } elseif ($now >= $clockout && $now <= $toleransiPulang) {
+                                            '" class="btn btn-secondary d-inline-block" onclick="checkLate()">Absen Masuk</a></li>';
+                                    } elseif ($now >= $clockout) {
                                         // Menampilkan tombol untuk absen pulang jika sudah lebih dari clock-out dengan toleransi 30 menit
                                         echo '<li><a id="attendance-btn" href="' .
                                             route('pegawai.tambah-attendance') .

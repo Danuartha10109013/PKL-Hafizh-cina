@@ -273,31 +273,27 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {{-- @foreach ($data as $index => $d) --}}
-                                @foreach ($calon as $index => $pegawai)
-                                    @foreach ($usersWithLateCount as $ul)
-                                        @if ($ul['user_id'] == $d->enhancer)
-                                            <!-- Ensure that the user_id matches the enhancer -->
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>
-                                                    @php
-                                                        $name = \App\Models\User::where('id', $ul['user_id'])->value(
-                                                            'name',
-                                                        );
-                                                    @endphp
-                                                    {{ $name }}
-                                                </td>
-                                                <td>{{ $ul['late_count'] }}</td>
-                                                <td><a href="{{ route('admin.kelolakehadiranpegawai.send', $ul['user_id']) }}"
-                                                        class="btn btn-danger">Kirim Peringatan</a></td>
-                                            </tr>
-                                        @endif
-                                    @endforeach
+                                @foreach ($usersWithLateCount as $ul)
+                                    <!-- Gunakan $pegawai -->
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>
+                                            @php
+                                                $name = \App\Models\User::where('id', $ul['user_id'])->value('name');
+                                                // dd($name);
+                                            @endphp
+                                            {{ $name }}
+                                        </td>
+                                        <td>{{ $ul['late_count'] }}</td>
+                                        <td>
+                                            <a href="{{ route('admin.kelolakehadiranpegawai.send', $ul['user_id']) }}"
+                                                class="btn btn-danger">
+                                                Kirim Peringatan
+                                            </a>
+                                        </td>
+                                    </tr>
                                 @endforeach
 
-
-                                {{-- @endforeach --}}
 
                             </tbody>
                         </table>

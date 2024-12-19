@@ -23,8 +23,8 @@
                                 <div class="toggle-expand-content" data-content="pageMenu">
                                     <ul class="nk-block-tools g-3">
                                         <li><a href="{{ route('admin.print-kelolacuti') }}" class="btn btn-secondary"
-                                                data-bs-toggle="modal" data-bs-target="#printModal" target="_blank"><em
-                                                    class="icon ni ni-printer"></em><span>Cetak</span></a></li>
+                                                target="_blank"><em class="icon ni ni-printer"></em><span>Cetak</span></a>
+                                        </li>
                                     </ul>
                                 </div>
                             </div><!-- .toggle-wrap -->
@@ -143,7 +143,8 @@
                                                                         </a>
                                                                     </li>
                                                                     <li>
-                                                                        <a href="{{route('admin.delete-satuancuti',$item->id)}}" class="dropdown-item">
+                                                                        <a href="{{ route('admin.delete-satuancuti', $item->id) }}"
+                                                                            class="dropdown-item">
                                                                             <em class="icon ni ni-trash"></em>
                                                                             <span>Hapus</span>
                                                                         </a>
@@ -242,7 +243,8 @@
                                                                         </a>
                                                                     </li>
                                                                     <li>
-                                                                        <a href="{{route('admin.delete-satuancuti',$item->id)}}" class="dropdown-item">
+                                                                        <a href="{{ route('admin.delete-satuancuti', $item->id) }}"
+                                                                            class="dropdown-item">
                                                                             <em class="icon ni ni-trash"></em>
                                                                             <span>Hapus</span>
                                                                         </a>
@@ -283,8 +285,8 @@
                                     aria-label="Close"></button>
                             </div>
                             @foreach ($leaves as $item)
-                                <form id="confirmationForm"
-                                    action="{{ route('admin.update-cuti', ['id' => $item->id]) }}" method="POST">
+                                <form id="confirmationForm" action="{{ route('admin.update-cuti', ['id' => $item->id]) }}"
+                                    method="POST">
                             @endforeach
                             @csrf
                             <input type="hidden" name="id" id="leave_id">
@@ -320,7 +322,7 @@
 
                 <!-- Modal for printing single leave request -->
                 <!-- Modal for printing single leave request -->
-                <div class="modal fade" id="printModal" tabindex="-1" aria-labelledby="printModalLabel"
+                {{-- <div class="modal fade" id="printModal" tabindex="-1" aria-labelledby="printModalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -385,7 +387,7 @@
                             </form>
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
 
             </div>
@@ -469,53 +471,53 @@
         });
 
 
-        $(document).ready(function() {
-            // Toggle print options based on dropdown selection
-            $('#print_option').on('change', function() {
-                const printOption = $(this).val();
-                const individualOption = $('#individual-option');
-                const categoryOption = $('#category-option');
-                const statusOption = $('#status-option');
+        // $(document).ready(function() {
+        //     // Toggle print options based on dropdown selection
+        //     $('#print_option').on('change', function() {
+        //         const printOption = $(this).val();
+        //         const individualOption = $('#individual-option');
+        //         const categoryOption = $('#category-option');
+        //         const statusOption = $('#status-option');
 
-                // Reset visibility
-                individualOption.hide();
-                categoryOption.hide();
-                statusOption.hide();
+        //         // Reset visibility
+        //         individualOption.hide();
+        //         categoryOption.hide();
+        //         statusOption.hide();
 
-                // Set form action URL based on selection
-                const form = $('#printForm');
-                if (printOption === 'all') {
-                    form.attr('action', '{{ route('admin.print-kelolacuti') }}');
-                } else if (printOption === 'individual') {
-                    form.attr('action', '/printindividual');
-                }
+        //         // Set form action URL based on selection
+        //         const form = $('#printForm');
+        //         if (printOption === 'all') {
+        //             form.attr('action', '{{ route('admin.print-kelolacuti') }}');
+        //         } else if (printOption === 'individual') {
+        //             form.attr('action', '/printindividual');
+        //         }
 
-                // If 'Cetak Individu' is selected
-                if (printOption === 'individual') {
-                    individualOption.show(); // Show employee selection
-                    categoryOption.show(); // Show category selection
-                }
-            });
+        //         // If 'Cetak Individu' is selected
+        //         if (printOption === 'individual') {
+        //             individualOption.show(); // Show employee selection
+        //             categoryOption.show(); // Show category selection
+        //         }
+        //     });
 
-            // Toggle status based on category selection
-            $('#category').on('change', function() {
-                const statusOption = $('#status-option');
+        //     // Toggle status based on category selection
+        //     $('#category').on('change', function() {
+        //         const statusOption = $('#status-option');
 
-                // Show status after category selection
-                statusOption.show();
-            });
+        //         // Show status after category selection
+        //         statusOption.show();
+        //     });
 
-            // Reset the modal content when it is closed, without refreshing the page
-            $('#printModal').on('hidden.bs.modal', function() {
-                // Reset the form inside the modal
-                $('#printForm')[0].reset();
+        //     // Reset the modal content when it is closed, without refreshing the page
+        //     $('#printModal').on('hidden.bs.modal', function() {
+        //         // Reset the form inside the modal
+        //         $('#printForm')[0].reset();
 
-                // Hide any options that were previously shown
-                $('#individual-option').hide();
-                $('#category-option').hide();
-                $('#status-option').hide();
-            });
-        });
+        //         // Hide any options that were previously shown
+        //         $('#individual-option').hide();
+        //         $('#category-option').hide();
+        //         $('#status-option').hide();
+        //     });
+        // });
 
 
 

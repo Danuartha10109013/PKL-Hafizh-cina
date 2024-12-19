@@ -185,21 +185,30 @@ class AttendanceController extends Controller
         $secondUser = isset(array_slice($topUsers, 1, 1, true)[array_key_first(array_slice($topUsers, 1, 1, true))]) ? User::find(array_key_first(array_slice($topUsers, 1, 1, true))) : null;
         $thirdUser = isset(array_slice($topUsers, 2, 1, true)[array_key_first(array_slice($topUsers, 2, 1, true))]) ? User::find(array_key_first(array_slice($topUsers, 2, 1, true))) : null;
 
-        $lateAttendees = Attendance::where('status', 0)
-            ->where('time', '>', Carbon::parse('08:00:00')->toDateTimeString())
+
+        $usersWithLateCount = Attendance::where('status', 0)
+            ->whereRaw("TIME(time) > ?", ['08:00:00']) // Membandingkan hanya waktu (jam:menit:detik) dari kolom `time`
             ->get()
-            ->groupBy('user_id')
-            ->filter(function ($attendances) {
-                return $attendances->count() > 3;
-            });
+            ->groupBy('enhancer') // Kelompokkan berdasarkan kolom `enhancer`
+            ->flatMap(function ($attendancesByEnhancer) {
+                return $attendancesByEnhancer->groupBy('user_id') // Kelompokkan kembali berdasarkan `user_id`
+                    ->filter(function ($userAttendances) {
+                        return $userAttendances->count() > 3; // Hanya yang keterlambatannya lebih dari 3
+                    })
+                    ->map(function ($userAttendances) {
+                        return [
+                            'user_id' => $userAttendances->first()->enhancer,
+                            // 'user_id' => $userAttendances->first()->user_id,
+                            'late_count' => $userAttendances->count(),
+                        ];
+                    });
+            })
+            ->values(); // Reset indeks array
 
-        $usersWithLateCount = $lateAttendees->map(function ($attendances) {
-            return [
-                'user_id' => $attendances->first()->enhancer,
-                'late_count' => $attendances->count(),
-            ];
-        });
 
+        // return $usersWithLateCount;
+
+        // dd($usersWithLateCount);
         return view('pages.admin.attendance.rekapitulasi', compact('calon', 'topUser', 'secondUser', 'thirdUser', 'usersWithLateCount'));
     }
 
@@ -259,7 +268,7 @@ class AttendanceController extends Controller
     {
         // Validasi input
         $request->validate([
-            'date' => 'nullable|date',
+            'date' => 'nullable|string', // Inputnya dalam format 'dd M yyyy'
             'month' => 'nullable|date_format:Y-m',
             'year' => 'nullable|numeric|min:1900|max:' . now()->year,
         ]);
@@ -270,9 +279,11 @@ class AttendanceController extends Controller
             $query->where('role', '2'); // Assuming '2' is the role ID for 'pegawai'
         });
 
-        // Apply filter based on print option
+        // Apply filter berdasarkan print option
         if ($printOption == 'byDate' && $request->has('date')) {
-            $query->whereDate('date', $request->input('date'));
+            // Konversi tanggal dari 'dd M yyyy' ke 'Y-m-d'
+            $date = Carbon::createFromFormat('d M Y', $request->input('date'))->format('Y-m-d');
+            $query->whereDate('date', $date);
         } elseif ($printOption == 'byMonth' && $request->has('month')) {
             $month = $request->input('month');
             $query->whereMonth('date', date('m', strtotime($month)))
@@ -281,11 +292,18 @@ class AttendanceController extends Controller
             $query->whereYear('date', $request->input('year'));
         }
 
+        // Ambil data kehadiran
         $attendances = $query->orderBy('date', 'asc')->orderBy('time', 'asc')->get();
 
-        // Return view with data
+        // Debugging jika data kosong
+        if ($attendances->isEmpty()) {
+            return redirect()->back()->withErrors(['error' => 'Tidak ada data untuk filter yang dipilih.']);
+        }
+
+        // Return view dengan data
         return view('pages.admin.attendance.printkehadiranpegawai', compact('attendances'));
     }
+
 
 
 

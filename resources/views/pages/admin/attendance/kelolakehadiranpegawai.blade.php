@@ -43,10 +43,10 @@
                                                 data-bs-toggle="modal" data-bs-target="#filterModal"><em
                                                     class="icon ni ni-filter"></em><span>Filter</span></a>
                                         </li>
-                                        <li><a href="#" class="btn btn-secondary" target="_blank"
+                                        {{-- <li><a href="#" class="btn btn-secondary" target="_blank"
                                                 data-bs-toggle="modal" data-bs-target="#validasiModal"><em
                                                     class="icon ni ni-clipboad-check"></em><span>Validasi</span></a>
-                                        </li>
+                                        </li> --}}
                                         <li>
                                             <a href="#" class="btn btn-secondary" target="_blank"
                                                 data-bs-toggle="modal" data-bs-target="#printModal">
@@ -206,7 +206,8 @@
                                                                     @endif
 
                                                                     <li>
-                                                                        <a href="{{route('admin.kelolakehadiranpegawai.delete',$attendance->id)}}"><em
+                                                                        <a
+                                                                            href="{{ route('admin.kelolakehadiranpegawai.delete', $attendance->id) }}"><em
                                                                                 class="icon ni ni-trash"></em><span>Hapus</span></a>
                                                                     </li>
                                                                 </ul>
