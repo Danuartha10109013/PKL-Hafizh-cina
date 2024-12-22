@@ -97,7 +97,7 @@
             </div>
 
             <!-- Tabel Kehadiran -->
-            <div class="nk-block nk-block-lg">
+            {{-- <div class="nk-block nk-block-lg">
                 <div class="card card-bordered card-preview">
                     <div class="card-inner">
                         <h4 class="card-title text-center mt-1">Absensi Anda</h4>
@@ -138,7 +138,7 @@
                         </table>
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
             <!-- Kalender Kehadiran -->
             <div class="card mt-4 card-bordered card-preview">
