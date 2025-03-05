@@ -17,6 +17,7 @@ class Attendance extends Model
         'enhancer',
         'date',
         'time',
+        'image',
         'status',
         'coordinate',
         'deleted_by',

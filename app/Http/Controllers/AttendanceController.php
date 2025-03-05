@@ -13,6 +13,8 @@ use App\Models\ScheduleDayM;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class AttendanceController extends Controller
 {
@@ -359,17 +361,93 @@ class AttendanceController extends Controller
         $request->validate([
             'status' => 'required|in:0,1',
             'coordinate' => 'required',
+            'faceData' => 'required|string',
         ]);
-
-        Attendance::create([
+    
+        // Decode Base64 Image
+        $base64Image = $request->input('faceData');
+        if (!preg_match('/^data:image\/(\w+);base64,/', $base64Image, $matches)) {
+            return back()->with('error', 'Format gambar tidak valid.');
+        }
+    
+        $extension = $matches[1];
+        $base64Image = base64_decode(substr($base64Image, strpos($base64Image, ',') + 1));
+    
+        if ($base64Image === false) {
+            return back()->with('error', 'Gambar tidak valid.');
+        }
+    
+        // Simpan gambar absensi
+        $fileName = Str::uuid() . '.' . $extension;
+        $imagePath = "attendances/{$fileName}";
+    
+        Storage::disk('public')->put($imagePath, $base64Image);
+    
+        // Simpan data absensi ke database
+        $attendance = Attendance::create([
             'enhancer' => Auth::id(),
             'date' => now()->format('Y-m-d'),
             'time' => now(),
+            'image' => $imagePath,
             'status' => $request->input('status'),
             'coordinate' => $request->input('coordinate'),
         ]);
-        return redirect()->route('pegawai.attendance')->with('success', 'Kehadiran berhasil disimpan.');
+    
+        $user = Auth::user();
+    
+        // Dapatkan folder acuan
+        $acuanFolder = storage_path("app/public/acuan");
+    
+        // Periksa apakah ada gambar referensi
+        $referenceImages = glob($acuanFolder . "/*.jpg"); // Bisa disesuaikan ke PNG jika perlu
+        if (empty($referenceImages)) {
+            $attendance->forceDelete();
+            return back()->with('error', 'Tidak ada gambar referensi yang tersedia.');
+        }
+    
+        // Jalankan Python Face Recognition
+        $fullImagePath = storage_path("app/public/" . $imagePath);
+        $command = escapeshellcmd("python recognition.py " . escapeshellarg($fullImagePath) . " " . escapeshellarg($acuanFolder));
+    
+        $output = [];
+        $status_code = 0;
+        exec($command, $output, $status_code);
+    
+        if ($status_code !== 0) {
+            $attendance->forceDelete();
+            return redirect()->route('pegawai.attendance')->with('error', 'Gagal menjalankan Face Recognition.');
+        }
+    
+        // Ambil hasil dari Python
+        $user_name = trim($output[0] ?? 'Unknown');
+        // dd($user_name);
+    
+        if ($user_name === 'Unknown') {
+            $attendance->forceDelete();
+            return redirect()->route('pegawai.attendance')->with('error', 'Wajah tidak dikenali.');
+        }
+    
+        // Cek apakah wajah dikenali dalam daftar pegawai
+        $hasil = User::where('acuan', "acuan/{$user_name}.jpg")->first();
+        // dd($hasil);
+    
+        if (!$hasil) {
+            $attendance->forceDelete();
+            return redirect()->route('pegawai.attendance')->with('error', 'User tidak ditemukan.');
+        }
+    
+        // Pastikan yang terdeteksi adalah user yang sedang login
+        if ($hasil->id !== $user->id) {
+            $attendance->forceDelete();
+            return redirect()->route('pegawai.attendance')->with('error', 'Anda hanya bisa absen untuk diri sendiri. Wajah terdeteksi sebagai '.$hasil->name);
+        }
+    
+        return redirect()->route('pegawai.attendance')->with('success', 'Kehadiran berhasil disimpan. Wajah terdeteksi sebagai ' . $hasil->name);
     }
+    
+
+    
+
 
     // Cetak data kehadiran per pegawai
     public function print($id)

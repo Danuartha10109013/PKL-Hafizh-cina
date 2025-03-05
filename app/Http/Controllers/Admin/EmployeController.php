@@ -91,7 +91,8 @@ class EmployeController extends Controller
             'name' => 'required|string|regex:/^[A-Za-z\s]+$/|max:80',
             'role' => 'required|integer|exists:roles,id',
             'email' => 'nullable|string|email|max:80|unique:users,email',
-            'password' => 'required|string|min:8|regex:/[A-Z]/|regex:/[0-9]/|regex:/[\W_]/',
+            'password' => 'required|string',
+            // 'password' => 'required|string|min:8|regex:/[A-Z]/|regex:/[0-9]/|regex:/[\W_]/',
         ]);
         // Hitung jumlah user yang ada untuk menentukan username
         $lastUsername = User::where('username', '!=', 'admin')->orderBy('username', 'desc')->value('username');
@@ -138,7 +139,8 @@ class EmployeController extends Controller
         $validatedData = $request->validate([
             'name' => 'nullable|string|max:80',
             'email' => 'nullable|string|email|max:80|unique:users,email,' . $id,
-            'password' => 'nullable|min:8|regex:/[A-Z]/|regex:/[a-z]/|regex:/[0-9]/|regex:/[@$!%*?&]/',
+            'password' => 'nullable',
+            // 'password' => 'nullable|min:8|regex:/[A-Z]/|regex:/[a-z]/|regex:/[0-9]/|regex:/[@$!%*?&]/',
             'schedule' => 'nullable|integer|exists:schedules,id',
             'telephone' => 'nullable|string|max:13',
             'status' => 'nullable|in:0,1',
@@ -165,6 +167,10 @@ class EmployeController extends Controller
         if ($request->hasFile('avatar')) {
             $avatarPath = $request->file('avatar')->store('avatars', 'public');
             $user->avatar = $avatarPath;
+        }
+        if ($request->hasFile('acuan')) {
+            $acuanPath = $request->file('acuan')->store('acuan', 'public');
+            $user->acuan = $acuanPath;
         }
 
         // Simpan perubahan

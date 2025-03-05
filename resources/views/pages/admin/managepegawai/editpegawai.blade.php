@@ -131,6 +131,16 @@
                                             </div>
                                             <div class="col-sm-6">
                                                 <div class="form-group">
+                                                    <label class="form-label" for="avatar">Acuan Absen</label>
+                                                    <div class="form-control-wrap">
+                                                        <input type="file" class="form-file-input" id="avatar"
+                                                            name="acuan" accept=".jpg,.jpeg,.png" placeholder="">
+                                                        <label class="form-file-label" for="avatar">Choose file</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
                                                     <label class="form-label" for="schedule">Jadwal</label>
                                                     <div class="form-control-wrap">
                                                         <select
