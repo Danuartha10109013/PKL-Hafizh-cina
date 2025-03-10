@@ -186,6 +186,7 @@ class LeavesController extends Controller
         $id_user = Auth::user()->id;
         $leaves = Leave::where('enhancer', $id_user)->with('user')->get();
         $name = User::where('id', $id_user)->value('name');
+        // dd($leaves);
         return view('pages.pegawai.leaves.print', compact('leaves'));
     }
 }
