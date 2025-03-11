@@ -73,6 +73,38 @@ class LeavesController extends Controller
         $leave->reason = $validatedData['reason'];
         $leave->category = $validatedData['category'];
         $leave->subcategory = $validatedData['subcategory'];
+        $currentYear = date('Y');
+    $currentMonth = date('n'); // Numeric month (1-12)
+
+    // Convert month to Roman numeral
+    $romanMonths = [
+        1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI',
+        7 => 'VII', 8 => 'VIII', 9 => 'IX', 10 => 'X', 11 => 'XI', 12 => 'XII'
+    ];
+    $romanMonth = $romanMonths[$currentMonth];
+
+    // Get the last leave number of the current month and year
+    $lastLeave = \App\Models\Leave::whereYear('created_at', $currentYear)
+        ->whereMonth('created_at', $currentMonth)
+        ->latest('id')
+        ->first();
+
+    if ($lastLeave) {
+        // Extract the number part and increment
+        preg_match('/^(\d{4})/', $lastLeave->no_surat, $matches);
+        $newNumber = isset($matches[1]) ? (int)$matches[1] + 1 : 1;
+    } else {
+        $newNumber = 1;
+    }
+
+    // Format number with leading zeros (0001, 0002, etc.)
+    $formattedNumber = str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+
+    // Generate the new no_surat
+    $no_surat = "{$formattedNumber}/Leave-PR/{$romanMonth}/{$currentYear}";
+
+    // dd( $no_surat);
+        $leave->no_surat = $no_surat;
         $leave->save();
 
         return redirect()->route('pegawai.leaves')->with('success', 'Pengajuan cuti berhasil ditambahkan dan sedang menunggu konfirmasi.');
@@ -181,12 +213,13 @@ class LeavesController extends Controller
     }
 
 
-    public function print()
+    public function print($id)
     {
         $id_user = Auth::user()->id;
-        $leaves = Leave::where('enhancer', $id_user)->with('user')->get();
+        $leaves = Leave::where('enhancer', $id_user)->with('user')->value('id');
+        $l = Leave::find($id);
         $name = User::where('id', $id_user)->value('name');
         // dd($leaves);
-        return view('pages.pegawai.leaves.print', compact('leaves'));
+        return view('pages.pegawai.leaves.print', compact('l'));
     }
 }

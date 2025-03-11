@@ -13,6 +13,7 @@ class Leave extends Model
 
     protected $fillable = [
         'enhancer',
+        'no_surat',
         'date',
         'end_date',
         'status',
@@ -21,6 +22,8 @@ class Leave extends Model
         'category',
         'subcategory',
         'about',
+        'accepted_by',
+        'accepted_time',
         'leave_letter',
     ];
 

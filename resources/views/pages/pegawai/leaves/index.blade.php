@@ -141,9 +141,9 @@
                                                                                     class="icon ni ni-edit"></em><span>Edit</span></a>
                                                                         </li>
                                                                     @endif
-                                                                    <li><a href="{{ route('pegawai.print-cuti') }}"
+                                                                    <li><a href="{{ route('pegawai.print-cuti-satu', ['id' => $item->id]) }}"
                                                                             target="_blank"><em
-                                                                                class="icon ni ni-printer"></em><span>Cetak</span></a>
+                                                                                class="icon ni ni-printer"></em><span>Cetaks</span></a>
                                                                     </li>
                                                                 </ul>
                                                             </div>

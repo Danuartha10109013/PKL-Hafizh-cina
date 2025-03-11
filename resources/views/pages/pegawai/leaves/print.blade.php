@@ -37,9 +37,37 @@
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 20px;
-            border-bottom: 2px solid black;
             padding-bottom: 10px;
         }
+        .top {
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #000;
+            padding: 10px;
+            font-family: Arial, sans-serif;
+        }
+        .logo {
+            max-width: 170px;
+            margin-right: 15px;
+        }
+        .company-info {
+            flex: 1;
+            text-align: center;
+        }
+        .company-info h1 {
+            font-size: 18px;
+            color: #0d3b82;
+            margin: 0;
+        }
+        .company-info p {
+            font-size: 12px;
+            margin: 5px 0;
+        }
+        .company-info a {
+            color: #007bff;
+            text-decoration: none;
+        }
+    </style>
     </style>
 </head>
 <body>
@@ -48,9 +76,16 @@
             window.print();
         };
     </script>
-    @foreach ( $leaves as $l)
-        
-        <div class="header">LEAVES SUMMARY</div>
+        <div class="top">
+            <img src="{{asset('PSTLOGO.png')}}" alt="PST Logo" class="logo">
+            <div class="company-info">
+                <h1>PT. PRATAMA SOLUSI TEKNOLOGI</h1>
+                <p>Kp. Gandasoli Rt. 014 Rw. 005 Babakan Wanayasa Kab. Purwakarta, Jawa Barat 41151.</p>
+                <p>Telp/Hp: +62 851-5565-2493 Email: Office@Pratamatechsolution.Co.id</p>
+                <p>Website: <a href="https://www.pratamatechsolution.co.id">https://www.pratamatechsolution.co.id</a></p>
+            </div>
+        </div>
+        <div style="margin-top: 20px" class="header">LEAVES SUMMARY</div>
         
         <table>
             <tr>
@@ -137,31 +172,25 @@
 
         <table>
             <tr>
-                <th style="text-align: center;">Diajukan Oleh</th>
                 <th style="text-align: center;">Disetujui Oleh</th>
             </tr>
             <tr>
-                <td style="text-align: center;">
-                    Purwakarta, {{$l->created_at->format("d-m-Y")}}<br>
-                <br><br>
-                <br><br>
-                <br><br>
-                <span>{{$employe->name}}</span><br>
-                <hr style="background-color: black; height: 3px; width: 30%; border: none;">
-                <span>{{$employe->position}}</span>
-                </td>
+                
                 <td style="text-align: center;">
                     Purwakarta, {{$l->updated_at->format("d-m-Y")}}<br>
-                <br><br>
-                <br><br>
-                <br><br>
-                <span>Nama</span><br>
+                <br>
+                <img style="width: 100px" src="{{ asset('storage/qrTtd/'.$l->qrCode_ttd) }}" alt="Persetujuan">
+
+                <br>
+                @php
+                    $acc = App\Models\User::find($l->accepted_by);
+                @endphp
+                <span>{{$acc->name ?? null}}</span><br>
                 <hr style="background-color: black; height: 3px; width: 30%; border: none;">
-                <span>Jabatan</span>
+                <span>{{$acc->position ?? null}}</span>
                 </td>
             </tr>
         </table>
-    @endforeach
     
     
 </body>

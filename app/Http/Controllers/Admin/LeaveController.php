@@ -7,7 +7,11 @@ use App\Models\Leave;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Storage;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\Writer\PngWriter;
 class LeaveController extends Controller
 {
     public function index()
@@ -70,8 +74,38 @@ class LeaveController extends Controller
 
         // Perbarui status cuti
         $leave->status = $request->status;
+        $leave->accepted_by = Auth::user()->id;
+        $leave->accepted_time = now();
         $leave->reason_verification = $request->status == '1' ? $request->reason : null; // Simpan alasan jika status 'Ditolak'
         // $leave->enhancer = $request->enhancer; // Update enhancer
+        if ($request->status == '0'){
+
+            $atasan = User::find($leave->accepted_by);
+            $qrContent = "Surat Izin Cuti\n"
+            . "Nomor: $leave->no_surat\n"
+            . "Disetujui oleh: $atasan->name\n"
+            . "PT Pratama Solusi Teknologi";
+    
+        // Define file name & path
+        $fileName = 'qr_' . $leave->id . '.png';
+        $filePath = 'public/qrTtd/' . $fileName;
+    
+        // ✅ Generate QR Code using Endroid QR Code
+        $result = Builder::create()
+            ->writer(new PngWriter()) // Save as PNG
+            ->data($qrContent) // QR Code Content
+            ->encoding(new Encoding('UTF-8'))
+            ->errorCorrectionLevel(ErrorCorrectionLevel::High)
+            ->size(300)
+            ->margin(10)
+            ->build();
+    
+        // Save QR code image to storage
+        Storage::put($filePath, $result->getString());
+    
+        // Save the file name to the database
+        $leave->qrCode_ttd = $fileName;
+        }
         $leave->save();
         if ($request->status == 0) {
             $avail = User::where('id', $request->enhancer)->value('available');
@@ -85,6 +119,9 @@ class LeaveController extends Controller
             $user->available = $totalday;
             $user->save();
         }
+        
+        // dd($qrCode);
+
         // Redirect kembali dengan pesan sukses
         return redirect()->route('admin.kelolacuti')->with('success', 'Status pengajuan cuti berhasil diperbarui.');
     }
