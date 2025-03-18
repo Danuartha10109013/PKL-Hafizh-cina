@@ -17,7 +17,7 @@
                                     data-target="pageMenu"><em class="icon ni ni-menu-alt-r"></em></a>
                                 <div class="toggle-expand-content" data-content="pageMenu">
                                     <ul class="nk-block-tools g-3">
-                                        <li><a href="#filter" class="btn btn-secondary"" data-bs-toggle="modal"
+                                        <li><a href="#filter" class="btn btn-secondary" data-bs-toggle="modal"
                                                 data-bs-target="#filterModal"><em
                                                     class="icon ni ni-filter"></em><span>Filter</span></a>
                                         </li>
@@ -180,6 +180,7 @@
                 </div>
                 <div class="modal-body">
                     <form action="{{ route('pegawai.filtercuti') }}" method="POST">
+
                         @csrf
                         <div class="mb-3">
                             <label for="category" class="form-label">Kategori</label>
@@ -227,6 +228,7 @@
                                 <option value="all">Cetak Semua</option>
                                 <option value="filtered">Cetak Berdasarkan Kategori dan Status</option>
                             </select>
+                            <input type="hidden" name="id" value="{{Auth::user()->id}}">
                         </div>
 
                         <!-- Filter kategori dan status -->

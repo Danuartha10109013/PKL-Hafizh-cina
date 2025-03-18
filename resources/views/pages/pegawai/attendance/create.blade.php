@@ -72,12 +72,13 @@
     <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var map = L.map('map').setView([-6.5528028, 107.8073375], 18); // Lokasi PT. Pratama Solusi Teknologi
+            
+            var map = L.map('map').setView([-6.5672482, 107.7482577], 18); // Lokasi PT. Pratama Solusi Teknologi
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 18,
             }).addTo(map);
 
-            var allowedLatLng = [-6.5528028, 107.8073375]; // Koordinat PT Pratama Solusi Teknologi
+            var allowedLatLng = [-6.5672482, 107.7482577]; // Koordinat PT Pratama Solusi Teknologi
             var allowedRadius = 30; // Radius 30 meter yang diizinkan
          
             // Tambahkan lingkaran untuk area yang diizinkan

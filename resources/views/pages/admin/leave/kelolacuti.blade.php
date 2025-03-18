@@ -206,10 +206,15 @@
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    <a class="btn btn-icon"
-                                                        href="{{ route('download', $item->leave_letter) }}">
-                                                        <em class="icon ni ni-file-pdf"></em>
-                                                    </a>
+                                                    @if($item->leave_letter)
+                                                        <a class="btn btn-icon"
+                                                            href="{{ route('download', $item->leave_letter ?? 'Tidak ada') }}">
+                                                            <em class="icon ni ni-file-pdf"></em>
+                                                        </a>
+                                                    @else
+                                                        <span>Tidak ada</span>
+                                                    @endif
+
                                                 </td>
                                                 <td>
                                                     @if ($item->status == null)

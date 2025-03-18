@@ -157,7 +157,7 @@ Route::middleware([AutoLogout::class])->group(function () {
             Route::post('/filtercuti', [LeavesController::class, 'filtercuti'])->name('filtercuti');
 
 
-            Route::get('/print', [LeavesController::class, 'print'])->name('print-cuti');
+            Route::get('/print', [LeavesController::class, 'printall'])->name('print-cuti');
             Route::get('/print/{id}', [LeavesController::class, 'print'])->name('print-cuti-satu');
         });
         Route::prefix('izin')->group(function () {

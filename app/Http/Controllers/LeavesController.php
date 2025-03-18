@@ -222,4 +222,18 @@ class LeavesController extends Controller
         // dd($leaves);
         return view('pages.pegawai.leaves.print', compact('l'));
     }
+    public function printall(Request $request)
+    {
+        // dd($request->all());
+        $leaves = Leave::where('enhancer', $request->id)
+            ->where('status', $request->status)
+            ->where('category', $request->category)
+            ->get();
+
+        if ($leaves->isEmpty()) {
+            return redirect()->back()->with('error', 'Data tidak ditemukan');
+        }
+
+        return view('pages.pegawai.leaves.print', compact('leaves'));
+    }
 }
