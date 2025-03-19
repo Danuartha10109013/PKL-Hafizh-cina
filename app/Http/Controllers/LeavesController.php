@@ -74,36 +74,46 @@ class LeavesController extends Controller
         $leave->category = $validatedData['category'];
         $leave->subcategory = $validatedData['subcategory'];
         $currentYear = date('Y');
-    $currentMonth = date('n'); // Numeric month (1-12)
+        $currentMonth = date('n'); // Numeric month (1-12)
 
-    // Convert month to Roman numeral
-    $romanMonths = [
-        1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI',
-        7 => 'VII', 8 => 'VIII', 9 => 'IX', 10 => 'X', 11 => 'XI', 12 => 'XII'
-    ];
-    $romanMonth = $romanMonths[$currentMonth];
+        // Convert month to Roman numeral
+        $romanMonths = [
+            1 => 'I',
+            2 => 'II',
+            3 => 'III',
+            4 => 'IV',
+            5 => 'V',
+            6 => 'VI',
+            7 => 'VII',
+            8 => 'VIII',
+            9 => 'IX',
+            10 => 'X',
+            11 => 'XI',
+            12 => 'XII'
+        ];
+        $romanMonth = $romanMonths[$currentMonth];
 
-    // Get the last leave number of the current month and year
-    $lastLeave = \App\Models\Leave::whereYear('created_at', $currentYear)
-        ->whereMonth('created_at', $currentMonth)
-        ->latest('id')
-        ->first();
+        // Get the last leave number of the current month and year
+        $lastLeave = \App\Models\Leave::whereYear('created_at', $currentYear)
+            ->whereMonth('created_at', $currentMonth)
+            ->latest('id')
+            ->first();
 
-    if ($lastLeave) {
-        // Extract the number part and increment
-        preg_match('/^(\d{4})/', $lastLeave->no_surat, $matches);
-        $newNumber = isset($matches[1]) ? (int)$matches[1] + 1 : 1;
-    } else {
-        $newNumber = 1;
-    }
+        if ($lastLeave) {
+            // Extract the number part and increment
+            preg_match('/^(\d{4})/', $lastLeave->no_surat, $matches);
+            $newNumber = isset($matches[1]) ? (int)$matches[1] + 1 : 1;
+        } else {
+            $newNumber = 1;
+        }
 
-    // Format number with leading zeros (0001, 0002, etc.)
-    $formattedNumber = str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+        // Format number with leading zeros (0001, 0002, etc.)
+        $formattedNumber = str_pad($newNumber, 4, '0', STR_PAD_LEFT);
 
-    // Generate the new no_surat
-    $no_surat = "{$formattedNumber}/Leave-PR/{$romanMonth}/{$currentYear}";
+        // Generate the new no_surat
+        $no_surat = "{$formattedNumber}/Leave-PR/{$romanMonth}/{$currentYear}";
 
-    // dd( $no_surat);
+        // dd( $no_surat);
         $leave->no_surat = $no_surat;
         $leave->save();
 
@@ -118,12 +128,12 @@ class LeavesController extends Controller
         return view('pages.pegawai.leaves.edit', compact('leave'));
     }
 
-    
+
     public function update(Request $request, $id)
     {
         // Find the leave record
         $leave = Leave::findOrFail($id);
-    
+
         // Common validations
         $request->validate([
             'category' => 'required|string|in:annual,other',
@@ -131,7 +141,7 @@ class LeavesController extends Controller
             'date' => 'required|date_format:d M Y',
             'end_date' => 'required|date_format:d M Y|after_or_equal:date',
         ]);
-    
+
         // Specific validations for 'other' category
         if ($request->category === 'other') {
             $request->validate([
@@ -139,29 +149,29 @@ class LeavesController extends Controller
                 'leave_letter' => 'nullable|file|mimes:pdf,doc,docx|max:2048', // Optional file for 'other'
             ]);
         }
-    
+
         // Update common fields
         $leave->category = $request->input('category');
         $leave->reason = $request->input('reason');
         $leave->date = \Carbon\Carbon::createFromFormat('d M Y', $request->input('date'))->format('Y-m-d');
         $leave->end_date = \Carbon\Carbon::createFromFormat('d M Y', $request->input('end_date'))->format('Y-m-d');
-    
+
         // Update 'other' specific fields
         if ($request->category === 'other') {
             $leave->subcategory = $request->input('subcategory');
-    
+
             // Handle leave letter file upload
             if ($request->hasFile('leave_letter')) {
                 // Delete old file if it exists
                 if ($leave->leave_letter && Storage::exists('leave_letters/' . $leave->leave_letter)) {
                     Storage::delete('leave_letters/' . $leave->leave_letter);
                 }
-    
+
                 // Store new file
                 $file = $request->file('leave_letter');
                 $filename = time() . '-' . $file->getClientOriginalName();
                 $file->storeAs('leave_letters', $filename, 'public');
-    
+
                 // Update file path in the database
                 $leave->leave_letter = $filename;
             }
@@ -173,15 +183,15 @@ class LeavesController extends Controller
             }
             $leave->leave_letter = null;
         }
-    
+
         // Save updated leave record
         $leave->save();
-    
+
         // Redirect with success message
         return redirect()->route('pegawai.leaves')->with('success', 'Cuti berhasil diperbarui.');
     }
-    
-    
+
+
 
 
     public function filtercuti(Request $request)
@@ -219,8 +229,9 @@ class LeavesController extends Controller
         $leaves = Leave::where('enhancer', $id_user)->with('user')->value('id');
         $l = Leave::find($id);
         $name = User::where('id', $id_user)->value('name');
+        $leaves = null;
         // dd($leaves);
-        return view('pages.pegawai.leaves.print', compact('l'));
+        return view('pages.pegawai.leaves.print', compact('l', 'leaves'));
     }
     public function printall(Request $request)
     {
