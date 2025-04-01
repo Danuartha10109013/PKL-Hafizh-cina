@@ -140,6 +140,7 @@ Route::middleware([AutoLogout::class])->group(function () {
 
         Route::prefix('attendance')->group(function () {
             Route::get('/', [AttendanceController::class, 'index'])->name('attendance');
+            Route::post('/setup', [AttendanceController::class, 'setup'])->name('attendance-setup');
             Route::get('/tambahabsensi', [AttendanceController::class, 'create'])->name('tambah-attendance');
             Route::post('/tambahabsensi/store', [AttendanceController::class, 'store'])->name('store-attendance');
             Route::get('/attendance/{id}/print', [AttendanceController::class, 'print'])->name('print-attendance');

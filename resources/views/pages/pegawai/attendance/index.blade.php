@@ -5,6 +5,7 @@
 @endsection
 
 @section('content-pegawai')
+
     <div class="nk-content nk-content-fluid">
         <div class="container-xl wide-lg">
             <div class="nk-content-body">
@@ -17,6 +18,29 @@
                             </div>
                         </div>
                     </div>
+                    @php
+                        $acuan = Auth::user()->id;
+                        $acuans = \App\Models\User::where('id', $acuan)->value('acuan');
+                        // dd($acuans);
+                    @endphp
+                    @if ($acuans == null)
+                        
+                    <div class="alert alert-warning text-center p-4 rounded">
+                        <p class="mb-3">Silakan masukkan gambar untuk acuan terlebih dahulu sebelum melakukan absensi</p>
+                        <p>
+                            contoh gambar yang baik
+                        </p>
+                        <img class="mb-3" width="20%" src="{{asset('acuan.jpg')}}" alt="">
+                        <form action="{{ route('pegawai.attendance-setup') }}" method="POST" class="d-flex flex-column align-items-center" enctype="multipart/form-data">
+                            @csrf
+                            <input type="hidden" name="id_user" value="{{ Auth::user()->id }}">
+                            <input type="file" name="acuan" class="form-control mb-3" required>
+                            <button type="submit" class="btn btn-primary">Upload</button>
+                        </form>
+                        
+                    </div>
+                    
+                    @endif
                     <div class="nk-block-between">
                         <div class="nk-block-head-content">
                             <!-- Tombol Absen Masuk/Pulang -->
@@ -43,16 +67,30 @@
                                         // Menampilkan tombol untuk absen masuk jika waktu belum lewat dari clock-in
                                         echo '<li><a id="attendance-btn" href="' .
                                             route('pegawai.tambah-attendance') .
-                                            '" class="btn btn-secondary d-inline-block" onclick="checkLate()">Absen Masuk</a></li>';
+                                            '" class="btn btn-secondary d-inline-block setup-cek" onclick="checkLate()">Absen Masuk</a></li>';
                                     } elseif ($now >= $clockout) {
                                         // Menampilkan tombol untuk absen pulang jika sudah lebih dari clock-out dengan toleransi 30 menit
                                         echo '<li><a id="attendance-btn" href="' .
                                             route('pegawai.tambah-attendance') .
-                                            '" class="btn btn-secondary d-inline-block">Absen Pulang</a></li>';
+                                            '" class="btn btn-secondary d-inline-block setup-cek">Absen Pulang</a></li>';
                                     }
                                 }
                             @endphp
                         </div>
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function () {
+                                let acuans = @json($acuans); // Konversi PHP ke JavaScript dengan aman
+                                let buttons = document.querySelectorAll(".setup-cek");
+
+                                if (!acuans || acuans === "null") {
+                                    buttons.forEach(button => {
+                                        button.style.pointerEvents = "none"; // Menonaktifkan klik
+                                        button.style.opacity = "0.5"; // Membuat tombol terlihat nonaktif
+                                    });
+                                }
+                            });
+
+                        </script>
                         <div class="nk-block-head-content">
                             <div class="toggle-wrap nk-block-tools-toggle">
                                 <ul class="nk-block-tools g-3">

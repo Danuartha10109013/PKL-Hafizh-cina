@@ -348,6 +348,19 @@ class AttendanceController extends Controller
         return view('pages.pegawai.attendance.index', compact('attendances', 'jadwal', 'jadwal_detail'));
     }
 
+    public function setup(Request $request){
+        $user = User::find($request->id_user);
+        // dd($request->all());
+        if ($request->hasFile('acuan')) {
+            $acuanPath = $request->file('acuan')->store('acuan', 'public');
+            $user->acuan = $acuanPath;
+            $user->update();
+            return redirect()->back()->with('Acuan berhasil disimpan');
+        }else{
+            return redirect()->back()->withErrors('Terjadi kesalahan');
+        }
+    }
+
 
     // Tampilkan halaman presensi
     public function create()
