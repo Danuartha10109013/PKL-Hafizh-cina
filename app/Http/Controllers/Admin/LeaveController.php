@@ -16,8 +16,8 @@ class LeaveController extends Controller
 {
     public function index()
     {
-        $leaves = Leave::with('user')->get();
-        $leaves_annual = Leave::with('user')->get();
+        $leaves = Leave::with('user')->orderBy('id', 'desc')->get();
+        $leaves_annual = Leave::with('user')->orderBy('id', 'desc')->get();
         $leaves_etc = Leave::with('user')->get();
         $id_user = Auth::user()->id;
         $data = User::where('id', $id_user)->get();
@@ -99,12 +99,28 @@ class LeaveController extends Controller
             ->size(300)
             ->margin(10)
             ->build();
+            Storage::put($filePath, $result->getString());
+    
+            // Save the file name to the database
+            $leave->qrCode_ttd = $fileName;
+
+        $fName = 'qr_' . $leave->id . '.png';
+        $fPath = 'public/qrApp/' . $fileName;
+        $qrAppContent = "http://127.0.0.1:8000/qrcode/".$leave->id;
+        $appQr = Builder::create()
+            ->writer(new PngWriter()) // Save as PNG
+            ->data($qrAppContent) // QR Code Content
+            ->encoding(new Encoding('UTF-8'))
+            ->errorCorrectionLevel(ErrorCorrectionLevel::High)
+            ->size(300)
+            ->margin(10)
+            ->build();
     
         // Save QR code image to storage
-        Storage::put($filePath, $result->getString());
+        Storage::put($fPath, $appQr->getString());
     
         // Save the file name to the database
-        $leave->qrCode_ttd = $fileName;
+        $leave->qrApp = $fName;
         }
         $leave->save();
         if ($request->status == 0) {

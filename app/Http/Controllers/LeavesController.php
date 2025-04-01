@@ -18,7 +18,7 @@ class LeavesController extends Controller
         $id_user = Auth::user()->id;
 
         // Fetch leaves associated with the currently authenticated user
-        $leaves = Leave::where('enhancer', $id_user)->with('user')->get();
+        $leaves = Leave::where('enhancer', $id_user)->with('user')->orderBy('created_at','desccls')->get();
 
         // Fetch the name of the currently authenticated user
         $name = User::where('id', $id_user)->value('name');

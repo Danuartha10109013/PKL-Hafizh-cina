@@ -72,6 +72,7 @@
                                         <th>Mulai</th>
                                         <th>Berakhir</th>
                                         <th>Verifikasi</th>
+                                        <th>Approved</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -106,6 +107,7 @@
                                             {{-- <td>{{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}</td> --}}
                                             <td>{{ \Carbon\Carbon::parse($item->date)->format('d M Y') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($item->end_date)->format('d M Y') }}</td>
+                                            
                                             <td>
                                                 @if ($item->status === null)
                                                     <span class="badge bg-warning">Menunggu</span>
@@ -113,6 +115,13 @@
                                                     {{ $item->reason_verification }}
                                                 @else
                                                     Silahkan Cuti
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($item->qrApp == null)
+                                                    -
+                                                @else
+                                                    <img src="{{ asset('storage/qrApp/' . $item->qrApp) }}" alt="qrApproved Image">
                                                 @endif
                                             </td>
                                             <td>

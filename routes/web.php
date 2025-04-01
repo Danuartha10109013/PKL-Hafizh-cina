@@ -11,6 +11,7 @@ use App\Http\Controllers\DeletedController;
 use App\Http\Controllers\ImportexcelController;
 use App\Http\Controllers\IzinController;
 use App\Http\Controllers\LeavesController;
+use App\Http\Controllers\readQrController;
 use App\Http\Controllers\ScheduleController as ControllersScheduleController;
 use App\Http\Middleware\AutoLogout;
 use Illuminate\Console\Scheduling\Schedule;
@@ -29,7 +30,8 @@ Route::get('/resetpassword', [LoginController::class, 'resetpassword'])->name('r
 Route::post('/resetpassword', [LoginController::class, 'gantipassword'])->name('gantipassword');
 
 
-
+//print with qr
+Route::get('/qrcode/{id}', [readQrController::class, 'index'])->name('read.qr');
 
 //auto Logout
 Route::middleware([AutoLogout::class])->group(function () {
