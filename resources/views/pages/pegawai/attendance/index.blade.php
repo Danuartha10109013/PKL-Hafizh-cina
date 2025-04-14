@@ -224,20 +224,27 @@
                 </div>
             </div>
         </div>
+        @php
+            $events = $attendances->map(function ($att) {
+                return [
+                    'title' => \Carbon\Carbon::parse($att->time)->format('H:i:s'),
+                    'start' => $att->date,
+                    'backgroundColor' => $att->status == 0 ? '#28a745' : '#fd7e14',
+                    'borderColor' => $att->status == 0 ? '#28a745' : '#fd7e14',
+                    'textColor' => '#fff',
+                ];
+            })->values()->toArray();
+        @endphp 
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js"></script>
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
+             document.addEventListener('DOMContentLoaded', function() {
                 var calendarEl = document.getElementById('calendar');
+
                 var calendar = new FullCalendar.Calendar(calendarEl, {
                     initialView: 'dayGridMonth',
-                    events: @json(
-                        $attendances->map(function ($att) {
-                            return [
-                                'title' => ucfirst($att->status == 0 ? 'Masuk' : 'Pulang'),
-                                'start' => $att->date,
-                            ];
-                        })),
+                    events: @json($events), // ← langsung aman karena array murni
                 });
+
                 calendar.render();
             });
 
