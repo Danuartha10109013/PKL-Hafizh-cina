@@ -62,7 +62,6 @@ class LeaveController extends Controller
         // dd($request->all());
         // Validasi data
         $request->validate([
-            'enhancer' => 'nullable',
             'id' => 'required|exists:leaves,id',
             // 'enhancer' => 'required|exists:users,id', // Pastikan enhancer ada di tabel users
             'status' => 'required|in:0,1',
@@ -77,7 +76,6 @@ class LeaveController extends Controller
         $leave->accepted_by = Auth::user()->id;
         $leave->accepted_time = now();
         $leave->reason_verification = $request->status == '1' ? $request->reason : null; // Simpan alasan jika status 'Ditolak'
-        // $leave->enhancer = $request->enhancer; // Update enhancer
         if ($request->status == '0'){
 
             $atasan = User::find($leave->accepted_by);
@@ -124,13 +122,14 @@ class LeaveController extends Controller
         }
         $leave->save();
         if ($request->status == 0) {
-            $avail = User::where('id', $request->enhancer)->value('available');
+            $avail = User::where('id', $leave->enhancer)->value('available');
 
-            $daysleave = \Carbon\Carbon::parse($leave->date)->diffInDays($leave->end_date);
+            $daysleave = \Carbon\Carbon::parse($leave->date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1;
+
             $totalday = $avail - $daysleave;
-            // dd($totalday);
+            // dd($avail);
             // Update the authenticated user’s available days
-            $enhancer = User::where('id', $request->enhancer)->value('id');
+            $enhancer = User::where('id', $leave->enhancer)->value('id');
             $user = User::findOrFail($enhancer);
             $user->available = $totalday;
             $user->save();

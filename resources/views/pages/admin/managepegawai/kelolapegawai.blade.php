@@ -132,11 +132,57 @@
                                                                                         class="icon ni ni-check-circle"></em><span>Restore</span></a>
                                                                             </li>
                                                                         @else --}}
-                                                                        <li>
-                                                                            <a
-                                                                                href="{{ route('admin.userdeleted', $d->id) }}"><em
-                                                                                    class="icon ni ni-trash"></em><span>Hapus</span></a>
-                                                                        </li>
+                                                                        <!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Tombol untuk memicu SweetAlert -->
+    <li>
+        <!-- Tombol Hapus yang tampak seperti link -->
+        <a href="javascript:void(0)" onclick="showDeleteConfirmation({{ $d->id }})">
+            <em class="icon ni ni-trash"></em><span>Hapus</span>
+        </a>
+    </li>
+    
+<script>
+    function showDeleteConfirmation(id) {
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+            text: "Data yang dihapus tidak bisa dikembalikan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Hapus',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Membuat form dinamis dan submit
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route("admin.userdeleted", ":id") }}'.replace(':id', id); // Replace :id with actual ID
+                
+                // Menambahkan input CSRF token
+                var csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                form.appendChild(csrfToken);
+                
+                // Menambahkan input method DELETE
+                var methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'GET';
+                form.appendChild(methodInput);
+                
+                // Menambahkan form ke body dan submit
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+</script>
+
+                                                                        
                                                                         {{-- <li><a href="#"
                                                                                     onclick="event.preventDefault(); document.getElementById('delete-form-{{ $d->id }}').submit();"><em
                                                                                         class="icon ni ni-na"></em><span>Hapus</span></a>

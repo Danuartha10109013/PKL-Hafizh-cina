@@ -48,7 +48,20 @@ class LeavesController extends Controller
             'date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:date',
         ]);
+         // Menghitung jumlah hari cuti yang diajukan
+        $startDate = \Carbon\Carbon::parse($request->date);
+        $endDate = \Carbon\Carbon::parse($request->end_date);
+        $daysLeave = $startDate->diffInDays($endDate) + 1; // +1 to include both start and end date in the count
 
+        // Mengambil saldo cuti pengguna yang sedang login
+        $availableLeave = Auth::user()->available; // Assuming 'available' is the user's leave balance
+        // dd($availableLeave < $daysLeave);
+        // Cek apakah saldo cuti mencukupi
+        if ($availableLeave < $daysLeave) {
+            return back()->withErrors([
+                'saldo_cuti' => 'Saldo cuti Anda tidak mencukupi untuk periode ini.'
+            ]);
+        }
         // Inisialisasi objek Leave
         $leave = new Leave();
 

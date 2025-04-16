@@ -277,6 +277,16 @@
                                                                         disabled>
                                                                 </div>
                                                             </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label class="form-label" for="nip">NIP</label>
+                                                                    <input type="text" class="form-control"
+                                                                        name="nip" value="{{ $item->nip }}"
+                                                                        maxlength="16" inputmode="numeric" pattern="\d*"
+                                                                        oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 16)"
+                                                                        placeholder="NIP">
+                                                                </div>
+                                                            </div>
                                                             <div class="col-md-12">
                                                                 <button type="submit" class="btn btn-secondary">Simpan
                                                                     Perubahan</button>

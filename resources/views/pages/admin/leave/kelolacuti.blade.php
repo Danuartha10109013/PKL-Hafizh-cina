@@ -85,7 +85,7 @@
                                                 <td>{{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($item->date)->format('d M Y') }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($item->end_date)->format('d M Y') }}</td>
-                                                <td>{{ \Carbon\Carbon::parse($item->date)->diffInDays($item->end_date) }}
+                                                <td>{{ \Carbon\Carbon::parse($item->date)->diffInDays($item->end_date) + 1 }}
                                                     hari</td>
                                                 <td>
                                                     @if ($item->status === null)
@@ -134,7 +134,6 @@
                                                                             data-bs-toggle="modal"
                                                                             data-bs-target="#confirmationModal"
                                                                             data-id="{{ $item->id }}"
-                                                                            data-enhancer="{{ $item->enhancer }}"
                                                                             data-status="{{ $item->status }}"
                                                                             data-reason="{{ $item->reason_verification }}">
                                                                             <em class="icon ni ni-check-circle-cut"></em>
@@ -142,13 +141,55 @@
                                                                             <!-- Optional: Add label for clarity -->
                                                                         </a>
                                                                     </li>
-                                                                    <li>
-                                                                        <a href="{{ route('admin.delete-satuancuti', $item->id) }}"
-                                                                            class="dropdown-item">
-                                                                            <em class="icon ni ni-trash"></em>
-                                                                            <span>Hapus</span>
-                                                                        </a>
-                                                                    </li>
+                                                                    
+                                                                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Tombol untuk memicu SweetAlert -->
+    <li>
+        <!-- Tombol Hapus yang tampak seperti link -->
+        <a href="javascript:void(0)" onclick="showDeleteConfirmationCuti({{ $item->id }})">
+            <em class="icon ni ni-trash"></em><span>Hapus</span>
+        </a>
+    </li>
+    
+<script>
+    function showDeleteConfirmationCuti(id) {
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+            text: "Data yang dihapus tidak bisa dikembalikan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Hapus',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Membuat form dinamis dan submit
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route("admin.delete-satuancuti", ":id") }}'.replace(':id', id); // Replace :id with actual ID
+                
+                // Menambahkan input CSRF token
+                var csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                form.appendChild(csrfToken);
+                
+                // Menambahkan input method DELETE
+                var methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'GET';
+                form.appendChild(methodInput);
+                
+                // Menambahkan form ke body dan submit
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+</script>
                                                                 </ul>
                                                             </div>
                                                         </li>
@@ -235,25 +276,56 @@
                                                             </a>
                                                             <div class="dropdown-menu dropdown-menu-end">
                                                                 <ul class="link-list-opt no-bdr">
-                                                                    <li>
-                                                                        <a href="#" class="dropdown-item"
-                                                                            data-bs-toggle="modal"
-                                                                            data-bs-target="#confirmationModal"
-                                                                            data-id="{{ $item->id }}"
-                                                                            data-status="{{ $item->status }}"
-                                                                            data-reason="{{ $item->reason }}">
-                                                                            <em class="icon ni ni-check-circle"></em>
-                                                                            <span>Konfirmasi</span>
-                                                                            <!-- Optional: Add label for clarity -->
-                                                                        </a>
-                                                                    </li>
-                                                                    <li>
-                                                                        <a href="{{ route('admin.delete-satuancuti', $item->id) }}"
-                                                                            class="dropdown-item">
-                                                                            <em class="icon ni ni-trash"></em>
-                                                                            <span>Hapus</span>
-                                                                        </a>
-                                                                    </li>
+                                                                    
+                                                                    
+                                                                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Tombol untuk memicu SweetAlert -->
+    <li>
+        <!-- Tombol Hapus yang tampak seperti link -->
+        <a href="javascript:void(0)" onclick="showDeleteConfirmation({{ $item->id }})">
+            <em class="icon ni ni-trash"></em><span>Hapus</span>
+        </a>
+    </li>
+    
+<script>
+    function showDeleteConfirmation(id) {
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+            text: "Data yang dihapus tidak bisa dikembalikan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Hapus',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Membuat form dinamis dan submit
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route("admin.delete-satuancuti", ":id") }}'.replace(':id', id); // Replace :id with actual ID
+                
+                // Menambahkan input CSRF token
+                var csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                form.appendChild(csrfToken);
+                
+                // Menambahkan input method DELETE
+                var methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'GET';
+                form.appendChild(methodInput);
+                
+                // Menambahkan form ke body dan submit
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+</script>
                                                                 </ul>
                                                             </div>
                                                         </li>
@@ -300,7 +372,6 @@
                             <div class="modal-body">
                                 <div class="form-group">
                                     <label for="status">Status Pengajuan Cuti</label>
-                                    <input type="text" name="enhancer" value="{{ $item->enhancer }} " hidden>
                                     <select name="status" id="status"
                                         class="form-select js-select2 select2-hidden-accesible valid"
                                         onchange="toggleReasonField()" required>

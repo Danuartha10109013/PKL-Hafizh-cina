@@ -92,6 +92,7 @@ class EmployeController extends Controller
             'role' => 'required|integer|exists:roles,id',
             'email' => 'nullable|string|email|max:80|unique:users,email',
             'password' => 'required|string',
+            'position' => 'required|string',
             // 'password' => 'required|string|min:8|regex:/[A-Z]/|regex:/[0-9]/|regex:/[\W_]/',
         ]);
         // Hitung jumlah user yang ada untuk menentukan username

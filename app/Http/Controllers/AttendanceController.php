@@ -262,6 +262,63 @@ class AttendanceController extends Controller
         return view('pages.admin.attendance.cetakrekapitulasi', compact('rekapData'));
     }
 
+    public function cetakrekapbulan(Request $request)
+{
+    // Get the selected month and year from the request
+    $month = $request->input('month');
+    $year = $request->input('year');
+    
+    // Filter users excluding role 1 (admin)
+    $users = User::where('role', '!=', 1)->get();
+
+    // Create rekapitulasi data based on month and year filters
+    $rekapData = $users->map(function ($user) use ($month, $year) {
+        // Filter attendance by user and month/year
+        $attendances = Attendance::where('enhancer', $user->id)
+            ->whereMonth('created_at', $month)
+            ->whereYear('created_at', $year)
+            ->get();
+
+        // Count attendance statuses
+        $masuk = $attendances->where('status', 0)->count(); // Kehadiran masuk
+        $pulang = $attendances->where('status', 1)->count(); // Kehadiran pulang
+
+        // Filter for terlambat if time is after 08:00:00
+        $terlambat = $attendances->where('status', 1)->filter(function ($attendance) {
+            return $attendance->time > '08:00:00';
+        })->count();
+
+        // Filter for lebih awal if time is before 17:00:00
+        $lebihAwal = $attendances->where('status', 2)->filter(function ($attendance) {
+            return $attendance->time < '17:00:00';
+        })->count();
+
+        // Filter leave records by user and month/year
+        $cuti = Leave::where('enhancer', $user->id)
+            ->whereMonth('created_at', $month)
+            ->whereYear('created_at', $year)
+            ->count();
+
+        // Determine sanction based on conditions
+        $sanksi = $terlambat > 3 ? 'danger' : ($lebihAwal > 1 ? 'warning' : 'success');
+        $sanksiLabel = $terlambat > 3 ? 'Sanksi' : ($lebihAwal > 1 ? 'Perlu Perhatian' : 'Aman');
+
+        return [
+            'nama' => $user->name,
+            'masuk' => $masuk,
+            'pulang' => $pulang,
+            'lebih_awal' => $lebihAwal,
+            'terlambat' => $terlambat,
+            'cuti' => $cuti,
+            'sanksi' => $sanksi,
+            'sanksi_label' => $sanksiLabel,
+        ];
+    });
+
+    // Return the rekapitulasi view with filtered data
+    return view('pages.admin.attendance.cetakrekapitulasi', compact('rekapData', 'month', 'year'));
+}
+
 
     public function filtertanggal() {}
 

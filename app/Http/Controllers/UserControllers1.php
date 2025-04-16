@@ -76,6 +76,7 @@ class UserControllers1 extends Controller
             'gender' => 'nullable',
             'religion' => 'nullable|string|max:50',
             'address' => 'nullable|string|max:255',
+            'nip' => 'nullable|string|max:255',
             'id_card' => 'nullable|string|regex:/^\d{1,16}$/',
         ]);
 

@@ -83,6 +83,7 @@ Route::middleware([AutoLogout::class])->group(function () {
             Route::get('/filter-kehadiran', [AttendanceController::class, 'filterKehadiran'])->name('filterKehadiran');
             Route::get('/rekapitulasi', [AttendanceController::class, 'rekap'])->name('rekapitulasi');
             Route::get('/cetakrekapitulasi', [AttendanceController::class, 'cetakrekap'])->name('print-cetakrekapitulasi');
+            Route::get('/cetakrekapitulasi/bulan', [AttendanceController::class, 'cetakrekapbulan'])->name('print-cetakrekapitulasi-bulan');
             Route::get('/cetakkehadiranpegawai', [AttendanceController::class, 'cetakkehadiran'])->name('print-kelolakehadiranpegawai');
             Route::get('/cetakkehadiranpegawaimasuk/{id}', [AttendanceController::class, 'cetakkehadiranmasuk'])->name('print-kelolakehadiranpegawai-masuk');
             Route::get('/cetakkehadiranpegawaikeluar/{id}', [AttendanceController::class, 'cetakkehadirankeluar'])->name('print-kelolakehadiranpegawai-keluar');
