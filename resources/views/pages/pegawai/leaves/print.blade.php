@@ -242,8 +242,12 @@
                         <td>{{ $employe->name }}</td>
                     </tr>
                     <tr>
-                        <td style="width: 200px; background-color: rgba(128, 128, 128, 0.2);">No. Induk Pegawai</td>
+                        <td style="width: 200px; background-color: rgba(128, 128, 128, 0.2);">NIK</td>
                         <td>{{ $employe->id_card }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 200px; background-color: rgba(128, 128, 128, 0.2);">No. Induk Pegawai</td>
+                        <td>{{ $employe->nip }}</td>
                     </tr>
                     <tr>
                         <td style="width: 200px; background-color: rgba(128, 128, 128, 0.2);">Jabatan</td>

@@ -45,6 +45,15 @@
                                             </div>
                                             <div class="col-sm-6">
                                                 <div class="form-group">
+                                                    <label class="form-label" for="nip">NIP</label>
+                                                    <div class="form-control-wrap">
+                                                        <input type="text" class="form-control" id="nip"
+                                                            name="nip" placeholder="masukan NIP">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
                                                     <label class="form-label" for="name">Nama</label>
                                                     <div class="form-control-wrap">
                                                         <input type="text" class="form-control" id="name"

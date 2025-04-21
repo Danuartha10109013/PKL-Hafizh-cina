@@ -93,6 +93,7 @@ class EmployeController extends Controller
             'email' => 'nullable|string|email|max:80|unique:users,email',
             'password' => 'required|string',
             'position' => 'required|string',
+            'nip' => 'required',
             // 'password' => 'required|string|min:8|regex:/[A-Z]/|regex:/[0-9]/|regex:/[\W_]/',
         ]);
         // Hitung jumlah user yang ada untuk menentukan username
@@ -150,7 +151,9 @@ class EmployeController extends Controller
             'gender' => 'nullable|string',
             'religion' => 'nullable|string|max:50',
             'address' => 'nullable|string|max:255',
+            'position' => 'nullable|string|max:255',
             'id_card' => 'nullable|string|max:16',
+            'nip' => 'nullable|string',
         ]);
 
         // Cari user berdasarkan ID

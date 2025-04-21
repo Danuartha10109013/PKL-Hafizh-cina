@@ -107,10 +107,34 @@
                                                                             </a>
                                                                         </li>
                                                                         <li>
-                                                                            <a
-                                                                                href="{{ route('admin.delete-jadwal', $schedule->id) }}"><em
-                                                                                    class="icon ni ni-trash"></em><span>Hapus</span></a>
+                                                                            <a href="javascript:void(0);" onclick="confirmDelete({{ $schedule->id }})">
+                                                                                <em class="icon ni ni-trash"></em><span>Hapus</span>
+                                                                            </a>
                                                                         </li>
+                                                                        
+                                                                        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+                                                                        <script>
+                                                                            function confirmDelete(scheduleId) {
+                                                                                Swal.fire({
+                                                                                    title: 'Yakin ingin menghapus?',
+                                                                                    text: "Data jadwal ini akan dihapus permanen!",
+                                                                                    icon: 'warning',
+                                                                                    showCancelButton: true,
+                                                                                    confirmButtonColor: '#d33',
+                                                                                    cancelButtonColor: '#6c757d',
+                                                                                    confirmButtonText: 'Ya, Hapus!',
+                                                                                    cancelButtonText: 'Batal'
+                                                                                }).then((result) => {
+                                                                                    if (result.isConfirmed) {
+                                                                                        // Redirect ke route penghapusan
+                                                                                        window.location.href = `/admin/delete-jadwal/${scheduleId}`;
+                                                                                    }
+                                                                                });
+                                                                            }
+                                                                        </script>
+                                                                        
+                                                                        
                                                                     </ul>
                                                                 </div>
                                                             </div>
@@ -124,6 +148,8 @@
                             </div>
                         </div><!-- .card-preview -->
                     </div> <!-- nk-block -->
+                    <!-- Modal Delete -->
+                  
                     <div class="nk-block ">
                         <h3 class="nk-block-title page-title">Pembagian Jadwal Pegawai</h3>
                         <div class="card card-bordered card-preview">

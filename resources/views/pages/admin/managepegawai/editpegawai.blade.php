@@ -136,8 +136,11 @@
                                                         <input type="file" class="form-file-input" id="avatar"
                                                             name="acuan" accept=".jpg,.jpeg,.png" placeholder="">
                                                         <label class="form-file-label" for="avatar">Choose file</label>
-                                                    </div>
+                                                    </div> 
                                                 </div>
+                                                @if ($item->acuan)
+                                                    <img src="{{asset('storage/'.$item->acuan)}}" style="width:30%"alt="">
+                                                @endif
                                             </div>
                                             <div class="col-sm-6">
                                                 <div class="form-group">
@@ -216,7 +219,28 @@
                                                         oninput="this.value = this.value.slice(0, 16)">
                                                 </div>
                                             </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">NIP</label>
+                                                    <input type="text" class="form-control" name="nip"
+                                                        value="{{ $item->nip }}"
+                                                        placeholder="masukan NIP">
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label class="form-label" for="position">Jabatan</label>
+                                                    <select
+                                                        class="form-select js-select2 select2-hidden-accesible valid"
+                                                        id="role" name="position" placeholder="Pilih Role">
+                                                        <option disabled {{ $item->position == null ? 'selected' : '' }}>-- Pilih Jabatan --</option>
+                                                        <option value="Web Developer" {{ $item->position == 'Web Developer' ? 'selected' : '' }}>Web Developer</option>
+                                                        <option value="Quality Assurance" {{ $item->position == 'Quality Assurance' ? 'selected' : '' }}>Quality Assurance</option>
+                                                        <option value="Software Enginer" {{ $item->position == 'Software Enginer' ? 'selected' : '' }}>Software Enginer</option>
+                                                    </select>
 
+                                                </div>
+                                            </div>
                                             <div class="col-sm-6">
                                                 <div class="form-group">
                                                     <label class="form-label" for="address">Alamat</label>
@@ -225,6 +249,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                           
                                         </div>
                                         <hr class="preview-hr">
                                         <div class="form-group">
