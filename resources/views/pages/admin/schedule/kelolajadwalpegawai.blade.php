@@ -128,7 +128,7 @@
                                                                                 }).then((result) => {
                                                                                     if (result.isConfirmed) {
                                                                                         // Redirect ke route penghapusan
-                                                                                        window.location.href = `/admin/delete-jadwal/${scheduleId}`;
+                                                                                        window.location.href = `/admin/schedule.kelolajadwalpegawai/delete/${scheduleId}`;
                                                                                     }
                                                                                 });
                                                                             }
