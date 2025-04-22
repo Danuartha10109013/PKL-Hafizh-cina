@@ -586,7 +586,7 @@ class AttendanceController extends Controller
         $coordinates = explode(',', $attendance->coordinate);
         $latitude = $coordinates[0] ?? null;
         $longitude = $coordinates[1] ?? null;
-
+        // dd($latitude);
         return view('pages.admin.attendance.printkehadiran-masuk', compact('attendance', 'latitude', 'longitude'));
     }
 

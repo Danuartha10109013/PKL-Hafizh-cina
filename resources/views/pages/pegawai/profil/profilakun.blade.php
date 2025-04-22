@@ -75,7 +75,7 @@
                                                 style="width: 150px; height: 150px; background-color: #2c3e50; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer;"
                                                 onclick="document.getElementById('avatarInput').click()">
                                                 @if ($item->avatar)
-                                                    <img src="{{ asset($item->avatar) }}" alt="{{ $item->name }}'s avatar"
+                                                    <img src="{{ asset('storage/'.$item->avatar) }}" alt="{{ $item->name }}'s avatar"
                                                         class="img-fluid"
                                                         style="width: 100%; height: 100%; object-fit: cover;">
                                                 @endif

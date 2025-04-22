@@ -95,7 +95,7 @@
                                                 <td>
                                                     <div class="user-card">
                                                         <div class="user-avatar bg-secondary">
-                                                            <img src="{{ asset($d->avatar) }}" class="img-fluid"
+                                                            <img src="{{ asset('storage/'.$d->avatar) }}" class="img-fluid"
                                                                 style="width: 100%; height: 100%; object-fit: cover;">
                                                         </div>
                                                     </div>

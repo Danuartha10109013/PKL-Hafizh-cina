@@ -25,7 +25,7 @@
                                             <div class="img-fluid rounded-circle shadow-sm"
                                                 style="width: 150px; height: 150px; background-color: #2c3e50; display: flex; align-items: center; justify-content: center; margin: 0 auto; overflow: hidden;">
                                                 @if ($item->avatar)
-                                                    <img src="{{ asset($item->avatar) }}" alt="{{ $item->name }}'s avatar"
+                                                    <img src="{{ asset('storage/'.$item->avatar) }}" alt="{{ $item->name }}'s avatar"
                                                         class="img-fluid text-white"
                                                         style="width: 100%; height: 100%; object-fit: cover;">
                                                 @else
@@ -36,6 +36,21 @@
                                             </div>
                                             <h5 class="mt-3">{{ $item->name }}</h5>
                                             <p class="text-muted">{{ $item->email }}</p>
+                                        </div>
+                                        <div class="text-center mb-4">
+                                            <div class="img-fluid rounded-circle shadow-sm"
+                                                style="width: 150px; height: 150px; background-color: #2c3e50; display: flex; align-items: center; justify-content: center; margin: 0 auto; overflow: hidden;">
+                                                @if ($item->avatar)
+                                                    <img src="{{ asset('storage/'.$item->acuan) }}" alt="{{ $item->acuan }}'s avatar"
+                                                        class="img-fluid text-white"
+                                                        style="width: 100%; height: 100%; object-fit: cover;">
+                                                @else
+                                                    <span>
+                                                        No image
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <h5 class="mt-3">Acuan Absensi</h5>
                                         </div>
                                     </div>
 
@@ -138,6 +153,20 @@
                                                     <label class="form-label">KTP</label>
                                                     <input type="text" class="form-control"
                                                         value="{{ $item->id_card }}" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">NIP</label>
+                                                    <input type="text" class="form-control"
+                                                        value="{{ $item->nip }}" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="form-label">Jabatan</label>
+                                                    <input type="text" class="form-control"
+                                                        value="{{ $item->position }}" disabled>
                                                 </div>
                                             </div>
                                             <div class="col-md-12">
