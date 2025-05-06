@@ -47,12 +47,12 @@
                                                 data-bs-toggle="modal" data-bs-target="#validasiModal"><em
                                                     class="icon ni ni-clipboad-check"></em><span>Validasi</span></a>
                                         </li> --}}
-                                        <li>
+                                        {{-- <li>
                                             <a href="#" class="btn btn-secondary" target="_blank"
                                                 data-bs-toggle="modal" data-bs-target="#printModal">
                                                 <em class="icon ni ni-printer"></em><span>Cetak</span>
                                             </a>
-                                        </li>
+                                        </li> --}}
                                     </ul>
                                 </div>
                             </div><!-- .toggle-wrap -->
@@ -205,55 +205,58 @@
                                                                         </li>
                                                                     @endif
 
-                                                                    
+
                                                                     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
                                                                     <!-- Tombol untuk memicu SweetAlert -->
                                                                     <li>
                                                                         <!-- Tombol Hapus yang tampak seperti link -->
-                                                                        <a href="javascript:void(0)" onclick="showDeleteConfirmationCuti({{ $attendance->id }})">
-                                                                            <em class="icon ni ni-trash"></em><span>Hapus</span>
+                                                                        <a href="javascript:void(0)"
+                                                                            onclick="showDeleteConfirmationCuti({{ $attendance->id }})">
+                                                                            <em
+                                                                                class="icon ni ni-trash"></em><span>Hapus</span>
                                                                         </a>
                                                                     </li>
-                                                                    
-                                                                <script>
-                                                                    function showDeleteConfirmationCuti(id) {
-                                                                        Swal.fire({
-                                                                            title: 'Apakah Anda yakin?',
-                                                                            text: "Data yang dihapus tidak bisa dikembalikan!",
-                                                                            icon: 'warning',
-                                                                            showCancelButton: true,
-                                                                            confirmButtonColor: '#d33',
-                                                                            cancelButtonColor: '#3085d6',
-                                                                            confirmButtonText: 'Hapus',
-                                                                            cancelButtonText: 'Batal'
-                                                                        }).then((result) => {
-                                                                            if (result.isConfirmed) {
-                                                                                // Membuat form dinamis dan submit
-                                                                                var form = document.createElement('form');
-                                                                                form.method = 'POST';
-                                                                                form.action = '{{ route("admin.kelolakehadiranpegawai.delete", ":id") }}'.replace(':id', id); // Replace :id with actual ID
-                                                                                
-                                                                                // Menambahkan input CSRF token
-                                                                                var csrfToken = document.createElement('input');
-                                                                                csrfToken.type = 'hidden';
-                                                                                csrfToken.name = '_token';
-                                                                                csrfToken.value = '{{ csrf_token() }}';
-                                                                                form.appendChild(csrfToken);
-                                                                                
-                                                                                // Menambahkan input method DELETE
-                                                                                var methodInput = document.createElement('input');
-                                                                                methodInput.type = 'hidden';
-                                                                                methodInput.name = '_method';
-                                                                                methodInput.value = 'GET';
-                                                                                form.appendChild(methodInput);
-                                                                                
-                                                                                // Menambahkan form ke body dan submit
-                                                                                document.body.appendChild(form);
-                                                                                form.submit();
-                                                                            }
-                                                                        });
-                                                                    }
-                                                                </script>
+
+                                                                    <script>
+                                                                        function showDeleteConfirmationCuti(id) {
+                                                                            Swal.fire({
+                                                                                title: 'Apakah Anda yakin?',
+                                                                                text: "Data yang dihapus tidak bisa dikembalikan!",
+                                                                                icon: 'warning',
+                                                                                showCancelButton: true,
+                                                                                confirmButtonColor: '#d33',
+                                                                                cancelButtonColor: '#3085d6',
+                                                                                confirmButtonText: 'Hapus',
+                                                                                cancelButtonText: 'Batal'
+                                                                            }).then((result) => {
+                                                                                if (result.isConfirmed) {
+                                                                                    // Membuat form dinamis dan submit
+                                                                                    var form = document.createElement('form');
+                                                                                    form.method = 'POST';
+                                                                                    form.action = '{{ route('admin.kelolakehadiranpegawai.delete', ':id') }}'.replace(':id',
+                                                                                    id); // Replace :id with actual ID
+
+                                                                                    // Menambahkan input CSRF token
+                                                                                    var csrfToken = document.createElement('input');
+                                                                                    csrfToken.type = 'hidden';
+                                                                                    csrfToken.name = '_token';
+                                                                                    csrfToken.value = '{{ csrf_token() }}';
+                                                                                    form.appendChild(csrfToken);
+
+                                                                                    // Menambahkan input method DELETE
+                                                                                    var methodInput = document.createElement('input');
+                                                                                    methodInput.type = 'hidden';
+                                                                                    methodInput.name = '_method';
+                                                                                    methodInput.value = 'GET';
+                                                                                    form.appendChild(methodInput);
+
+                                                                                    // Menambahkan form ke body dan submit
+                                                                                    document.body.appendChild(form);
+                                                                                    form.submit();
+                                                                                }
+                                                                            });
+                                                                        }
+                                                                    </script>
                                                                 </ul>
                                                             </div>
                                                         </div>

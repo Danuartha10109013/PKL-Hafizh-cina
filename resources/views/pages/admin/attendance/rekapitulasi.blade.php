@@ -10,7 +10,7 @@
                     <div class="nk-block-head nk-block-head-sm">
                         <div class="nk-block-between">
                             <div class="nk-block-head-content">
-                                <h3 class="nk-block-title page-title">Rekapitulasi Kehadiran</h3>
+                                <h3 class="nk-block-title page-title">Rekapitulasi</h3>
                             </div>
                             <div class="nk-block-head-content">
                                 <div class="toggle-wrap nk-block-tools-toggle">
@@ -18,33 +18,40 @@
                                         data-target="pageMenu"><em class="icon ni ni-menu-alt-r"></em></a>
                                     <div class="toggle-expand-content" data-content="pageMenu">
                                         <ul class="nk-block-tools g-3">
-                                            <li><a href="{{ route('admin.print-cetakrekapitulasi') }}"
+                                            {{-- <li><a href="{{ route('admin.print-cetakrekapitulasi') }}"
                                                     class="btn btn-secondary" target="_blank"><em
-                                                        class="icon ni ni-printer"></em><span>Cetak</span></a></li>
+                                                        class="icon ni ni-printer"></em><span>Cetak</span></a></li> --}}
                                             <!-- Button to open the modal for selecting month and year -->
                                             <li>
-                                                <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#selectMonthYearModal">
-                                                    <em class="icon ni ni-printer"></em><span>Cetak per Bulan</span>
+                                                <button class="btn btn-secondary" data-bs-toggle="modal"
+                                                    data-bs-target="#selectMonthYearModal">
+                                                    <em class="icon ni ni-printer"></em><span>Cetak</span>
                                                 </button>
                                             </li>
                                         </ul>
-                                        
+
                                         <!-- Modal for selecting month and year -->
-                                        <div class="modal fade" id="selectMonthYearModal" tabindex="-1" aria-labelledby="selectMonthYearModalLabel" aria-hidden="true">
+                                        <div class="modal fade" id="selectMonthYearModal" tabindex="-1"
+                                            aria-labelledby="selectMonthYearModalLabel" aria-hidden="true">
                                             <div class="modal-dialog">
                                                 <div class="modal-content p-3">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="selectMonthYearModalLabel">Pilih Bulan dan Tahun</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                                                        <h5 class="modal-title" id="selectMonthYearModalLabel">Pilih Bulan
+                                                            dan Tahun</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Tutup"></button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <form action="{{ route('admin.print-cetakrekapitulasi-bulan') }}" method="GET" target="_blank">
+                                                        <form action="{{ route('admin.print-cetakrekapitulasi-bulan') }}"
+                                                            method="GET" target="_blank">
                                                             @csrf
                                                             <!-- Month and Year Selection -->
                                                             <div class="form-group mb-3">
                                                                 <label for="month">Bulan</label>
-                                                                <select name="month" id="month" class="form-control" required>
-                                                                    <option value="" selected disabled>-- Pilih Bulan --</option>
+                                                                <select name="month" id="month" class="form-control"
+                                                                    required>
+                                                                    <option value="" selected disabled>-- Pilih Bulan
+                                                                        --</option>
                                                                     <option value="1">Januari</option>
                                                                     <option value="2">Februari</option>
                                                                     <option value="3">Maret</option>
@@ -61,24 +68,29 @@
                                                             </div>
                                                             <div class="form-group mb-3">
                                                                 <label for="year">Tahun</label>
-                                                                <select name="year" id="year" class="form-control" required>
-                                                                    <option value="" selected disabled>-- Pilih Tahun --</option>
+                                                                <select name="year" id="year" class="form-control"
+                                                                    required>
+                                                                    <option value="" selected disabled>-- Pilih Tahun
+                                                                        --</option>
                                                                     @for ($year = 2020; $year <= 2030; $year++)
-                                                                        <option value="{{ $year }}">{{ $year }}</option>
+                                                                        <option value="{{ $year }}">
+                                                                            {{ $year }}</option>
                                                                     @endfor
                                                                 </select>
                                                             </div>
                                                             <!-- Submit Button -->
                                                             <div class="modal-footer p-0 d-flex justify-content-between">
-                                                                <button type="submit" class="btn btn-primary">Cetak</button>
-                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                                                <button type="submit"
+                                                                    class="btn btn-primary">Cetak</button>
+                                                                <button type="button" class="btn btn-secondary"
+                                                                    data-bs-dismiss="modal">Batal</button>
                                                             </div>
                                                         </form>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                     </div>
                                 </div><!-- .toggle-wrap -->
                             </div><!-- .nk-block-head-content -->

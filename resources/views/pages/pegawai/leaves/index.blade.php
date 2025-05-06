@@ -21,10 +21,10 @@
                                                 data-bs-target="#filterModal"><em
                                                     class="icon ni ni-filter"></em><span>Filter</span></a>
                                         </li>
-                                        <li><a href="{{ route('pegawai.print-cuti') }}" class="btn btn-secondary"
+                                        {{-- <li><a href="{{ route('pegawai.print-cuti') }}" class="btn btn-secondary"
                                                 data-bs-toggle="modal" data-bs-target="#printModal" target="_blank"><em
                                                     class="icon ni ni-printer"></em><span>Cetak</span></a>
-                                        </li>
+                                        </li> --}}
                                         <a href="{{ route('pegawai.create-cuti') }}" class="btn btn-icon btn-secondary">
                                             <em class="icon ni ni-plus"></em>
                                         </a>
@@ -107,7 +107,7 @@
                                             {{-- <td>{{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}</td> --}}
                                             <td>{{ \Carbon\Carbon::parse($item->date)->format('d M Y') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($item->end_date)->format('d M Y') }}</td>
-                                            
+
                                             <td>
                                                 @if ($item->status === null)
                                                     <span class="badge bg-warning">Menunggu</span>
@@ -121,7 +121,8 @@
                                                 @if ($item->qrApp == null)
                                                     -
                                                 @else
-                                                    <img src="{{ asset('storage/qrApp/' . $item->qrApp) }}" alt="qrApproved Image">
+                                                    <img src="{{ asset('storage/qrApp/' . $item->qrApp) }}"
+                                                        alt="qrApproved Image">
                                                 @endif
                                             </td>
                                             <td>
@@ -237,7 +238,7 @@
                                 <option value="all">Cetak Semua</option>
                                 <option value="filtered">Cetak Berdasarkan Kategori dan Status</option>
                             </select>
-                            <input type="hidden" name="id" value="{{Auth::user()->id}}">
+                            <input type="hidden" name="id" value="{{ Auth::user()->id }}">
                         </div>
 
                         <!-- Filter kategori dan status -->
