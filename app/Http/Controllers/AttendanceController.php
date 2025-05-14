@@ -263,61 +263,61 @@ class AttendanceController extends Controller
     }
 
     public function cetakrekapbulan(Request $request)
-{
-    // Get the selected month and year from the request
-    $month = $request->input('month');
-    $year = $request->input('year');
-    
-    // Filter users excluding role 1 (admin)
-    $users = User::where('role', '!=', 1)->get();
+    {
+        // Get the selected month and year from the request
+        $month = $request->input('month');
+        $year = $request->input('year');
 
-    // Create rekapitulasi data based on month and year filters
-    $rekapData = $users->map(function ($user) use ($month, $year) {
-        // Filter attendance by user and month/year
-        $attendances = Attendance::where('enhancer', $user->id)
-            ->whereMonth('created_at', $month)
-            ->whereYear('created_at', $year)
-            ->get();
+        // Filter users excluding role 1 (admin)
+        $users = User::where('role', '!=', 1)->get();
 
-        // Count attendance statuses
-        $masuk = $attendances->where('status', 0)->count(); // Kehadiran masuk
-        $pulang = $attendances->where('status', 1)->count(); // Kehadiran pulang
+        // Create rekapitulasi data based on month and year filters
+        $rekapData = $users->map(function ($user) use ($month, $year) {
+            // Filter attendance by user and month/year
+            $attendances = Attendance::where('enhancer', $user->id)
+                ->whereMonth('created_at', $month)
+                ->whereYear('created_at', $year)
+                ->get();
 
-        // Filter for terlambat if time is after 08:00:00
-        $terlambat = $attendances->where('status', 1)->filter(function ($attendance) {
-            return $attendance->time > '08:00:00';
-        })->count();
+            // Count attendance statuses
+            $masuk = $attendances->where('status', 0)->count(); // Kehadiran masuk
+            $pulang = $attendances->where('status', 1)->count(); // Kehadiran pulang
 
-        // Filter for lebih awal if time is before 17:00:00
-        $lebihAwal = $attendances->where('status', 2)->filter(function ($attendance) {
-            return $attendance->time < '17:00:00';
-        })->count();
+            // Filter for terlambat if time is after 08:00:00
+            $terlambat = $attendances->where('status', 1)->filter(function ($attendance) {
+                return $attendance->time > '08:00:00';
+            })->count();
 
-        // Filter leave records by user and month/year
-        $cuti = Leave::where('enhancer', $user->id)
-            ->whereMonth('created_at', $month)
-            ->whereYear('created_at', $year)
-            ->count();
+            // Filter for lebih awal if time is before 17:00:00
+            $lebihAwal = $attendances->where('status', 2)->filter(function ($attendance) {
+                return $attendance->time < '17:00:00';
+            })->count();
 
-        // Determine sanction based on conditions
-        $sanksi = $terlambat > 3 ? 'danger' : ($lebihAwal > 1 ? 'warning' : 'success');
-        $sanksiLabel = $terlambat > 3 ? 'Sanksi' : ($lebihAwal > 1 ? 'Perlu Perhatian' : 'Aman');
+            // Filter leave records by user and month/year
+            $cuti = Leave::where('enhancer', $user->id)
+                ->whereMonth('created_at', $month)
+                ->whereYear('created_at', $year)
+                ->count();
 
-        return [
-            'nama' => $user->name,
-            'masuk' => $masuk,
-            'pulang' => $pulang,
-            'lebih_awal' => $lebihAwal,
-            'terlambat' => $terlambat,
-            'cuti' => $cuti,
-            'sanksi' => $sanksi,
-            'sanksi_label' => $sanksiLabel,
-        ];
-    });
+            // Determine sanction based on conditions
+            $sanksi = $terlambat > 3 ? 'danger' : ($lebihAwal > 1 ? 'warning' : 'success');
+            $sanksiLabel = $terlambat > 3 ? 'Sanksi' : ($lebihAwal > 1 ? 'Perlu Perhatian' : 'Aman');
 
-    // Return the rekapitulasi view with filtered data
-    return view('pages.admin.attendance.cetakrekapitulasi', compact('rekapData', 'month', 'year'));
-}
+            return [
+                'nama' => $user->name,
+                'masuk' => $masuk,
+                'pulang' => $pulang,
+                'lebih_awal' => $lebihAwal,
+                'terlambat' => $terlambat,
+                'cuti' => $cuti,
+                'sanksi' => $sanksi,
+                'sanksi_label' => $sanksiLabel,
+            ];
+        });
+
+        // Return the rekapitulasi view with filtered data
+        return view('pages.admin.attendance.cetakrekapitulasi', compact('rekapData', 'month', 'year'));
+    }
 
 
     public function filtertanggal() {}
@@ -405,7 +405,8 @@ class AttendanceController extends Controller
         return view('pages.pegawai.attendance.index', compact('attendances', 'jadwal', 'jadwal_detail'));
     }
 
-    public function setup(Request $request){
+    public function setup(Request $request)
+    {
         $user = User::find($request->id_user);
         // dd($request->all());
         if ($request->hasFile('acuan')) {
@@ -413,7 +414,7 @@ class AttendanceController extends Controller
             $user->acuan = $acuanPath;
             $user->update();
             return redirect()->back()->with('Acuan berhasil disimpan');
-        }else{
+        } else {
             return redirect()->back()->withErrors('Terjadi kesalahan');
         }
     }
@@ -433,26 +434,26 @@ class AttendanceController extends Controller
             'coordinate' => 'required',
             'faceData' => 'required|string',
         ]);
-    
+
         // Decode Base64 Image
         $base64Image = $request->input('faceData');
         if (!preg_match('/^data:image\/(\w+);base64,/', $base64Image, $matches)) {
             return back()->with('error', 'Format gambar tidak valid.');
         }
-    
+
         $extension = $matches[1];
         $base64Image = base64_decode(substr($base64Image, strpos($base64Image, ',') + 1));
-    
+
         if ($base64Image === false) {
             return back()->with('error', 'Gambar tidak valid.');
         }
-    
+
         // Simpan gambar absensi
         $fileName = Str::uuid() . '.' . $extension;
         $imagePath = "attendances/{$fileName}";
-    
+
         Storage::disk('public')->put($imagePath, $base64Image);
-    
+
         // Simpan data absensi ke database
         $attendance = Attendance::create([
             'enhancer' => Auth::id(),
@@ -462,61 +463,61 @@ class AttendanceController extends Controller
             'status' => $request->input('status'),
             'coordinate' => $request->input('coordinate'),
         ]);
-    
+
         $user = Auth::user();
-    
+
         // Dapatkan folder acuan
         $acuanFolder = storage_path("app/public/acuan");
-    
+
         // Periksa apakah ada gambar referensi
         $referenceImages = glob($acuanFolder . "/*.jpg"); // Bisa disesuaikan ke PNG jika perlu
         if (empty($referenceImages)) {
             $attendance->forceDelete();
             return back()->with('error', 'Tidak ada gambar referensi yang tersedia.');
         }
-    
+
         // Jalankan Python Face Recognition
         $fullImagePath = storage_path("app/public/" . $imagePath);
         $command = escapeshellcmd("python recognition.py " . escapeshellarg($fullImagePath) . " " . escapeshellarg($acuanFolder));
-    
+
         $output = [];
         $status_code = 0;
         exec($command, $output, $status_code);
-    
+
         if ($status_code !== 0) {
             $attendance->forceDelete();
             return redirect()->route('pegawai.attendance')->with('error', 'Gagal menjalankan Face Recognition.');
         }
-    
+
         // Ambil hasil dari Python
         $user_name = trim($output[0] ?? 'Unknown');
         // dd($user_name);
-    
+
         if ($user_name === 'Unknown') {
             $attendance->forceDelete();
             return redirect()->route('pegawai.attendance')->with('error', 'Wajah tidak dikenali.');
         }
-    
+
         // Cek apakah wajah dikenali dalam daftar pegawai
         $hasil = User::where('acuan', "acuan/{$user_name}.jpg")->first();
         // dd($hasil);
-    
+
         if (!$hasil) {
             $attendance->forceDelete();
             return redirect()->route('pegawai.attendance')->with('error', 'User tidak ditemukan.');
         }
-    
+
         // Pastikan yang terdeteksi adalah user yang sedang login
         if ($hasil->id !== $user->id) {
             $attendance->forceDelete();
-            return redirect()->route('pegawai.attendance')->with('error', 'Anda hanya bisa absen untuk diri sendiri. Wajah terdeteksi sebagai '.$hasil->name);
+            return redirect()->route('pegawai.attendance')->with('error', 'Anda hanya bisa absen untuk diri sendiri. Wajah terdeteksi sebagai ' . $hasil->name);
         }
-    
+
         return redirect()->route('pegawai.attendance')->with('success', 'Kehadiran berhasil disimpan. Wajah terdeteksi sebagai ' . $hasil->name);
     }
-    
 
-    
+
+
 
 
     // Cetak data kehadiran per pegawai

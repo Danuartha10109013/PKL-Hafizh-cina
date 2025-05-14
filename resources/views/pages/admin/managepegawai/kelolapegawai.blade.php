@@ -76,7 +76,7 @@
                                             <th>Bergabung</th>
                                             <th>Jadwal</th>
                                             <th>Avatar</th>
-                                            <th>Status</th>
+                                            {{-- <th>Status</th> --}}
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -95,17 +95,18 @@
                                                 <td>
                                                     <div class="user-card">
                                                         <div class="user-avatar bg-secondary">
-                                                            <img src="{{ asset('storage/'.$d->avatar) }}" class="img-fluid"
+                                                            <img src="{{ asset('storage/' . $d->avatar) }}"
+                                                                class="img-fluid"
                                                                 style="width: 100%; height: 100%; object-fit: cover;">
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td>
+                                                {{-- <td>
                                                     <span
                                                         class="tb-status {{ $d->status == 0 ? 'text-success' : 'text-danger' }}">
                                                         {{ $d->status == 0 ? 'Aktif' : 'Tidak Aktif' }}
                                                     </span>
-                                                </td>
+                                                </td> --}}
 
                                                 <td>
                                                     <ul class="nk-tb-actions gx-2">
@@ -133,56 +134,59 @@
                                                                             </li>
                                                                         @else --}}
                                                                         <!-- SweetAlert2 CDN -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Tombol untuk memicu SweetAlert -->
-    <li>
-        <!-- Tombol Hapus yang tampak seperti link -->
-        <a href="javascript:void(0)" onclick="showDeleteConfirmation({{ $d->id }})">
-            <em class="icon ni ni-trash"></em><span>Hapus</span>
-        </a>
-    </li>
-    
-<script>
-    function showDeleteConfirmation(id) {
-        Swal.fire({
-            title: 'Apakah Anda yakin?',
-            text: "Data yang dihapus tidak bisa dikembalikan!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Hapus',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Membuat form dinamis dan submit
-                var form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '{{ route("admin.userdeleted", ":id") }}'.replace(':id', id); // Replace :id with actual ID
-                
-                // Menambahkan input CSRF token
-                var csrfToken = document.createElement('input');
-                csrfToken.type = 'hidden';
-                csrfToken.name = '_token';
-                csrfToken.value = '{{ csrf_token() }}';
-                form.appendChild(csrfToken);
-                
-                // Menambahkan input method DELETE
-                var methodInput = document.createElement('input');
-                methodInput.type = 'hidden';
-                methodInput.name = '_method';
-                methodInput.value = 'GET';
-                form.appendChild(methodInput);
-                
-                // Menambahkan form ke body dan submit
-                document.body.appendChild(form);
-                form.submit();
-            }
-        });
-    }
-</script>
+                                                                        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                                                                        <!-- Tombol untuk memicu SweetAlert -->
+                                                                        <li>
+                                                                            <!-- Tombol Hapus yang tampak seperti link -->
+                                                                            <a href="javascript:void(0)"
+                                                                                onclick="showDeleteConfirmation({{ $d->id }})">
+                                                                                <em
+                                                                                    class="icon ni ni-trash"></em><span>Hapus</span>
+                                                                            </a>
+                                                                        </li>
 
-                                                                        
+                                                                        <script>
+                                                                            function showDeleteConfirmation(id) {
+                                                                                Swal.fire({
+                                                                                    title: 'Apakah Anda yakin?',
+                                                                                    text: "Data yang dihapus tidak bisa dikembalikan!",
+                                                                                    icon: 'warning',
+                                                                                    showCancelButton: true,
+                                                                                    confirmButtonColor: '#d33',
+                                                                                    cancelButtonColor: '#3085d6',
+                                                                                    confirmButtonText: 'Hapus',
+                                                                                    cancelButtonText: 'Batal'
+                                                                                }).then((result) => {
+                                                                                    if (result.isConfirmed) {
+                                                                                        // Membuat form dinamis dan submit
+                                                                                        var form = document.createElement('form');
+                                                                                        form.method = 'POST';
+                                                                                        form.action = '{{ route('admin.userdeleted', ':id') }}'.replace(':id',
+                                                                                            id); // Replace :id with actual ID
+
+                                                                                        // Menambahkan input CSRF token
+                                                                                        var csrfToken = document.createElement('input');
+                                                                                        csrfToken.type = 'hidden';
+                                                                                        csrfToken.name = '_token';
+                                                                                        csrfToken.value = '{{ csrf_token() }}';
+                                                                                        form.appendChild(csrfToken);
+
+                                                                                        // Menambahkan input method DELETE
+                                                                                        var methodInput = document.createElement('input');
+                                                                                        methodInput.type = 'hidden';
+                                                                                        methodInput.name = '_method';
+                                                                                        methodInput.value = 'GET';
+                                                                                        form.appendChild(methodInput);
+
+                                                                                        // Menambahkan form ke body dan submit
+                                                                                        document.body.appendChild(form);
+                                                                                        form.submit();
+                                                                                    }
+                                                                                });
+                                                                            }
+                                                                        </script>
+
+
                                                                         {{-- <li><a href="#"
                                                                                     onclick="event.preventDefault(); document.getElementById('delete-form-{{ $d->id }}').submit();"><em
                                                                                         class="icon ni ni-na"></em><span>Hapus</span></a>
