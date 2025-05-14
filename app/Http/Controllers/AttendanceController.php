@@ -429,6 +429,7 @@ class AttendanceController extends Controller
     // Simpan data presensi
     public function store(Request $request)
     {
+        // dd($request->all());
         $request->validate([
             'status' => 'required|in:0,1',
             'coordinate' => 'required',
