@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leave Request Form</title>
+    <link rel="shortcut icon" href="{{ asset('demo5/src/images/faviconlogo.png') }}">
+    <title>Cetak Cuti</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -95,7 +96,7 @@
 
         <div class="">
 
-            <div class="top">
+            {{-- <div class="top">
                 <img src="{{ asset('PSTLOGO.png') }}" alt="PST Logo" class="logo">
                 <div class="company-info">
                     <h1>PT. PRATAMA SOLUSI TEKNOLOGI</h1>
@@ -104,7 +105,7 @@
                     <p>Website: <a
                             href="https://www.pratamatechsolution.co.id">https://www.pratamatechsolution.co.id</a></p>
                 </div>
-            </div>
+            </div> --}}
             <div style="margin-top: 20px" class="header">LEAVES SUMMARY</div>
 
             <table>
@@ -200,7 +201,8 @@
                     <td style="text-align: center;">
                         Purwakarta, {{ $l->updated_at->format('d-m-Y') }}<br>
                         <br>
-                        <img style="width: 100px" src="{{ asset('storage/qrTtd/' . $l->qrCode_ttd) }}" alt="Persetujuan">
+                        <img style="width: 100px" src="{{ asset('storage/qrTtd/' . $l->qrCode_ttd) }}"
+                            alt="Persetujuan">
 
                         <br>
                         @php

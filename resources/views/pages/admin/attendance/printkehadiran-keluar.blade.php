@@ -4,9 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Print Kehadiran</title>
+    <title>Cetak Kehadiran</title>
     <link rel="shortcut icon" href="{{ asset('demo5/src/images/logo-shorcut-kehadiran.png') }}">
     <link rel="stylesheet" href="{{ asset('demo5/src/assets/css/dashlite.css?ver=3.0.3') }}">
+    <link rel="shortcut icon" href="{{ asset('demo5/src/images/faviconlogo.png') }}">
     <link id="skin-default" rel="stylesheet" href="{{ asset('demo5/src/assets/css/theme.css?ver=3.0.3') }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 
@@ -78,57 +79,56 @@
         }
 
         @media print {
-    body {
-        width: 210mm;
-        height: 297mm;
-        margin: 0;
-        padding: 0;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
+            body {
+                width: 210mm;
+                height: 297mm;
+                margin: 0;
+                padding: 0;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
 
-    .container {
-        width: 100%;
-        padding: 10mm;
-        box-sizing: border-box;
-        border: none;
-        background: white !important;
-    }
+            .container {
+                width: 100%;
+                padding: 10mm;
+                box-sizing: border-box;
+                border: none;
+                background: white !important;
+            }
 
-    .btn {
-        display: none;
-    }
+            .btn {
+                display: none;
+            }
 
-    .attendance-image {
-        width: 100%;
-        max-width: 200px;
-        height: auto;
-    }
+            .attendance-image {
+                width: 100%;
+                max-width: 200px;
+                height: auto;
+            }
 
-    .row {
-        display: flex;
-        justify-content: space-between;
-        flex-wrap: nowrap;
-    }
+            .row {
+                display: flex;
+                justify-content: space-between;
+                flex-wrap: nowrap;
+            }
 
-    .col-md-6 {
-        width: 48%;
-    }
+            .col-md-6 {
+                width: 48%;
+            }
 
-    #mapPrint {
-        height: 250px !important;
-        page-break-inside: avoid;
-    }
-}
-
+            #mapPrint {
+                height: 250px !important;
+                page-break-inside: avoid;
+            }
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
         <div class="invoice-brand text-center">
-            <img src="{{ asset('demo5/src/images/logo-dark.png') }}"
-                srcset="{{ asset('demo5/src/images/logo-dark2x.png 2x') }}" alt="Logo">
+            <img src="{{ asset('demo5/src/images/logonew1.png') }}"
+                srcset="{{ asset('demo5/src/images/logonew1.png') }}" alt="">
         </div>
 
         <div class="invoice-head">
@@ -140,15 +140,19 @@
                     <div class="row">
                         <div class="col-md-6">
                             <ul class="list-plain">
-                                <li><em class="icon ni ni-calendar-fill fs-18px"></em>Tanggal: {{ $attendance->date }}</li>
+                                <li><em class="icon ni ni-calendar-fill fs-18px"></em>Tanggal: {{ $attendance->date }}
+                                </li>
                                 <li><em class="icon ni ni-clock-fill fs-14px"></em>Waktu: {{ $attendance->time }}</li>
-                                <li><em class="icon ni ni-check-circle-fill fs-14px"></em>Status: {{ $attendance->status == 0 ? 'Masuk' : 'Pulang' }}</li>
-                                <li><em class="icon ni ni-map-pin-fill fs-14px"></em>Koordinat: {{ $attendance->coordinate }}</li>
+                                <li><em class="icon ni ni-check-circle-fill fs-14px"></em>Status:
+                                    {{ $attendance->status == 0 ? 'Masuk' : 'Pulang' }}</li>
+                                <li><em class="icon ni ni-map-pin-fill fs-14px"></em>Koordinat:
+                                    {{ $attendance->coordinate }}</li>
                             </ul>
                         </div>
                         <div class="col-md-6">
                             <p>Bukti Foto:</p>
-                            <img class="attendance-image" style="width: 40%" src="{{ asset('storage/' . $attendance->image) }}" alt="Bukti Foto">
+                            <img class="attendance-image" style="width: 40%"
+                                src="{{ asset('storage/' . $attendance->image) }}" alt="Bukti Foto">
                         </div>
                     </div>
                 </div>
@@ -160,7 +164,7 @@
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             var latitude = {{ $latitude ?? 'null' }};
             var longitude = {{ $longitude ?? 'null' }};
 
