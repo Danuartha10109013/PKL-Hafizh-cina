@@ -55,12 +55,14 @@
 
             </div>
             <div id="instructions" class="alert alert-info">
-                <strong>Instruksi:</strong> Untuk verifikasi wajah, silakan lakukan hal berikut:
-                <ul>
-                    <li><strong>Berkedip</strong> minimal satu kali</li>
-                    <li><strong>Mengangguk</strong> (gerakkan kepala ke bawah cepat)</li>
-                    <li><strong>Buka mulut</strong> sedikit</li>
-                </ul>
+                <div id="faceStatus" class="mb-2 text-danger">Menunggu deteksi wajah...</div>
+                <div id="faceInstruction" class="mb-3 fw-bold text-primary">Silakan mulai...</div>
+
+                <strong>Instruksi:</strong> Untuk verifikasi wajah, silakan lakukan hal berikut: <br>
+                <input type="checkbox" id="checkBlink" disabled> Berkedip<br>
+                <input type="checkbox" id="checkNod" disabled> Mengangguk<br>
+                <input type="checkbox" id="checkMouth" disabled> Buka Mulut<br>
+
                 Setelah semua terdeteksi, foto akan diambil secara otomatis.
             </div>
             <!-- Preview Image Section -->
@@ -91,12 +93,12 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var map = L.map('map').setView([-6.907383, 107.610220], 18); // Lokasi PT. Pratama Solusi Teknologi
+            var map = L.map('map').setView([-6.5529022, 107.8073298], 18); // Lokasi PT. Pratama Solusi Teknologi
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 18,
             }).addTo(map);
 
-            var allowedLatLng = [-6.907383, 107.610220];
+            var allowedLatLng = [-6.5529022, 107.8073298];
             var allowedRadius = 100;
 
             var allowedCircle = L.circle(allowedLatLng, {
@@ -206,131 +208,143 @@
             });
 
             // Fungsi verifikasi wajah humanisasi
-            async function startFaceVerification() {
-                const video = document.getElementById('video');
-                const canvas = document.getElementById('canvas');
-                const ctx = canvas.getContext('2d');
-                const faceStatus = document.getElementById('faceStatus');
-                const faceDataInput = document.getElementById('faceData');
-                const imagePreview = document.getElementById('imagePreview');
-                const previewImage = document.getElementById('previewImage');
-                canvas.width = 640;
-                canvas.height = 480;
+           async function startFaceVerification() {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const faceStatus = document.getElementById('faceStatus');
+            const instruction = document.getElementById('faceInstruction');
+            const faceDataInput = document.getElementById('faceData');
+            const imagePreview = document.getElementById('imagePreview');
+            const previewImage = document.getElementById('previewImage');
+            canvas.width = 640;
+            canvas.height = 480;
 
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({
-                        video: true
-                    });
-                    video.srcObject = stream;
-                } catch (error) {
-                    Swal.fire('Gagal Mengakses Kamera', 'Mohon izinkan akses kamera di browser.', 'error');
-                    return;
-                }
-
-                const faceMesh = new FaceMesh({
-                    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
-                });
-
-                faceMesh.setOptions({
-                    maxNumFaces: 1,
-                    refineLandmarks: true,
-                    minDetectionConfidence: 0.5,
-                    minTrackingConfidence: 0.5,
-                });
-
-                let blinked = false;
-                let nodded = false;
-                let mouthOpened = false;
-                let lastNoseY = null;
-                let allPassed = false;
-
-                function distance(a, b) {
-                    return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
-                }
-
-                faceMesh.onResults((results) => {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    if (results.multiFaceLandmarks.length > 0) {
-                        faceStatus.innerText = "Wajah terdeteksi!";
-                        faceStatus.classList.remove("text-danger");
-                        faceStatus.classList.add("text-success");
-
-                        const landmarks = results.multiFaceLandmarks[0];
-
-                        for (const point of landmarks) {
-                            const x = point.x * canvas.width;
-                            const y = point.y * canvas.height;
-                            ctx.beginPath();
-                            ctx.arc(x, y, 1, 0, 2 * Math.PI);
-                            ctx.fillStyle = 'lime';
-                            ctx.fill();
-                        }
-
-                        const leftEAR = distance(landmarks[159], landmarks[145]) / distance(landmarks[
-                            33], landmarks[133]);
-                        const rightEAR = distance(landmarks[386], landmarks[374]) / distance(landmarks[
-                            362], landmarks[263]);
-                        const ear = (leftEAR + rightEAR) / 2;
-                        if (ear < 0.2) {
-                            blinked = true;
-                        }
-
-                        const mar = distance(landmarks[13], landmarks[14]) / distance(landmarks[78],
-                            landmarks[308]);
-                        if (mar > 0.05) {
-                            mouthOpened = true;
-                        }
-
-                        const noseY = landmarks[1].y;
-                        if (lastNoseY !== null && noseY - lastNoseY > 0.02) {
-                            nodded = true;
-                        }
-                        lastNoseY = noseY;
-
-                        if (blinked && nodded && mouthOpened && !allPassed) {
-                            allPassed = true;
-                            faceStatus.innerText = "Verifikasi Humanisasi Berhasil!";
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Aksi Terdeteksi!',
-                                text: 'Berkedip, Mengangguk, dan Buka Mulut berhasil.',
-                                timer: 1500,
-                                showConfirmButton: false
-                            });
-
-                            setTimeout(() => {
-                                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                                const imageData = canvas.toDataURL();
-                                faceDataInput.value = imageData;
-
-                                if (previewImage) {
-                                    previewImage.src = imageData;
-                                    if (imagePreview) imagePreview.style.display = 'block';
-                                }
-
-                                document.getElementById('submitContainer').style.display =
-                                    "block";
-                            }, 1000);
-                        }
-
-                    } else {
-                        faceStatus.innerText = "Tidak ada wajah yang terdeteksi!";
-                        faceStatus.classList.remove("text-success");
-                        faceStatus.classList.add("text-danger");
-                    }
-                });
-
-                const camera = new Camera(video, {
-                    onFrame: async () => {
-                        await faceMesh.send({
-                            image: video
-                        });
-                    },
-                    width: 640,
-                    height: 480
-                });
-                camera.start();
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            } catch (error) {
+                Swal.fire('Gagal Mengakses Kamera', 'Mohon izinkan akses kamera di browser.', 'error');
+                return;
             }
+
+            const faceMesh = new FaceMesh({
+                locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+            });
+
+            faceMesh.setOptions({
+                maxNumFaces: 1,
+                refineLandmarks: true,
+                minDetectionConfidence: 0.5,
+                minTrackingConfidence: 0.5,
+            });
+
+            let step = 0; // 0: Blink, 1: Nod, 2: Mouth
+            let lastNoseY = null;
+
+            function distance(a, b) {
+                return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
+            }
+
+            function updateInstruction() {
+                const messages = [
+                    "Silakan BERKEDIP terlebih dahulu.",
+                    "Bagus! Sekarang SILAKAN MENGANGGUK.",
+                    "Terakhir, SILAKAN BUKA MULUT.",
+                ];
+                instruction.innerText = messages[step] || "";
+            }
+
+            updateInstruction();
+
+            faceMesh.onResults((results) => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                if (results.multiFaceLandmarks.length > 0) {
+                    faceStatus.innerText = "Wajah terdeteksi!";
+                    faceStatus.classList.remove("text-danger");
+                    faceStatus.classList.add("text-success");
+
+                    const landmarks = results.multiFaceLandmarks[0];
+
+                    // Gambar titik wajah
+                    for (const point of landmarks) {
+                        const x = point.x * canvas.width;
+                        const y = point.y * canvas.height;
+                        ctx.beginPath();
+                        ctx.arc(x, y, 1, 0, 2 * Math.PI);
+                        ctx.fillStyle = 'lime';
+                        ctx.fill();
+                    }
+
+                    const leftEAR = distance(landmarks[159], landmarks[145]) / distance(landmarks[33], landmarks[133]);
+                    const rightEAR = distance(landmarks[386], landmarks[374]) / distance(landmarks[362], landmarks[263]);
+                    const ear = (leftEAR + rightEAR) / 2;
+
+                    const mar = distance(landmarks[13], landmarks[14]) / distance(landmarks[78], landmarks[308]);
+
+                    const noseY = landmarks[1].y;
+
+                    // === Langkah 1: Kedip ===
+                    if (step === 0 && ear < 0.2) {
+                        step++;
+                        updateInstruction();
+                        Swal.fire('Bagus!', 'Berkedip berhasil terdeteksi.', 'success');
+                    }
+
+                    // === Langkah 2: Angguk ===
+                    if (step === 1 && lastNoseY !== null && noseY - lastNoseY > 0.02) {
+                        step++;
+                        updateInstruction();
+                        Swal.fire('Bagus!', 'Gerakan mengangguk berhasil terdeteksi.', 'success');
+                    }
+
+                    lastNoseY = noseY;
+
+                    // === Langkah 3: Buka Mulut ===
+                    if (step === 2 && mar > 0.05) {
+                        step++;
+                        instruction.innerText = "Semua langkah berhasil!";
+                        faceStatus.innerText = "Verifikasi Humanisasi Berhasil!";
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Verifikasi Lengkap!',
+                            text: 'Berkedip, Mengangguk, dan Buka Mulut berhasil.',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+
+                        setTimeout(() => {
+                            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                            const imageData = canvas.toDataURL();
+                            faceDataInput.value = imageData;
+
+                            if (previewImage) {
+                                previewImage.src = imageData;
+                                if (imagePreview) imagePreview.style.display = 'block';
+                            }
+
+                            document.getElementById('submitContainer').style.display = "block";
+                        }, 3000);
+                    }
+
+                } else {
+                    faceStatus.innerText = "Tidak ada wajah yang terdeteksi!";
+                    faceStatus.classList.remove("text-success");
+                    faceStatus.classList.add("text-danger");
+                }
+            });
+
+            const camera = new Camera(video, {
+                onFrame: async () => {
+                    await faceMesh.send({ image: video });
+                },
+                width: 640,
+                height: 480
+            });
+            camera.start();
+        }
+
+
         });
     </script>
 @endsection

@@ -487,6 +487,7 @@ class AttendanceController extends Controller
 
         if ($status_code !== 0) {
             $attendance->forceDelete();
+            
             return redirect()->route('pegawai.attendance')->with('error', 'Gagal menjalankan Face Recognition.');
         }
 
