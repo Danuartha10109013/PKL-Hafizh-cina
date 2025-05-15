@@ -32,8 +32,8 @@ class AttendanceController extends Controller
             ->whereHas('user', function ($query) {
                 $query->where('role', '2'); // Assuming '2' is the role ID for 'pegawai'
             })
-            ->orderBy('date', 'asc')
-            ->orderBy('time', 'asc')
+            ->orderBy('date', 'desc')
+            ->orderBy('time', 'desc')
             ->get()
             ->map(function ($attendance) {
                 // Replace null values with "N/A"
@@ -89,72 +89,6 @@ class AttendanceController extends Controller
 
     public function rekap()
     {
-        // $data = Attendance::select('enhancer')->distinct()->get();
-
-        // $calon = User::where('available', 10)->get();
-        // $userAbsenceCounts = [];
-
-        // foreach ($calon as $c) {
-        //     $id = $c->id;
-
-        //     // Get attendance records for this user
-        //     $seleksi = Attendance::where('enhancer', $id)
-        //         ->where('status', 0)
-        //         ->where('time', '<=', Carbon::parse('08:00:00')->toDateTimeString())
-        //         ->get();
-
-        //     // Count absences for this user
-        //     $absenceCount = $seleksi->count();
-
-        //     // Store the count in the array
-        //     $userAbsenceCounts[$id] = $absenceCount;
-        // }
-
-        // // Sort the array by the absence count in descending order
-        // arsort($userAbsenceCounts);
-
-        // // Get the top 3 users (keys will be the user IDs)
-        // $topUsers = array_slice($userAbsenceCounts, 0, 3, true);
-
-        // // Initialize variables for the top users
-        // $topUser = null;
-        // $secondUser = null;
-        // $thirdUser = null;
-
-        // if (isset($topUsers[key($topUsers)])) {
-        //     $topUserId = key($topUsers);
-        //     $topUser = User::find($topUserId);
-        // }
-
-        // if (isset($topUsers[key(array_slice($topUsers, 1, 1, true))])) {
-        //     $secondUserId = key(array_slice($topUsers, 1, 1, true));
-        //     $secondUser = User::find($secondUserId);
-        // }
-
-        // if (isset($topUsers[key(array_slice($topUsers, 2, 1, true))])) {
-        //     $thirdUserId = key(array_slice($topUsers, 2, 1, true));
-        //     $thirdUser = User::find($thirdUserId);
-        // }
-
-        // $lateAttendees = Attendance::where('status', 0)
-        //     ->where('time', '>', Carbon::parse('08:00:00')->toDateTimeString())
-        //     ->get()
-        //     ->groupBy('user_id') // Group by user_id to count late occurrences
-        //     ->filter(function ($attendances) {
-        //         return $attendances->count() > 3; // Filter users who have been late more than 3 times
-        //     });
-
-        // $usersWithLateCount = $lateAttendees->map(function ($attendances) {
-        //     return [
-        //         'user_id' => $attendances->first()->enhancer,
-        //         'late_count' => $attendances->count(), // Count how many times the user was late
-        //     ];
-        // });
-
-        // // dd($usersWithLateCount);
-
-        // // Pass data to the view
-        // return view('pages.admin.attendance.rekapitulasi', compact('data', 'topUser', 'secondUser', 'thirdUser', 'usersWithLateCount'));
 
         // Ambil semua data pegawai
         $calon = User::where('role', '!=', 1)->get(); // Sesuaikan atribut untuk mengecualikan admin
@@ -487,7 +421,7 @@ class AttendanceController extends Controller
 
         if ($status_code !== 0) {
             $attendance->forceDelete();
-            
+
             return redirect()->route('pegawai.attendance')->with('error', 'Gagal menjalankan Face Recognition.');
         }
 
