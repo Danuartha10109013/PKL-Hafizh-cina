@@ -81,7 +81,7 @@
                             </a>
                         </li><!-- .nk-menu-item -->
                         <li class="nk-menu-item">
-                            <a href="{{ route('admin.koordinat') }}" class="nk-menu-link">
+                            <a href="{{ route('admin.kordinat') }}" class="nk-menu-link">
                                 <span class="nk-menu-icon"><em class="icon ni ni-location"></em></span>
                                 <span class="nk-menu-text">Coordinate</span>
                             </a>

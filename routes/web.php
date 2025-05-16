@@ -94,8 +94,6 @@ Route::middleware([AutoLogout::class])->group(function () {
             Route::get('/restore/{id}', [AttendanceController::class, 'restore'])->name('kelolakehadiranpegawai.restore');
             Route::delete('/forcedelete/{id}', [AttendanceController::class, 'forcedelete'])->name('kelolakehadiranpegawai.forcedelete');
             Route::get('/daftarsanksi', [AttendanceController::class, 'daftarsanksi'])->name('daftarsanksi');
-            Route::get('/daftarsanksi/{id}', [AttendanceController::class, 'daftarsanksidetail'])->name('daftarsanksi.detail');
-            Route::get('/daftarsanksi/preview/{id}', [AttendanceController::class, 'previewSuratPeringatan'])->name('daftarsanksi.preview');
         });
 
         // Manage Schedules
@@ -121,6 +119,10 @@ Route::middleware([AutoLogout::class])->group(function () {
             Route::get('/delete/{id}', [LeaveController::class, 'delete'])->name('delete-satuancuti');
             Route::get('/restore/{id}', [LeaveController::class, 'restore'])->name('restore-satuancuti');
             Route::delete('/forcedelete/{id}', [LeaveController::class, 'forcedelete'])->name('forcedelete-satuancuti');
+        });
+        Route::prefix('kordinat')->group(function () {
+
+            Route::get('/', [AdminController::class, 'koordinat'])->name('kordinat');
         });
 
         Route::prefix('trashed.kelolasampah')->group(function () {
