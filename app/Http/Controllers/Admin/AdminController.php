@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\Leave;
 use App\Models\User;
+use App\Models\Koordinat;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -172,5 +173,10 @@ class AdminController extends Controller
     public function editcuti()
     {
         return view('pages.admin.leave.editcuti');
+    }
+
+    public function koordinat()
+    {
+        return view('pages.admin.koordinat.index');
     }
 }
