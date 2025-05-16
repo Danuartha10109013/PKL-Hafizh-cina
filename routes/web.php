@@ -89,11 +89,12 @@ Route::middleware([AutoLogout::class])->group(function () {
             Route::get('/cetakkehadiranpegawaikeluar/{id}', [AttendanceController::class, 'cetakkehadirankeluar'])->name('print-kelolakehadiranpegawai-keluar');
             Route::get('/print-selection', [AttendanceController::class, 'printSelection'])->name('print-selection');
             Route::post('/print-selected', [AttendanceController::class, 'printSelected'])->name('print-selected');
-            Route::get('/send/{id}', [AttendanceController::class, 'send'])->name('kelolakehadiranpegawai.send');
+            Route::post('/send/{id}', [AttendanceController::class, 'send'])->name('kelolakehadiranpegawai.send');
             Route::get('/delete/{id}', [AttendanceController::class, 'delete'])->name('kelolakehadiranpegawai.delete');
             Route::get('/restore/{id}', [AttendanceController::class, 'restore'])->name('kelolakehadiranpegawai.restore');
             Route::delete('/forcedelete/{id}', [AttendanceController::class, 'forcedelete'])->name('kelolakehadiranpegawai.forcedelete');
             Route::get('/daftarsanksi', [AttendanceController::class, 'daftarsanksi'])->name('daftarsanksi');
+            Route::get('/daftarsanksi/{id}', [AttendanceController::class, 'daftarsanksidetail'])->name('daftarsanksi.detail');
             Route::get('/daftarsanksi/preview/{id}', [AttendanceController::class, 'previewSuratPeringatan'])->name('daftarsanksi.preview');
         });
 

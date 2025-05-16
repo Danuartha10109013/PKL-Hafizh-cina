@@ -245,11 +245,12 @@
             </div><!-- .nk-block-head -->
 
             <div class="nk-block nk-block-lg">
-                <div class="card card-bordered card-preview">
-                    <div class="card-inner">
+                
                         <div class="row">
                             <!-- Ranking Terlambat (kiri) -->
                             <div class="col-lg-6">
+                                <div class="card card-bordered card-preview">
+                                <div class="card-inner">
                                 <h4 class="mb-3">Masuk Terlambat</h4>
                                 <div class="row align-items-center">
                                     <!-- Rank 2 Terlambat -->
@@ -291,25 +292,29 @@
                                         </div>
                                     </div>
                                 </div>
+                                </div>
+                                </div>
                             </div>
 
                             @php
-                                $topAbsentUser = (object) [
-                                    'name' => 'Budi Santoso',
-                                    'email' => 'budi@example.com',
-                                ];
-                                $secondAbsentUser = (object) [
-                                    'name' => 'Sari Dewi',
-                                    'email' => 'sari@example.com',
-                                ];
-                                $thirdAbsentUser = (object) [
-                                    'name' => 'Andi Pratama',
-                                    'email' => 'andi@example.com',
-                                ];
+                                // Ubah koleksi ke collection jika belum
+                                $sortedResults = collect($result)->sortByDesc('absent_count')->values();
+
+                                $topAbsentUser = (object) ($sortedResults[0] ?? []);
+                                $secondAbsentUser = (object) ($sortedResults[1] ?? []);
+                                $thirdAbsentUser = (object) ($sortedResults[2] ?? []);
+
+                                $name1 = \App\Models\User::find($topAbsentUser->user_id);
+                                $name2 = \App\Models\User::find($secondAbsentUser->user_id);
+                                $name3 = \App\Models\User::find($thirdAbsentUser->user_id);
+                                // dd($name1);
                             @endphp
+
 
                             <!-- Ranking Tidak Masuk (kanan) -->
                             <div class="col-lg-6">
+                                <div class="card card-bordered card-preview">
+                                <div class="card-inner">
                                 <h4 class="mb-3">Tidak Masuk</h4>
                                 <div class="row align-items-center">
                                     <!-- Rank 2 Tidak Masuk -->
@@ -319,8 +324,8 @@
                                                 <h6 class="mb-0">🥈 Rank 2</h6>
                                             </div>
                                             <div class="card-body text-center">
-                                                <p class="font-weight-bold">{{ $secondAbsentUser->name }}</p>
-                                                <p class="mb-0 text-muted">{{ $secondAbsentUser->email }}</p>
+                                                <p class="font-weight-bold">{{ $name2->name }}</p>
+                                                <p class="mb-0 text-muted">{{ $name2->email }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -332,8 +337,8 @@
                                                 <h5 class="mb-0">🥇 Rank 1</h5>
                                             </div>
                                             <div class="card-body text-center">
-                                                <p class="font-weight-bold">{{ $topAbsentUser->name }}</p>
-                                                <p class="mb-0 text-muted">{{ $topAbsentUser->email }}</p>
+                                                <p class="font-weight-bold">{{ $name1->name }}</p>
+                                                <p class="mb-0 text-muted">{{ $name1->email }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -345,16 +350,18 @@
                                                 <h6 class="mb-0">🥉 Rank 3</h6>
                                             </div>
                                             <div class="card-body text-center">
-                                                <p class="font-weight-bold">{{ $thirdAbsentUser->name }}</p>
-                                                <p class="mb-0 text-muted">{{ $thirdAbsentUser->email }}</p>
+                                                <p class="font-weight-bold">{{ $name3->name }}</p>
+                                                <p class="mb-0 text-muted">{{ $name3->email }}</p>
                                             </div>
                                         </div>
+                                    </div>
+                                    </div>
                                     </div>
                                 </div>
                             </div> <!-- end col kanan -->
                         </div>
-                    </div>
-                </div><!-- .card-preview -->
+                    {{-- </div> --}}
+                {{-- </div><!-- .card-preview --> --}}
             </div>
 
 
@@ -391,12 +398,13 @@
                                     <th>Nama Pegawai</th>
                                     <th>Total Terlambat Masuk</th>
                                     <th>Total Tidak Masuk</th>
-                                    <th>Peringatan</th>
+                                    <th rowspan="
+                                    2">Peringatan</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($usersWithLateCount as $ul)
+                                @foreach ($result as $ul)
                                     <!-- Gunakan $pegawai -->
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
@@ -408,25 +416,41 @@
                                             {{ $name }}
                                         </td>
                                         <td>{{ $ul['late_count'] }}</td>
-                                        <td>-</td>
-                                        <td>
-                                            <div class="d-flex gap-2">
-                                                @foreach (['SP0', 'SP1', 'SP2', 'SP3'] as $sp)
-                                                    <button class="btn-sp {{ $sp === 'SP0' ? 'active-sp0' : '' }}"
-                                                        data-sp="{{ $sp }}" data-user="{{ $ul['user_id'] }}"
-                                                        id="btn-{{ $ul['user_id'] }}-{{ $sp }}">
-                                                        {{ $sp }}
-                                                    </button>
-                                                @endforeach
-                                            </div>
-                                        </td>
+                                        <td>{{ $ul['absent_count'] }}</td>
+                                       <form action="{{ route('admin.kelolakehadiranpegawai.send', ['id' => $ul['user_id']]) }}" method="POST">
+                                            @csrf
+                                            <td>
+                                                <div class="d-flex gap-2">
+                                                    @php
+                                                        $peringatan = \App\Models\PeringatanM::where('user_id', $ul['user_id'])->orderBy('created_at','desc')->first();
+                                                        $status = $peringatan->status ?? 0; // default 0 jika belum ada
+                                                    @endphp
 
-                                        <td>
-                                            <a href="{{ route('admin.kelolakehadiranpegawai.send', $ul['user_id']) }}"
-                                                class="btn btn-dark">
-                                                Kirim Peringatan
-                                            </a>
-                                        </td>
+                                                    <input type="hidden" name="totalDays" value="{{ $ul['late_count'] }}">
+
+                                                    @foreach ([0, 1, 2, 3] as $sp)
+                                                        <div class="form-check text-center flex-fill">
+                                                            <input
+                                                                class="form-check-input"
+                                                                type="checkbox"
+                                                                name="sp"
+                                                                id="sp_{{ $ul['user_id'] }}_{{ $sp }}"
+                                                                value="{{ $sp }}"
+                                                                {{ $status >= $sp ? 'checked disabled' : '' }}
+                                                            >
+                                                            <label class="btn btn-sm w-100 {{ $status >= $sp ? 'btn-success' : 'btn-outline-dark' }}"
+                                                                for="sp_{{ $ul['user_id'] }}_{{ $sp }}">
+                                                                SP {{ $sp }}
+                                                            </label>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <button type="submit" class="btn btn-primary">Kirim Peringatan</button>
+                                            </td>
+                                        </form>
                                     </tr>
                                 @endforeach
 
@@ -436,8 +460,25 @@
                     </div>
                 </div><!-- .card-preview -->
             </div>
+
+            
         </div>
     </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const buttons = document.querySelectorAll('.sp-btn');
+
+        buttons.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const sp = this.dataset.sp;
+                const userId = this.dataset.user;
+                const url = `/admin/kelolakehadiranpegawai/send?id=${userId}&sp=${sp}`;
+                window.location.href = url;
+            });
+        });
+    });
+</script>
+
     <!-- Script untuk Tombol Peringatan -->
     <script>
         function sendWarning(employeeName) {
@@ -445,67 +486,6 @@
             // Anda bisa menambahkan logika untuk mengirim notifikasi
         }
     </script>
-    <script>
-        $(document).on('click', '.btn-sp', function() {
-            const spType = $(this).data('sp');
 
-            // SP0 tidak bisa di-*click*
-            if (spType === 'SP0') return;
 
-            // Matikan semua kecuali SP0
-            $(this).siblings().removeClass('active');
-
-            // Aktifkan SP yang diklik
-            $(this).addClass('active');
-
-            console.log(`Status ${spType} diubah menjadi aktif!`);
-        });
-    </script>
-    <style>
-        .btn-sp {
-            padding: 5px 15px;
-            border-radius: 4px;
-            border: none;
-            background-color: #f1f3f5;
-            cursor: pointer;
-            color: #495057;
-            font-weight: bold;
-            min-width: 30px;
-            min-height: 40px;
-            transition: background-color 0.3s, color 0.3s;
-            user-select: none;
-        }
-
-        /* Warna default dan aktif */
-        .btn-sp[data-sp="SP0"] {
-            background-color: #198754 !important;
-            /* Hijau */
-            color: white;
-            cursor: not-allowed;
-            /* Tidak bisa di-klik */
-        }
-
-        .btn-sp[data-sp="SP1"].active {
-            background-color: #ffc107;
-            /* Kuning */
-            color: white;
-        }
-
-        .btn-sp[data-sp="SP2"].active {
-            background-color: #fd7e14;
-            /* Oranye */
-            color: white;
-        }
-
-        .btn-sp[data-sp="SP3"].active {
-            background-color: #dc3545;
-            /* Merah */
-            color: white;
-        }
-
-        /* Hover effect kecuali SP0 */
-        .btn-sp:not(.active-sp0):hover {
-            background-color: #e9ecef;
-        }
-    </style>
 @endsection

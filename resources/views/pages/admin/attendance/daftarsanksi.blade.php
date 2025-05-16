@@ -55,20 +55,31 @@
                                     <thead>
                                         <tr>
                                             <th>No</th>
+                                            <th>Tanggal</th>
                                             <th>Nama Pegawai</th>
                                             <th>Jenis SP</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @foreach ($data as $d)
+                                            
                                         <tr>
-                                            <td>1</td>
-                                            <td>Hafizh</td>
-                                            <td>SP1</td>
+                                            <td>{{$loop->iteration}}</td>
+                                            <td>{{$d->created_at->format('d M Y')}}</td>
                                             <td>
-                                                <em class="icon ni ni-file-pdf"></em>
+                                                @php
+                                                    $name = \App\Models\User::find($d->user_id);
+                                                @endphp
+                                                {{$name->name}}
+                                            </td>
+                                            <td>SP{{$d->status}}</td>
+                                            <td>
+                                                <a href="{{route('admin.daftarsanksi.detail', $d->id)}}"><em class="icon ni ni-file-pdf"></em></a>
                                             </td>
                                         </tr>
+                                        @endforeach
+
                                     </tbody>
                                 </table>
                             </div>

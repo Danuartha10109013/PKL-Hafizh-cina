@@ -20,6 +20,11 @@ class Schedule extends Model
         'deleted_at',
 
     ];
+    
+    public function scheduleDays()
+    {
+        return $this->hasMany(ScheduleDayM::class, 'schedule_id');
+    }
 
 
     public function users()

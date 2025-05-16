@@ -68,6 +68,7 @@ class User extends Authenticatable
         // Jika foreign key di tabel `users` bernama `schedule`
         return $this->belongsTo(Schedule::class, 'schedule', 'id');
     }
+    
 
 
     // Relasi ke model Attendance

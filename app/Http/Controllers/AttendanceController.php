@@ -6,11 +6,13 @@ use App\Mail\AttendanceReminder;
 use Illuminate\Http\Request;
 use App\Models\Leave;
 use App\Models\Attendance;
+use App\Models\PeringatanM;
 use App\Models\Role;
 use Carbon\Carbon;
 use App\Models\Schedule;
 use App\Models\ScheduleDayM;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -121,31 +123,88 @@ class AttendanceController extends Controller
         $secondUser = isset(array_slice($topUsers, 1, 1, true)[array_key_first(array_slice($topUsers, 1, 1, true))]) ? User::find(array_key_first(array_slice($topUsers, 1, 1, true))) : null;
         $thirdUser = isset(array_slice($topUsers, 2, 1, true)[array_key_first(array_slice($topUsers, 2, 1, true))]) ? User::find(array_key_first(array_slice($topUsers, 2, 1, true))) : null;
 
+        $now = Carbon::now();
+        $startOfMonth = $now->copy()->startOfMonth();
+        $today = $now->copy()->startOfDay();
 
-        $usersWithLateCount = Attendance::where('status', 0)
-            ->whereRaw("TIME(time) > ?", ['08:00:00']) // Membandingkan hanya waktu (jam:menit:detik) dari kolom `time`
-            ->get()
-            ->groupBy('enhancer') // Kelompokkan berdasarkan kolom `enhancer`
-            ->flatMap(function ($attendancesByEnhancer) {
-                return $attendancesByEnhancer->groupBy('user_id') // Kelompokkan kembali berdasarkan `user_id`
-                    ->filter(function ($userAttendances) {
-                        return $userAttendances->count() > 3; // Hanya yang keterlambatannya lebih dari 3
-                    })
-                    ->map(function ($userAttendances) {
-                        return [
-                            'user_id' => $userAttendances->first()->enhancer,
-                            // 'user_id' => $userAttendances->first()->user_id,
-                            'late_count' => $userAttendances->count(),
-                        ];
-                    });
-            })
-            ->values(); // Reset indeks array
+        $users = User::with('schedule')->get();
+        // dd($users);
+        $result = collect();
 
+        foreach ($users as $user) {
+            if (!$user->schedule) {
+                continue; // Lewati jika tidak punya jadwal
+            }
 
+            // Ambil hari kerja dari schedule_day
+            $scheduleDays = ScheduleDayM::where('schedule_id', $user->schedule)->get();
+            // dd($scheduleDays);
+            if ($scheduleDays->isEmpty()) {
+                continue;
+            }
+
+            $workdays = collect();
+            $clockInMap = [];
+
+            // Siapkan list hari kerja (e.g. ['Senin', 'Selasa', ...])
+            $dayNames = [
+                0 => 'Minggu', 1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu',
+                4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu'
+            ];
+
+            for ($date = $startOfMonth->copy(); $date <= $today; $date->addDay()) {
+                $dayName = $dayNames[$date->dayOfWeek];
+                $matchedDay = $scheduleDays->firstWhere('days', $dayName);
+
+                if ($matchedDay) {
+                    $workdays->push([
+                        'date' => $date->format('Y-m-d'),
+                        'clock_in' => $matchedDay->clock_in
+                    ]);
+                }
+            }
+
+            // Ambil absensi user bulan ini
+            $attendances = Attendance::where('enhancer', $user->id)
+                ->whereBetween('created_at', [$startOfMonth, $today])
+                ->get()
+                ->groupBy(fn($a) => Carbon::parse($a->created_at)->format('Y-m-d'));
+
+            $lateCount = 0;
+            $absentDates = [];
+
+            foreach ($workdays as $workday) {
+                $date = $workday['date'];
+                $scheduledClockIn = $workday['clock_in'];
+                $attendance = $attendances->get($date);
+
+                if ($attendance && $attendance->count() > 0) {
+                    $actualTime = Carbon::parse($attendance->first()->time)->format('H:i:s');
+
+                    if ($actualTime > $scheduledClockIn) {
+                        $lateCount++;
+                    }
+                } else {
+                    $absentDates[] = $date;
+                }
+            }
+
+            if ($lateCount > 0 || count($absentDates) > 0) {
+                $result->push([
+                    'user_id' => $user->id,
+                    'name' => $user->name,
+                    'late_count' => $lateCount,
+                    'absent_count' => count($absentDates),
+                    'missing_dates' => $absentDates,
+                ]);
+            }
+        }
+
+        // return response()->json($result);
         // return $usersWithLateCount;
 
-        // dd($usersWithLateCount);
-        return view('pages.admin.attendance.rekapitulasi', compact('calon', 'topUser', 'secondUser', 'thirdUser', 'usersWithLateCount'));
+        // dd($result);
+        return view('pages.admin.attendance.rekapitulasi', compact('calon', 'topUser', 'secondUser', 'thirdUser', 'result'));
     }
 
 
@@ -545,16 +604,20 @@ class AttendanceController extends Controller
         return view('pages.admin.attendance.printkehadiran-keluar', compact('attendance', 'latitude', 'longitude'));
     }
 
-    public function send($id)
+    public function send(Request $request,$id)
     {
         // Find the user by their ID
         $user = User::find($id);
-        // dd($user->email);
+        // dd($request->all());
 
         if ($user) {
             // Send email using the Mailable class
             Mail::to($user->email)->send(new AttendanceReminder($user));
-
+            $peringatan = new PeringatanM();
+            $peringatan->status = $request->sp;
+            $peringatan->totalDays = $request->sp;
+            $peringatan->user_id = $id;
+            $peringatan->save();
             return redirect()->back()->with('success', 'Email Telah Dikirim');
         } else {
             return redirect()->back()->with('error', 'Pegawai tidak ditemukan');
@@ -597,6 +660,17 @@ class AttendanceController extends Controller
 
     public function daftarsanksi()
     {
-        return view('pages.admin.attendance.daftarsanksi');
+        $data = PeringatanM::orderBy('created_at','desc')->get();
+        return view('pages.admin.attendance.daftarsanksi',compact('data'));
+    }
+    public function daftarsanksidetail($id)
+    {
+    $data = PeringatanM::findOrFail($id);
+    $user = User::findOrFail($data->user_id);
+
+    $pdf = Pdf::loadView('pages.admin.attendance.contohsuratperingatan1', compact('data', 'user'));
+    $filename = 'Surat_Peringatan_SP-' . $data->status . '_' . $user->name . '.pdf';
+
+    return $pdf->download($filename);
     }
 }
