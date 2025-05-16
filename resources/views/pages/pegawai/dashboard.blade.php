@@ -122,7 +122,7 @@
                                                     style="direction: rtl; text-align: right;">
                                                     <!-- Menambahkan style untuk arah teks -->
                                                     <div class="card-title">
-                                                        <h6 class="title text-white">Selamat Datang di Sistem Kehadiran
+                                                        <h6 class="title text-white">Selamat Datang di Sistem Cuti
                                                             Pegawai</h6>
                                                     </div>
                                                 </div>

@@ -594,4 +594,9 @@ class AttendanceController extends Controller
         // Redirect back with a success message
         return redirect()->back()->with('success', 'Absensi telah dihapus secara permanen');
     }
+
+    public function daftarsanksi()
+    {
+        return view('pages.admin.attendance.daftarsanksi');
+    }
 }

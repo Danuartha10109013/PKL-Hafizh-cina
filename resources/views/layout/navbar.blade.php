@@ -53,6 +53,11 @@
                                     <a href="{{ route('admin.rekapitulasi') }}" class="nk-menu-link"><span
                                             class="nk-menu-text">Rekapitulasi</span></a>
                                 </li>
+                                <li class="nk-menu-item">
+                                    <a href="{{ route('admin.daftarsanksi') }}" class="nk-menu-link"><span
+                                            class="nk-menu-text">Daftar
+                                            Sanksi</span></a>
+                                </li>
                             </ul>
                         </li>
                         <li class="nk-menu-item">

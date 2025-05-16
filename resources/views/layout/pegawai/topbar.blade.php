@@ -9,8 +9,7 @@
                     <a href="{{ route('pegawai.pages.pegawai.dashboard') }}" class="logo-link">
                         <img class="logo-light logo-img" src="{{ asset('demo5/src/images/logo.png') }}"
                             srcset="{{ asset('demo5/src/images/logo2x.png') }} 2x" alt="logo">
-                        <p style="margin-top:-2rem" class="text-left text-allign-center"><b>PT. PRATAMA SOLUSI
-                                TEKNOLOGI</b></p>
+                        <p style="margin-top:-2rem" class="text-left text-allign-center"><b></b></p>
                     </a>
                 </div><!-- .nk-header-brand -->
                 <div class="nk-header-news d-none d-xl-block">
@@ -80,7 +79,7 @@
                                 </div>
                             </div>
                         </li><!-- .dropdown -->
-                        <li class="dropdown notification-dropdown me-n1">
+                        {{-- <li class="dropdown notification-dropdown me-n1">
                             <a href="#" class="dropdown-toggle nk-quick-nav-icon" data-bs-toggle="dropdown">
                                 <div class="icon-status icon-status-info"><em class="icon ni ni-bell"></em></div>
                             </a>
@@ -116,7 +115,7 @@
                                         <a href="#" class="text-secondary">View All</a>
                                     </div>
                                 </div>
-                        </li><!-- .dropdown -->
+                        </li><!-- .dropdown --> --}}
                     </ul><!-- .nk-quick-nav -->
                 </div><!-- .nk-header-tools -->
             </div><!-- .nk-header-wrap -->

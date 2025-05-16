@@ -236,83 +236,135 @@
             </div>
 
             {{-- Rank Kehadiran --}}
-            {{-- <div class="nk-block-head nk-block-head-sm">
+            <div class="nk-block-head nk-block-head-sm">
                 <div class="nk-block-between">
                     <div class="nk-block-head-content">
-                        <h3 class="nk-block-title page-title">Rank Kehadiran</h3>
+                        <h3 class="nk-block-title page-title">Daftar Pegawai Bermasalah</h3>
                     </div>
                 </div><!-- .nk-block-between -->
             </div><!-- .nk-block-head -->
 
             <div class="nk-block nk-block-lg">
                 <div class="card card-bordered card-preview">
-                    <div class="card-inner text-center">
-                        <div class="row align-items-center">
-                            <!-- Rank 2 -->
-                            <div class="col-lg-4 col-md-6 mb-3">
-                                <div class="card shadow-sm">
-                                    <div class="card-header bg-light text-primary">
-                                        <h5 class="mb-0">🥈 Rank 2</h5>
+                    <div class="card-inner">
+                        <div class="row">
+                            <!-- Ranking Terlambat (kiri) -->
+                            <div class="col-lg-6">
+                                <h4 class="mb-3">Masuk Terlambat</h4>
+                                <div class="row align-items-center">
+                                    <!-- Rank 2 Terlambat -->
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card shadow-sm">
+                                            <div class="card-header bg-light text-primary">
+                                                <h6 class="mb-0">🥈 Rank 2</h6>
+                                            </div>
+                                            <div class="card-body text-center">
+                                                <p class="font-weight-bold">{{ $secondUser->name }}</p>
+                                                <p class="mb-0 text-muted">{{ $secondUser->email }}</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="card-body text-center">
-                                        @if ($secondUser->avatar)
-                                            <img src="{{ asset($secondUser->avatar) }}" alt="Employee Image"
-                                                class="img-fluid rounded-circle mb-3"
-                                                style="width: 120px; height: 120px; object-fit: cover;">
-                                        @else
-                                            <div class="img-placeholder rounded-circle mb-3"></div>
-                                        @endif
-                                        <h6 class="font-weight-bold">{{ $secondUser->name }}</h6>
-                                        <p class="mb-0 text-muted">{{ $secondUser->email }}</p>
+
+                                    <!-- Rank 1 Terlambat -->
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card shadow-lg border-secondary">
+                                            <div class="card-header bg-secondary text-white">
+                                                <h5 class="mb-0">🥇 Rank 1</h5>
+                                            </div>
+                                            <div class="card-body text-center">
+                                                <p class="font-weight-bold">{{ $topUser->name }}</p>
+                                                <p class="mb-0 text-muted">{{ $topUser->email }}</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                            <!-- Rank 1 -->
-                            <div class="col-lg-4 col-md-12 mb-3">
-                                <div class="card shadow-lg border-secondary">
-                                    <div class="card-header bg-secondary text-white">
-                                        <h4 class="mb-0">🥇 Rank 1</h4>
-                                    </div>
-                                    <div class="card-body">
-                                        <img src="{{ asset($topUser->avatar) }}" alt="Employee Image"
-                                            class="img-fluid rounded-circle mb-3" style="width: 120px; height: 120px;">
-                                        <h5 class="font-weight-bold">{{ $topUser->name }}</h5>
-                                        <p class="mb-0 text-muted">{{ $topUser->email }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Rank 3 -->
-                            <div class="col-lg-4 c  ol-md-6 mb-3">
-                                <div class="card shadow-sm">
-                                    <div class="card-header bg-light text-primary">
-                                        <h5 class="mb-0">🥉 Rank 3</h5>
-                                    </div>
-                                    <div class="card-body text-center">
-                                        @if ($thirdUser->avatar)
-                                            <img src="{{ asset($thirdUser->avatar) }}" alt="Employee Image"
-                                                class="img-fluid rounded-circle mb-3"
-                                                style="width: 120px; height: 120px; object-fit: cover;">
-                                        @else
-                                            <div class="img-placeholder rounded-circle mb-3"></div>
-                                        @endif
-                                        <h6 class="font-weight-bold">{{ $thirdUser->name }}</h6>
-                                        <p class="mb-0 text-muted">{{ $thirdUser->email }}</p>
+
+                                    <!-- Rank 3 Terlambat -->
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card shadow-sm">
+                                            <div class="card-header bg-light text-primary">
+                                                <h6 class="mb-0">🥉 Rank 3</h6>
+                                            </div>
+                                            <div class="card-body text-center">
+                                                <p class="font-weight-bold">{{ $thirdUser->name }}</p>
+                                                <p class="mb-0 text-muted">{{ $thirdUser->email }}</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
+                            @php
+                                $topAbsentUser = (object) [
+                                    'name' => 'Budi Santoso',
+                                    'email' => 'budi@example.com',
+                                ];
+                                $secondAbsentUser = (object) [
+                                    'name' => 'Sari Dewi',
+                                    'email' => 'sari@example.com',
+                                ];
+                                $thirdAbsentUser = (object) [
+                                    'name' => 'Andi Pratama',
+                                    'email' => 'andi@example.com',
+                                ];
+                            @endphp
 
+                            <!-- Ranking Tidak Masuk (kanan) -->
+                            <div class="col-lg-6">
+                                <h4 class="mb-3">Tidak Masuk</h4>
+                                <div class="row align-items-center">
+                                    <!-- Rank 2 Tidak Masuk -->
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card shadow-sm">
+                                            <div class="card-header bg-light text-primary">
+                                                <h6 class="mb-0">🥈 Rank 2</h6>
+                                            </div>
+                                            <div class="card-body text-center">
+                                                <p class="font-weight-bold">{{ $secondAbsentUser->name }}</p>
+                                                <p class="mb-0 text-muted">{{ $secondAbsentUser->email }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Rank 1 Tidak Masuk -->
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card shadow-lg border-secondary">
+                                            <div class="card-header bg-secondary text-white">
+                                                <h5 class="mb-0">🥇 Rank 1</h5>
+                                            </div>
+                                            <div class="card-body text-center">
+                                                <p class="font-weight-bold">{{ $topAbsentUser->name }}</p>
+                                                <p class="mb-0 text-muted">{{ $topAbsentUser->email }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Rank 3 Tidak Masuk -->
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card shadow-sm">
+                                            <div class="card-header bg-light text-primary">
+                                                <h6 class="mb-0">🥉 Rank 3</h6>
+                                            </div>
+                                            <div class="card-body text-center">
+                                                <p class="font-weight-bold">{{ $thirdAbsentUser->name }}</p>
+                                                <p class="mb-0 text-muted">{{ $thirdAbsentUser->email }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> <!-- end col kanan -->
                         </div>
                     </div>
                 </div><!-- .card-preview -->
-            </div> --}}
+            </div>
+
+
 
 
             {{-- Sanksi --}}
             <div class="nk-block-head nk-block-head-sm">
                 <div class="nk-block-between">
                     <div class="nk-block-head-content">
-                        <h3 class="nk-block-title page-title">Sanksi</h3>
+                        <h3 class="nk-block-title page-title">Peringatan Sanksi</h3>
                     </div>
                     <div class="nk-block-head-content">
                         <div class="toggle-wrap nk-block-tools-toggle">
@@ -337,7 +389,9 @@
                                 <tr>
                                     <th>No</th>
                                     <th>Nama Pegawai</th>
-                                    <th>Total Terlambat</th>
+                                    <th>Total Terlambat Masuk</th>
+                                    <th>Total Tidak Masuk</th>
+                                    <th>Peringatan</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -354,9 +408,22 @@
                                             {{ $name }}
                                         </td>
                                         <td>{{ $ul['late_count'] }}</td>
+                                        <td>-</td>
+                                        <td>
+                                            <div class="d-flex gap-2">
+                                                @foreach (['SP0', 'SP1', 'SP2', 'SP3'] as $sp)
+                                                    <button class="btn-sp {{ $sp === 'SP0' ? 'active-sp0' : '' }}"
+                                                        data-sp="{{ $sp }}" data-user="{{ $ul['user_id'] }}"
+                                                        id="btn-{{ $ul['user_id'] }}-{{ $sp }}">
+                                                        {{ $sp }}
+                                                    </button>
+                                                @endforeach
+                                            </div>
+                                        </td>
+
                                         <td>
                                             <a href="{{ route('admin.kelolakehadiranpegawai.send', $ul['user_id']) }}"
-                                                class="btn btn-danger">
+                                                class="btn btn-dark">
                                                 Kirim Peringatan
                                             </a>
                                         </td>
@@ -378,4 +445,67 @@
             // Anda bisa menambahkan logika untuk mengirim notifikasi
         }
     </script>
+    <script>
+        $(document).on('click', '.btn-sp', function() {
+            const spType = $(this).data('sp');
+
+            // SP0 tidak bisa di-*click*
+            if (spType === 'SP0') return;
+
+            // Matikan semua kecuali SP0
+            $(this).siblings().removeClass('active');
+
+            // Aktifkan SP yang diklik
+            $(this).addClass('active');
+
+            console.log(`Status ${spType} diubah menjadi aktif!`);
+        });
+    </script>
+    <style>
+        .btn-sp {
+            padding: 5px 15px;
+            border-radius: 4px;
+            border: none;
+            background-color: #f1f3f5;
+            cursor: pointer;
+            color: #495057;
+            font-weight: bold;
+            min-width: 30px;
+            min-height: 40px;
+            transition: background-color 0.3s, color 0.3s;
+            user-select: none;
+        }
+
+        /* Warna default dan aktif */
+        .btn-sp[data-sp="SP0"] {
+            background-color: #198754 !important;
+            /* Hijau */
+            color: white;
+            cursor: not-allowed;
+            /* Tidak bisa di-klik */
+        }
+
+        .btn-sp[data-sp="SP1"].active {
+            background-color: #ffc107;
+            /* Kuning */
+            color: white;
+        }
+
+        .btn-sp[data-sp="SP2"].active {
+            background-color: #fd7e14;
+            /* Oranye */
+            color: white;
+        }
+
+        .btn-sp[data-sp="SP3"].active {
+            background-color: #dc3545;
+            /* Merah */
+            color: white;
+        }
+
+        /* Hover effect kecuali SP0 */
+        .btn-sp:not(.active-sp0):hover {
+            background-color: #e9ecef;
+        }
+    </style>
 @endsection

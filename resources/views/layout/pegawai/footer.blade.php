@@ -1,7 +1,7 @@
 <div class="nk-footer">
     <div class="container-fluid">
         <div class="nk-footer-wrap">
-            <div class="nk-footer-copyright"> &copy; PT. PST @Hafizh Alfaris
+            <div class="nk-footer-copyright"> &copy; PT. XYZ
             </div>
             {{-- <div class="nk-footer-links">
                 <ul class="nav nav-sm">

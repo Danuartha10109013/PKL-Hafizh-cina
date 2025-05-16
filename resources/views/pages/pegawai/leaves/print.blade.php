@@ -106,7 +106,7 @@
                             href="https://www.pratamatechsolution.co.id">https://www.pratamatechsolution.co.id</a></p>
                 </div>
             </div> --}}
-            <div style="margin-top: 20px" class="header">LEAVES SUMMARY</div>
+            <div style="margin-top: 20px" class="header">FORMULIR PENGAJUAN CUTI</div>
 
             <table>
                 <tr>
@@ -219,7 +219,7 @@
     @else
         <div class="">
             @foreach ($leaves as $index => $l)
-                <div class="top">
+                {{-- <div class="top">
                     <img src="{{ asset('PSTLOGO.png') }}" alt="PST Logo" class="logo">
                     <div class="company-info">
                         <h1>PT. PRATAMA SOLUSI TEKNOLOGI</h1>
@@ -229,116 +229,118 @@
                                 href="https://www.pratamatechsolution.co.id">https://www.pratamatechsolution.co.id</a>
                         </p>
                     </div>
-                </div>
-                <div style="margin-top: 20px" class="header">LEAVES SUMMARY</div>
+                </div> --}}
+                <div style="margin-top: 20px" class="header">FORMULIR PENGAJUAN CUTI/div>
 
-                <table>
-                    <tr>
-                        <th colspan="2" style="width: 30px">Data Pegawai</th>
-                    </tr>
-                    <tr>
-                        <td style="width: 200px; background-color: rgba(128, 128, 128, 0.2);">Nama</td>
-                        @php
-                            $employe = App\Models\User::find($l->enhancer);
-                        @endphp
-                        <td>{{ $employe->name }}</td>
-                    </tr>
-                    <tr>
-                        <td style="width: 200px; background-color: rgba(128, 128, 128, 0.2);">NIK</td>
-                        <td>{{ $employe->id_card }}</td>
-                    </tr>
-                    <tr>
-                        <td style="width: 200px; background-color: rgba(128, 128, 128, 0.2);">No. Induk Pegawai</td>
-                        <td>{{ $employe->nip }}</td>
-                    </tr>
-                    <tr>
-                        <td style="width: 200px; background-color: rgba(128, 128, 128, 0.2);">Jabatan</td>
-                        <td>{{ $employe->position }}</td>
-                    </tr>
-                    <tr>
-                        <td style="width: 200px; background-color: rgba(128, 128, 128, 0.2);">No. Handphone</td>
-                        <td>{{ $employe->telephone }}</td>
-                    </tr>
-                </table>
-
-                <table>
-                    <tr>
-                        <th>Jenis Cuti</th>
-                        <th colspan="2">Periode Cuti</th>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input type="checkbox" {{ $l->category == 'annual' ? 'checked' : '' }}> Cuti Tahunan
-                        </td>
-                        <td style="width: 150px; background-color: rgba(128, 128, 128, 0.2);">Diajukan Tgl.</td>
-                        <td>{{ $l->created_at->format('d-m-Y') }}</td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" {{ $l->category != 'annual' ? 'checked' : '' }}> Cuti Lainnya</td>
-                        <td style="width: 150px; background-color: rgba(128, 128, 128, 0.2);">Tgl. Mulai Cuti</td>
-                        <td>{{ \Carbon\Carbon::parse($l->date)->format('d-m-Y') }}</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td style="width: 150px; background-color: rgba(128, 128, 128, 0.2);">Tgl. Selesai Cuti</td>
-                        <td>{{ \Carbon\Carbon::parse($l->end_date)->format('d-m-Y') }}</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td style="width: 150px; background-color: rgba(128, 128, 128, 0.2);">Lama Cuti</td>
-                        <td>{{ \Carbon\Carbon::parse($l->date)->diffInDays(\Carbon\Carbon::parse($l->end_date)) }} hari
-                        </td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td style="width: 150px; background-color: rgba(128, 128, 128, 0.2);">Tgl. Masuk</td>
-                        <td>{{ \Carbon\Carbon::parse($l->end_date)->addDay()->format('d-m-Y') }}</td>
-                    </tr>
-                </table>
-
-                <table>
-                    <tr>
-                        <th>Keterangan / Alasan</th>
-                    </tr>
-                    <tr>
-                        <td>{{ $l->reason }} <br> {{ $l->subcategory }}</td>
-                    </tr>
-                </table>
-
-                <table>
-                    <tr>
-                        <th>Catatan Lainnya</th>
-                    </tr>
-                    <tr>
-                        <td>{{ $l->reason_verification }}</td>
-                    </tr>
-                </table>
-
-                <table>
-                    <tr>
-                        <th style="text-align: center;">Disetujui Oleh</th>
-                    </tr>
-                    <tr>
-                        <td style="text-align: center;">
-                            Purwakarta, {{ $l->updated_at->format('d-m-Y') }}<br>
-                            <br>
-                            <img style="width: 100px" src="{{ asset('storage/qrTtd/' . $l->qrCode_ttd) }}"
-                                alt="Persetujuan">
-                            <br>
+                    <table>
+                        <tr>
+                            <th colspan="2" style="width: 30px">Data Pegawai</th>
+                        </tr>
+                        <tr>
+                            <td style="width: 200px; background-color: rgba(128, 128, 128, 0.2);">Nama</td>
                             @php
-                                $acc = App\Models\User::find($l->accepted_by);
+                                $employe = App\Models\User::find($l->enhancer);
                             @endphp
-                            <span>{{ $acc->name ?? null }}</span><br>
-                            <hr style="background-color: black; height: 3px; width: 30%; border: none;">
-                            <span>{{ $acc->position ?? null }}</span>
-                        </td>
-                    </tr>
-                </table>
+                            <td>{{ $employe->name }}</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 200px; background-color: rgba(128, 128, 128, 0.2);">NIK</td>
+                            <td>{{ $employe->id_card }}</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 200px; background-color: rgba(128, 128, 128, 0.2);">No. Induk Pegawai</td>
+                            <td>{{ $employe->nip }}</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 200px; background-color: rgba(128, 128, 128, 0.2);">Jabatan</td>
+                            <td>{{ $employe->position }}</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 200px; background-color: rgba(128, 128, 128, 0.2);">No. Handphone</td>
+                            <td>{{ $employe->telephone }}</td>
+                        </tr>
+                    </table>
 
-                <!-- ✅ Tambahkan page break setelah setiap data -->
-                @if (!$loop->last)
-                    <div style="page-break-after: always;"></div>
-                @endif
+                    <table>
+                        <tr>
+                            <th>Jenis Cuti</th>
+                            <th colspan="2">Periode Cuti</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="checkbox" {{ $l->category == 'annual' ? 'checked' : '' }}> Cuti Tahunan
+                            </td>
+                            <td style="width: 150px; background-color: rgba(128, 128, 128, 0.2);">Diajukan Tgl.</td>
+                            <td>{{ $l->created_at->format('d-m-Y') }}</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" {{ $l->category != 'annual' ? 'checked' : '' }}> Cuti Lainnya
+                            </td>
+                            <td style="width: 150px; background-color: rgba(128, 128, 128, 0.2);">Tgl. Mulai Cuti</td>
+                            <td>{{ \Carbon\Carbon::parse($l->date)->format('d-m-Y') }}</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td style="width: 150px; background-color: rgba(128, 128, 128, 0.2);">Tgl. Selesai Cuti</td>
+                            <td>{{ \Carbon\Carbon::parse($l->end_date)->format('d-m-Y') }}</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td style="width: 150px; background-color: rgba(128, 128, 128, 0.2);">Lama Cuti</td>
+                            <td>{{ \Carbon\Carbon::parse($l->date)->diffInDays(\Carbon\Carbon::parse($l->end_date)) }}
+                                hari
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td style="width: 150px; background-color: rgba(128, 128, 128, 0.2);">Tgl. Masuk</td>
+                            <td>{{ \Carbon\Carbon::parse($l->end_date)->addDay()->format('d-m-Y') }}</td>
+                        </tr>
+                    </table>
+
+                    <table>
+                        <tr>
+                            <th>Keterangan / Alasan</th>
+                        </tr>
+                        <tr>
+                            <td>{{ $l->reason }} <br> {{ $l->subcategory }}</td>
+                        </tr>
+                    </table>
+
+                    <table>
+                        <tr>
+                            <th>Catatan Lainnya</th>
+                        </tr>
+                        <tr>
+                            <td>{{ $l->reason_verification }}</td>
+                        </tr>
+                    </table>
+
+                    <table>
+                        <tr>
+                            <th style="text-align: center;">Disetujui Oleh</th>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">
+                                Purwakarta, {{ $l->updated_at->format('d-m-Y') }}<br>
+                                <br>
+                                <img style="width: 100px" src="{{ asset('storage/qrTtd/' . $l->qrCode_ttd) }}"
+                                    alt="Persetujuan">
+                                <br>
+                                @php
+                                    $acc = App\Models\User::find($l->accepted_by);
+                                @endphp
+                                <span>{{ $acc->name ?? null }}</span><br>
+                                <hr style="background-color: black; height: 3px; width: 30%; border: none;">
+                                <span>{{ $acc->position ?? null }}</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- ✅ Tambahkan page break setelah setiap data -->
+                    @if (!$loop->last)
+                        <div style="page-break-after: always;"></div>
+                    @endif
             @endforeach
         </div>
 

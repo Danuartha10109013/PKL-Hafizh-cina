@@ -93,12 +93,12 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var map = L.map('map').setView([-6.552803, 107.807370], 18); // Lokasi PT. Pratama Solusi Teknologi
+            var map = L.map('map').setView([-6.907383, 107.610220], 18); // Lokasi PT. Pratama Solusi Teknologi
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 18,
             }).addTo(map);
 
-            var allowedLatLng = [-7.323735, 108.222924];
+            var allowedLatLng = [-6.907383, 107.610220];
             var allowedRadius = 100;
 
             var allowedCircle = L.circle(allowedLatLng, {
