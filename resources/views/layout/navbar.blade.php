@@ -80,6 +80,12 @@
                                 <span class="nk-menu-text">Recycle Bin</span>
                             </a>
                         </li><!-- .nk-menu-item -->
+                        <li class="nk-menu-item">
+                            <a href="#" class="nk-menu-link">
+                                <span class="nk-menu-icon"><em class="icon ni ni-location"></em></span>
+                                <span class="nk-menu-text">Coordinate</span>
+                            </a>
+                        </li><!-- .nk-menu-item -->
                 </div><!-- .nk-sidebar-menu -->
                 {{-- <div class="nk-sidebar-footer">
                     <ul class="nk-menu nk-menu-footer">
