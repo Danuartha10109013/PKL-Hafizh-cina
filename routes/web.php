@@ -94,6 +94,7 @@ Route::middleware([AutoLogout::class])->group(function () {
             Route::get('/restore/{id}', [AttendanceController::class, 'restore'])->name('kelolakehadiranpegawai.restore');
             Route::delete('/forcedelete/{id}', [AttendanceController::class, 'forcedelete'])->name('kelolakehadiranpegawai.forcedelete');
             Route::get('/daftarsanksi', [AttendanceController::class, 'daftarsanksi'])->name('daftarsanksi');
+            Route::get('/daftarsanksi/detail/{id}', [AttendanceController::class, 'daftarsanksidetail'])->name('daftarsanksi.detail');
         });
 
         // Manage Schedules

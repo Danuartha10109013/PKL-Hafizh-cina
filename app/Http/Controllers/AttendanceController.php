@@ -148,8 +148,13 @@ class AttendanceController extends Controller
 
             // Siapkan list hari kerja (e.g. ['Senin', 'Selasa', ...])
             $dayNames = [
-                0 => 'Minggu', 1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu',
-                4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu'
+                0 => 'Minggu',
+                1 => 'Senin',
+                2 => 'Selasa',
+                3 => 'Rabu',
+                4 => 'Kamis',
+                5 => 'Jumat',
+                6 => 'Sabtu'
             ];
 
             for ($date = $startOfMonth->copy(); $date <= $today; $date->addDay()) {
@@ -604,7 +609,7 @@ class AttendanceController extends Controller
         return view('pages.admin.attendance.printkehadiran-keluar', compact('attendance', 'latitude', 'longitude'));
     }
 
-    public function send(Request $request,$id)
+    public function send(Request $request, $id)
     {
         // Find the user by their ID
         $user = User::find($id);
@@ -660,17 +665,17 @@ class AttendanceController extends Controller
 
     public function daftarsanksi()
     {
-        $data = PeringatanM::orderBy('created_at','desc')->get();
-        return view('pages.admin.attendance.daftarsanksi',compact('data'));
+        $data = PeringatanM::orderBy('created_at', 'desc')->get();
+        return view('pages.admin.attendance.daftarsanksi', compact('data'));
     }
     public function daftarsanksidetail($id)
     {
-    $data = PeringatanM::findOrFail($id);
-    $user = User::findOrFail($data->user_id);
+        $data = PeringatanM::findOrFail($id);
+        $user = User::findOrFail($data->user_id);
 
-    $pdf = Pdf::loadView('pages.admin.attendance.contohsuratperingatan1', compact('data', 'user'));
-    $filename = 'Surat_Peringatan_SP-' . $data->status . '_' . $user->name . '.pdf';
+        $pdf = Pdf::loadView('pages.admin.attendance.contohsuratperingatan1', compact('data', 'user'));
+        $filename = 'Surat_Peringatan_SP-' . $data->status . '_' . $user->name . '.pdf';
 
-    return $pdf->download($filename);
+        return $pdf->download($filename);
     }
 }

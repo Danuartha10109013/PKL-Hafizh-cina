@@ -80,6 +80,9 @@
                                 <span class="nk-menu-text">Recycle Bin</span>
                             </a>
                         </li><!-- .nk-menu-item -->
+                        <li class="nk-menu-heading">
+                            <h6 class="overline-title text-secondary-alt">Edit</h6>
+                        </li><!-- .nk-menu-heading -->
                         <li class="nk-menu-item">
                             <a href="{{ route('admin.kordinat') }}" class="nk-menu-link">
                                 <span class="nk-menu-icon"><em class="icon ni ni-location"></em></span>

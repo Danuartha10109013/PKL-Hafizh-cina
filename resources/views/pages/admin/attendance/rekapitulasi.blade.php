@@ -24,6 +24,12 @@
                                             <!-- Button to open the modal for selecting month and year -->
                                             <li>
                                                 <button class="btn btn-secondary" data-bs-toggle="modal"
+                                                    data-bs-target="filterModal">
+                                                    <em class="icon ni ni-filter"></em><span>Filter</span>
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button class="btn btn-secondary" data-bs-toggle="modal"
                                                     data-bs-target="#selectMonthYearModal">
                                                     <em class="icon ni ni-printer"></em><span>Cetak</span>
                                                 </button>
@@ -31,6 +37,7 @@
                                         </ul>
 
                                         <!-- Modal for selecting month and year -->
+
                                         <div class="modal fade" id="selectMonthYearModal" tabindex="-1"
                                             aria-labelledby="selectMonthYearModalLabel" aria-hidden="true">
                                             <div class="modal-dialog">
@@ -90,7 +97,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                     </div>
                                 </div><!-- .toggle-wrap -->
                             </div><!-- .nk-block-head-content -->
@@ -245,12 +251,12 @@
             </div><!-- .nk-block-head -->
 
             <div class="nk-block nk-block-lg">
-                
-                        <div class="row">
-                            <!-- Ranking Terlambat (kiri) -->
-                            <div class="col-lg-6">
-                                <div class="card card-bordered card-preview">
-                                <div class="card-inner">
+
+                <div class="row">
+                    <!-- Ranking Terlambat (kiri) -->
+                    <div class="col-lg-6">
+                        <div class="card card-bordered card-preview">
+                            <div class="card-inner">
                                 <h4 class="mb-3">Masuk Terlambat</h4>
                                 <div class="row align-items-center">
                                     <!-- Rank 2 Terlambat -->
@@ -292,29 +298,29 @@
                                         </div>
                                     </div>
                                 </div>
-                                </div>
-                                </div>
                             </div>
+                        </div>
+                    </div>
 
-                            @php
-                                // Ubah koleksi ke collection jika belum
-                                $sortedResults = collect($result)->sortByDesc('absent_count')->values();
+                    @php
+                        // Ubah koleksi ke collection jika belum
+                        $sortedResults = collect($result)->sortByDesc('absent_count')->values();
 
-                                $topAbsentUser = (object) ($sortedResults[0] ?? []);
-                                $secondAbsentUser = (object) ($sortedResults[1] ?? []);
-                                $thirdAbsentUser = (object) ($sortedResults[2] ?? []);
+                        $topAbsentUser = (object) ($sortedResults[0] ?? []);
+                        $secondAbsentUser = (object) ($sortedResults[1] ?? []);
+                        $thirdAbsentUser = (object) ($sortedResults[2] ?? []);
 
-                                $name1 = \App\Models\User::find($topAbsentUser->user_id);
-                                $name2 = \App\Models\User::find($secondAbsentUser->user_id);
-                                $name3 = \App\Models\User::find($thirdAbsentUser->user_id);
-                                // dd($name1);
-                            @endphp
+                        $name1 = \App\Models\User::find($topAbsentUser->user_id);
+                        $name2 = \App\Models\User::find($secondAbsentUser->user_id);
+                        $name3 = \App\Models\User::find($thirdAbsentUser->user_id);
+                        // dd($name1);
+                    @endphp
 
 
-                            <!-- Ranking Tidak Masuk (kanan) -->
-                            <div class="col-lg-6">
-                                <div class="card card-bordered card-preview">
-                                <div class="card-inner">
+                    <!-- Ranking Tidak Masuk (kanan) -->
+                    <div class="col-lg-6">
+                        <div class="card card-bordered card-preview">
+                            <div class="card-inner">
                                 <h4 class="mb-3">Tidak Masuk</h4>
                                 <div class="row align-items-center">
                                     <!-- Rank 2 Tidak Masuk -->
@@ -355,12 +361,12 @@
                                             </div>
                                         </div>
                                     </div>
-                                    </div>
-                                    </div>
                                 </div>
-                            </div> <!-- end col kanan -->
+                            </div>
                         </div>
-                    {{-- </div> --}}
+                    </div> <!-- end col kanan -->
+                </div>
+                {{-- </div> --}}
                 {{-- </div><!-- .card-preview --> --}}
             </div>
 
@@ -399,7 +405,7 @@
                                     <th>Total Terlambat Masuk</th>
                                     <th>Total Tidak Masuk</th>
                                     <th rowspan="
-                                    2">Peringatan</th>
+                                    10">Peringatan</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -417,40 +423,60 @@
                                         </td>
                                         <td>{{ $ul['late_count'] }}</td>
                                         <td>{{ $ul['absent_count'] }}</td>
-                                       <form action="{{ route('admin.kelolakehadiranpegawai.send', ['id' => $ul['user_id']]) }}" method="POST">
+                                        <form
+                                            action="{{ route('admin.kelolakehadiranpegawai.send', ['id' => $ul['user_id']]) }}"
+                                            method="POST">
                                             @csrf
                                             <td>
                                                 <div class="d-flex gap-2">
                                                     @php
-                                                        $peringatan = \App\Models\PeringatanM::where('user_id', $ul['user_id'])->orderBy('created_at','desc')->first();
-                                                        $status = $peringatan->status ?? 0; // default 0 jika belum ada
+                                                        $peringatan = \App\Models\PeringatanM::where(
+                                                            'user_id',
+                                                            $ul['user_id'],
+                                                        )
+                                                            ->orderBy('created_at', 'desc')
+                                                            ->first();
+                                                        $status = $peringatan->status ?? -1; // default -1 supaya sp0 bisa default hijau dan disabled
                                                     @endphp
 
-                                                    <input type="hidden" name="totalDays" value="{{ $ul['late_count'] }}">
+                                                    <input type="hidden" name="totalDays"
+                                                        value="{{ $ul['late_count'] }}">
 
                                                     @foreach ([0, 1, 2, 3] as $sp)
-                                                        <div class="form-check text-center flex-fill">
-                                                            <input
-                                                                class="form-check-input"
-                                                                type="checkbox"
-                                                                name="sp"
-                                                                id="sp_{{ $ul['user_id'] }}_{{ $sp }}"
-                                                                value="{{ $sp }}"
-                                                                {{ $status >= $sp ? 'checked disabled' : '' }}
-                                                            >
-                                                            <label class="btn btn-sm w-100 {{ $status >= $sp ? 'btn-success' : 'btn-outline-dark' }}"
-                                                                for="sp_{{ $ul['user_id'] }}_{{ $sp }}">
-                                                                SP {{ $sp }}
-                                                            </label>
-                                                        </div>
+                                                        @php
+                                                            $colors = [
+                                                                0 => 'btn-success', // hijau
+                                                                1 => 'btn-warning', // kuning
+                                                                2 => 'btn-orange', // orange
+                                                                3 => 'btn-danger', // merah
+                                                            ];
+
+                                                            $isDisabled = $status >= $sp || $sp === 0; // SP0 selalu di-disable
+                                                            $btnClass = $isDisabled
+                                                                ? $colors[$sp]
+                                                                : 'btn-outline-secondary';
+                                                        @endphp
+
+                                                        <input type="checkbox" class="btn-check sp-checkbox"
+                                                            name="sp"
+                                                            id="sp_{{ $ul['user_id'] }}_{{ $sp }}"
+                                                            value="{{ $sp }}" autocomplete="off"
+                                                            {{ $isDisabled ? 'checked disabled' : '' }}>
+                                                        <label class="btn btn-sm flex-fill {{ $btnClass }}"
+                                                            for="sp_{{ $ul['user_id'] }}_{{ $sp }}"
+                                                            data-sp="{{ $sp }}">
+                                                            SP {{ $sp }}
+                                                        </label>
                                                     @endforeach
                                                 </div>
                                             </td>
 
                                             <td>
-                                                <button type="submit" class="btn btn-primary">Kirim Peringatan</button>
+                                                <button type="submit" class="btn btn-dark">Kirim Peringatan</button>
                                             </td>
                                         </form>
+
+
                                     </tr>
                                 @endforeach
 
@@ -461,23 +487,62 @@
                 </div><!-- .card-preview -->
             </div>
 
-            
+
         </div>
     </div>
     <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const buttons = document.querySelectorAll('.sp-btn');
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkboxes = document.querySelectorAll('.sp-checkbox');
 
-        buttons.forEach(btn => {
-            btn.addEventListener('click', function () {
-                const sp = this.dataset.sp;
-                const userId = this.dataset.user;
-                const url = `/admin/kelolakehadiranpegawai/send?id=${userId}&sp=${sp}`;
-                window.location.href = url;
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', function() {
+                    const [_, userId, sp] = this.id.split(
+                        '_'); // ambil user_id dan sp dari ID checkbox
+                    const spValue = parseInt(sp);
+                    const label = document.querySelector(`label[for="${this.id}"]`);
+                    const colors = ['btn-success', 'btn-warning', 'btn-orange', 'btn-danger'];
+
+                    if (spValue === 0) return; // SP0 tidak boleh diubah
+
+                    // Ambil semua SP checkbox untuk user ini
+                    const userCheckboxes = Array.from(document.querySelectorAll(
+                        `.sp-checkbox[id^="sp_${userId}_"]`));
+
+                    const prevCheckbox = document.getElementById(`sp_${userId}_${spValue - 1}`);
+                    const nextCheckbox = document.getElementById(`sp_${userId}_${spValue + 1}`);
+
+                    // Cegah centang loncat (tanpa alert)
+                    if (this.checked && (!prevCheckbox || !prevCheckbox.checked)) {
+                        this.checked = false;
+                        return;
+                    }
+
+                    // Jika uncheck, maka semua SP di atasnya ikut di-uncheck
+                    if (!this.checked) {
+                        userCheckboxes.forEach(cb => {
+                            const val = parseInt(cb.value);
+                            if (val > spValue && !cb.disabled) {
+                                cb.checked = false;
+                                const lbl = document.querySelector(`label[for="${cb.id}"]`);
+                                lbl.classList.remove(...colors);
+                                lbl.classList.add('btn-outline-secondary');
+                            }
+                        });
+                    }
+
+                    // Update warna tombol
+                    label.classList.remove(...colors, 'btn-outline-secondary');
+                    if (this.checked) {
+                        label.classList.add(colors[spValue]);
+                    } else {
+                        label.classList.add('btn-outline-secondary');
+                    }
+                });
             });
         });
-    });
-</script>
+    </script>
+
+
 
     <!-- Script untuk Tombol Peringatan -->
     <script>
@@ -487,5 +552,117 @@
         }
     </script>
 
+    <style>
+        /* Global Styling */
+        .btn-success,
+        .btn-warning,
+        .btn-orange,
+        .btn-danger,
+        .btn-outline-secondary {
+            height: 50px;
+            width: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
 
+        /* === SP0 - Hijau === */
+        .btn-success {
+            color: #fff;
+            background-color: #198754;
+            border-color: #198754;
+        }
+
+        .btn-success:hover,
+        .btn-success:focus,
+        .btn-success:active {
+            background-color: #198754 !important;
+            color: #fff !important;
+            /* Tetap hijau */
+            border-color: #198754 !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }
+
+        /* === SP1 - Kuning === */
+        .btn-warning {
+            color: #212529;
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+
+        .btn-warning:hover,
+        .btn-warning:focus,
+        .btn-warning:active {
+            background-color: #ffc107 !important;
+            color: #212529 !important;
+            /* Tetap kuning */
+            border-color: #ffc107 !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }
+
+        /* === SP2 - Orange === */
+        .btn-orange {
+            color: #fff;
+            background-color: #fd7e14;
+            border-color: #fd7e14;
+        }
+
+        .btn-orange:hover,
+        .btn-orange:focus,
+        .btn-orange:active {
+            background-color: #fd7e14 !important;
+            color: #fff !important;
+            /* Tetap oranye */
+            border-color: #fd7e14 !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }
+
+        /* === SP3 - Merah === */
+        .btn-danger {
+            color: #fff;
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .btn-danger:hover,
+        .btn-danger:focus,
+        .btn-danger:active {
+            background-color: #dc3545 !important;
+            olor: #fff !important;
+            /* Tetap merah */
+            border-color: #dc3545 !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }
+
+        /* === Jika tombol belum di-check === */
+        .btn-outline-secondary {
+            color: #6c757d;
+            background-color: #ffffff;
+            border-color: #6c757d;
+        }
+
+        .btn-outline-secondary:hover,
+        .btn-outline-secondary:focus,
+        .btn-outline-secondary:active {
+            color: #6c757d !important;
+            background-color: #ffffff !important;
+
+            /* Tetap putih */
+            border-color: #6c757d !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }
+
+        /* Menghilangkan efek klik biru */
+        .btn-check:focus+label {
+            box-shadow: none !important;
+            outline: none !important;
+        }
+    </style>
 @endsection

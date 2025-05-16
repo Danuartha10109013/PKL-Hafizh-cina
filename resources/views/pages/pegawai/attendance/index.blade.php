@@ -5,7 +5,6 @@
 @endsection
 
 @section('content-pegawai')
-
     <div class="nk-content nk-content-fluid">
         <div class="container-xl wide-lg">
             <div class="nk-content-body">
@@ -24,22 +23,22 @@
                         // dd($acuans);
                     @endphp
                     @if ($acuans == null)
-                        
-                    <div class="alert alert-warning text-center p-4 rounded">
-                        <p class="mb-3">Silakan masukkan gambar untuk acuan terlebih dahulu sebelum melakukan absensi</p>
-                        <p>
-                            contoh gambar yang baik
-                        </p>
-                        <img class="mb-3" width="20%" src="{{asset('acuan.jpg')}}" alt="">
-                        <form action="{{ route('pegawai.attendance-setup') }}" method="POST" class="d-flex flex-column align-items-center" enctype="multipart/form-data">
-                            @csrf
-                            <input type="hidden" name="id_user" value="{{ Auth::user()->id }}">
-                            <input type="file" name="acuan" class="form-control mb-3" required>
-                            <button type="submit" class="btn btn-primary">Upload</button>
-                        </form>
-                        
-                    </div>
-                    
+                        <div class="alert alert-warning text-center p-4 rounded">
+                            <p class="mb-3">Silakan masukkan gambar untuk acuan terlebih dahulu sebelum melakukan absensi
+                            </p>
+                            <p>
+                                contoh gambar yang baik
+                            </p>
+                            <img class="mb-3" width="20%" src="{{ asset('acuan.jpg') }}" alt="">
+                            <form action="{{ route('pegawai.attendance-setup') }}" method="POST"
+                                class="d-flex flex-column align-items-center" enctype="multipart/form-data">
+                                @csrf
+                                <input type="hidden" name="id_user" value="{{ Auth::user()->id }}">
+                                <input type="file" name="acuan" class="form-control mb-3" required>
+                                <button type="submit" class="btn btn-primary">Upload</button>
+                            </form>
+
+                        </div>
                     @endif
                     <div class="nk-block-between">
                         <div class="nk-block-head-content">
@@ -78,7 +77,7 @@
                             @endphp
                         </div>
                         <script>
-                            document.addEventListener("DOMContentLoaded", function () {
+                            document.addEventListener("DOMContentLoaded", function() {
                                 let acuans = @json($acuans); // Konversi PHP ke JavaScript dengan aman
                                 let buttons = document.querySelectorAll(".setup-cek");
 
@@ -89,7 +88,6 @@
                                     });
                                 }
                             });
-
                         </script>
                         <div class="nk-block-head-content">
                             <div class="toggle-wrap nk-block-tools-toggle">
@@ -225,19 +223,37 @@
             </div>
         </div>
         @php
-            $events = $attendances->map(function ($att) {
-                return [
-                    'title' => \Carbon\Carbon::parse($att->time)->format('H:i:s'),
-                    'start' => $att->date,
-                    'backgroundColor' => $att->status == 0 ? '#28a745' : '#fd7e14',
-                    'borderColor' => $att->status == 0 ? '#28a745' : '#fd7e14',
-                    'textColor' => '#fff',
-                ];
-            })->values()->toArray();
-        @endphp 
+            $jadwalMasuk = \Carbon\Carbon::createFromTime(8, 0); // 08:00
+            $jadwalPulang = \Carbon\Carbon::createFromTime(16, 0); // 16:00
+
+            $events = $attendances
+                ->map(function ($att) use ($jadwalMasuk, $jadwalPulang) {
+                    $time = \Carbon\Carbon::parse($att->time);
+                    $formattedTime = $time->format('H:i');
+
+                    $indicator = '';
+                    if ($att->status == 0 && $time->gt($jadwalMasuk)) {
+                        $indicator = ' (Terlambat Masuk)';
+                    } elseif ($att->status == 1 && $time->lt($jadwalPulang)) {
+                        $indicator = ' (Pulang Lebih Aawal)';
+                    }
+
+                    return [
+                        'title' => $formattedTime . $indicator,
+                        'start' => $att->date,
+                        'backgroundColor' => $att->status == 0 ? '#28a745' : '#fd7e14',
+                        'borderColor' => $att->status == 0 ? '#28a745' : '#fd7e14',
+                        'textColor' => '#fff',
+                    ];
+                })
+                ->values()
+                ->toArray();
+        @endphp
+
+
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js"></script>
         <script>
-             document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('DOMContentLoaded', function() {
                 var calendarEl = document.getElementById('calendar');
 
                 var calendar = new FullCalendar.Calendar(calendarEl, {
