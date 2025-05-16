@@ -90,15 +90,16 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+@php
+    $kordinat = \App\Models\Koordinat::find(1);
+@endphp
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var map = L.map('map').setView([-6.907383, 107.610220], 18); // Lokasi PT. Pratama Solusi Teknologi
+            var map = L.map('map').setView([{{ $kordinat->latitude }}, {{ $kordinat->longitude }}], 18); // Lokasi PT. Pratama Solusi Teknologi
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 18,
             }).addTo(map);
-
-            var allowedLatLng = [-6.907383, 107.610220];
+            var allowedLatLng = [{{ $kordinat->latitude }}, {{ $kordinat->longitude }}];
             var allowedRadius = 100;
 
             var allowedCircle = L.circle(allowedLatLng, {

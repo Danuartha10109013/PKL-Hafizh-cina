@@ -8,6 +8,7 @@ use App\Models\Leave;
 use App\Models\User;
 use App\Models\Koordinat;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
@@ -177,6 +178,27 @@ class AdminController extends Controller
 
     public function koordinat()
     {
-        return view('pages.admin.koordinat.index');
+        $data = Koordinat::find(1);
+        return view('pages.admin.koordinat.index',compact('data'));
     }
+
+public function updateKordinat(Request $request)
+{
+    $request->validate([
+        'id' => 'required|integer|exists:koordinat,id',
+        'field' => 'required|in:latitude,longitude',
+        'value' => 'required|string',
+    ]);
+
+    $koordinat = Koordinat::find($request->id);
+
+    if (!$koordinat) {
+        return response()->json(['success' => false, 'message' => 'Data tidak ditemukan.']);
+    }
+
+    $koordinat->{$request->field} = $request->value;
+    $koordinat->save();
+
+    return response()->json(['success' => true]);
+}
 }

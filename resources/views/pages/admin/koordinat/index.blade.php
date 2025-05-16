@@ -1,50 +1,54 @@
 @extends('layout.main')
 @section('title')
-    Coordinate
+    Detail Pegawai
 @endsection
 @section('content')
-    <div class="card mt-3">
-        <div class="card-header">
-            <h5 class="card-title">Atur Koordinat</h5>
-        </div>
-        <div class="container">
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered mb-4">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>IT</th>
-                            <th>Sales Enginer</th>
-                            <th>Aplications</th>
-                            <th>Admin</th>
-                            <th>Manager</th>
-                            {{-- <th>TYPE</th> --}}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($data as $d)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td contenteditable="true" class="editable" data-id="{{ $d->id }}" data-field="it">
-                                    {{ $d->it }}
-                                </td>
-                                <td contenteditable="true" class="editable" data-id="{{ $d->id }}" data-field="se">
-                                    {{ $d->se }}
-                                </td>
-                                <td contenteditable="true" class="editable" data-id="{{ $d->id }}" data-field="as">
-                                    {{ $d->as }}
-                                </td>
-                                <td contenteditable="true" class="editable" data-id="{{ $d->id }}" data-field="adm">
-                                    {{ $d->adm }}
-                                </td>
-                                <td contenteditable="true" class="editable" data-id="{{ $d->id }}" data-field="mng">
-                                    {{ $d->mng }}
-                                </td>
-                                {{-- <td>{{ $d->jenis == '0' ? 'Non Customer' : 'Customer' }}</td> --}}
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+    <div class="nk-content nk-content-fluid">
+        <div class="container-xl wide-lg">
+            <div class="nk-content-body">
+                <div class="components-preview wide-md mx-auto">
+                    <div class="nk-block-head nk-block-head-lg wide-sm">
+                        <div class="nk-block-head-sub">
+                            <a class="back-to" href="{{ route('admin.kelolapegawai') }}">
+                                <em class="icon ni ni-chevron-left-circle-fill"></em><span>Back</span>
+                            </a>
+                        </div>
+                        <h2 class="nk-block-title fw-normal">Kordinat Absensi </h2>
+                    </div>
+                    <div class="nk-block nk-block-lg">
+                        <div class="card card-bordered card-preview shadow-sm">
+                            <div class="card-inner">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-bordered mb-4">
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Latitude</th>
+                                                <th>Longitude</th>
+                                            
+                                                {{-- <th>TYPE</th> --}}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                    <td>1</td>
+                                                    <td contenteditable="true" class="editable" data-id="{{ $data->id }}" data-field="latitude">
+                                                        {{ $data->latitude }}
+                                                    </td>
+                                                    <td contenteditable="true" class="editable" data-id="{{ $data->id }}" data-field="longitude">
+                                                        {{ $data->longitude }}
+                                                    </td>
+
+                                                    
+                                                    {{-- <td>{{ $d->jenis == '0' ? 'Non Customer' : 'Customer' }}</td> --}}
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -86,7 +90,7 @@
                     const field = this.dataset.field;
 
                     if (newValue !== originalContent) {
-                        fetch(/direktur/calculation / update, {
+                        fetch("/admin/kordinat/update", {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',

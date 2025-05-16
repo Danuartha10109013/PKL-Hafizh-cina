@@ -123,6 +123,7 @@ Route::middleware([AutoLogout::class])->group(function () {
         Route::prefix('kordinat')->group(function () {
 
             Route::get('/', [AdminController::class, 'koordinat'])->name('kordinat');
+            Route::post('/update', [AdminController::class, 'updateKordinat'])->name('kordinat.update');
         });
 
         Route::prefix('trashed.kelolasampah')->group(function () {
