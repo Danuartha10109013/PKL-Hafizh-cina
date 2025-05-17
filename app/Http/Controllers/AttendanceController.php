@@ -20,6 +20,8 @@ use Illuminate\Support\Str;
 
 class AttendanceController extends Controller
 {
+
+
     public function kehadiran()
     {
         $user = Auth::user();
@@ -89,7 +91,7 @@ class AttendanceController extends Controller
 
 
 
-    public function rekap()
+    public function rekap( Request $request)
     {
 
         // Ambil semua data pegawai
@@ -209,7 +211,7 @@ class AttendanceController extends Controller
         // return $usersWithLateCount;
 
         // dd($result);
-        return view('pages.admin.attendance.rekapitulasi', compact('calon', 'topUser', 'secondUser', 'thirdUser', 'result'));
+        return view('pages.admin.attendance.rekapitulasi', compact('calon', 'topUser', 'secondUser', 'thirdUser', 'result','request'));
     }
 
 

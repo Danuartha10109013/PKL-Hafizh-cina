@@ -29,7 +29,7 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/resetpassword', [LoginController::class, 'resetpassword'])->name('resetpassword');
 Route::post('/resetpassword', [LoginController::class, 'gantipassword'])->name('gantipassword');
 
-
+Route::get('/filter-attendance', [AttendanceController::class, 'filterAttendance']);
 //print with qr
 Route::get('/qrcode/{id}', [readQrController::class, 'index'])->name('read.qr');
 

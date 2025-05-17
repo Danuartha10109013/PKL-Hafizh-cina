@@ -22,17 +22,28 @@
                                                     class="btn btn-secondary" target="_blank"><em
                                                         class="icon ni ni-printer"></em><span>Cetak</span></a></li> --}}
                                             <!-- Button to open the modal for selecting month and year -->
-                                            <li>
-                                                <button class="btn btn-secondary" data-bs-toggle="modal"
-                                                    data-bs-target="filterModal">
-                                                    <em class="icon ni ni-filter"></em><span>Filter</span>
-                                                </button>
+                                            <form action="{{ route('admin.rekapitulasi') }}" method="GET" class="d-flex align-items-end ">
+                                            <li class="d-flex align-items-center gap-2">
+
+                                            <label for="start_date" class="mb-0 me-1">Dari :</label>
+                                            <input type="date" id="start_date" name="start_date" value="{{$request->start_date}}" class="form-control form-control-sm" style="width: 140px;" />
+
+                                            <label for="end_date" class="mb-0 ms-2 me-1">Sampai :</label>
+                                            <input type="date" id="end_date" name="end_date" value="{{$request->end_date}}" class="form-control form-control-sm" style="width: 140px;" />
+
+                                            <button type="submit" class="btn btn-sm btn-dark ms-3">
+                                                <em class="icon ni ni-filter"></em> Filter
+                                            </button>
+                                            
+                                        </form>
                                             </li>
+
+
                                             <li>
-                                                <button class="btn btn-secondary" data-bs-toggle="modal"
-                                                    data-bs-target="#selectMonthYearModal">
-                                                    <em class="icon ni ni-printer"></em><span>Cetak</span>
-                                                </button>
+                                                <button class="btn btn-sm btn-secondary ms-3" data-bs-toggle="modal"
+                                                data-bs-target="#selectMonthYearModal">
+                                                <em class="icon ni ni-printer"></em><span>Cetak</span>
+                                            </button>
                                             </li>
                                         </ul>
 
@@ -127,9 +138,10 @@
                     <div class="nk-block nk-block-lg">
                         <div class="card card-bordered card-preview">
                             <div class="card-inner">
-                                <table class="datatable-init table">
+                                <table id="dataTable" class="datatable-init table">
                                     <thead>
                                         <tr>
+                                            <th class="d-none">Created At</th>
                                             <th>No</th>
                                             <th>Nama Pegawai</th>
                                             <th>Masuk</th>
@@ -141,96 +153,82 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {{-- @foreach ($data as $d)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>@php
-                                                    $name = \App\Models\User::where('id', $d->enhancer)->value('name');
-                                                    $ids = \App\Models\User::where('id', $d->enhancer)->value('id');
-                                                    // dd($ids);
-                                                @endphp
-                                                    {{ $name }}
-                                                </td>
-                                                <td>
-                                                    @php
-                                                        $countmasuk = \App\Models\Attendance::where('enhancer', $ids)
-                                                            ->where('status', '0')
-                                                            ->count();
-                                                        // dd($countmasuk);
-                                                    @endphp
-                                                    {{ $countmasuk }}
-                                                </td>
-                                                <td>
-                                                    @php
-                                                        $countpulang = \App\Models\Attendance::where('enhancer', $ids)
-                                                            ->where('status', '1')
-                                                            ->count();
-                                                        // dd($countmasuk);
-                                                    @endphp
-                                                    {{ $countpulang }}
-                                                </td>
-                                                <td>
-                                                    @php
-                                                        $lebihawal = \App\Models\Attendance::where('enhancer', $ids)
-                                                            ->where('status', '1')
-                                                            ->whereTime('created_at', '<', '16:00:00')
-                                                            ->count();
-                                                    @endphp
-                                                    {{ $lebihawal }}
-                                                </td>
-                                                <td>@php
-                                                    $terlambat = \App\Models\Attendance::where('enhancer', $ids)
-                                                        ->where('status', '0')
-                                                        ->whereTime('created_at', '>', '08:00:00')
-                                                        ->count();
-                                                @endphp
-                                                    {{ $terlambat }}
-                                                </td>
-                                                <td></td>
-                                                <td>@php
-                                                    $cuti = \App\Models\Leave::where('enhancer', $ids)
-                                                        ->where('status', '0')
-                                                        ->count();
-                                                @endphp
-                                                    {{ $cuti }}</td>
-                                            </tr>
-                                        @endforeach --}}
                                         @foreach ($calon as $index => $pegawai)
-                                            @php
+                                           @php
+
                                                 $ids = $pegawai->id;
-                                                $name = $pegawai->name;
+                                                $scheduleId = $pegawai->schedule;
 
-                                                $countMasuk = \App\Models\Attendance::where('enhancer', $ids)
-                                                    ->where('status', '0')
-                                                    ->count();
-
-                                                $countPulang = \App\Models\Attendance::where('enhancer', $ids)
-                                                    ->where('status', '1')
-                                                    ->count();
-
-                                                $lebihAwal = \App\Models\Attendance::where('enhancer', $ids)
-                                                    ->where('status', '1')
-                                                    ->whereTime('created_at', '<', '16:00:00')
-                                                    ->count();
-
-                                                $terlambat = \App\Models\Attendance::where('enhancer', $ids)
-                                                    ->where('status', '0')
-                                                    ->whereTime('created_at', '>', '08:00:00')
-                                                    ->count();
+                                                $countMasuk = 0;
+                                                $countPulang = 0;
+                                                $lebihAwal = 0;
+                                                $terlambat = 0;
 
                                                 $cuti = \App\Models\Leave::where('enhancer', $ids)
-                                                    ->where('status', '0')
-                                                    ->count();
-                                            @endphp
+                                                    ->where('status', '0');
+
+                                                if (request()->start_date || request()->end_date) {
+                                                    $cuti->whereBetween('created_at', [
+                                                        \Carbon\Carbon::parse(request()->start_date)->startOfDay(),
+                                                        \Carbon\Carbon::parse(request()->end_date)->endOfDay()
+                                                    ]);
+                                                }
+                                                $cuti = $cuti->count();
+                                                if ($scheduleId) {
+                                                    $schedule = \App\Models\Schedule::find($scheduleId);
+                                                    $scheduledays = $schedule ? \App\Models\ScheduleDayM::where('schedule_id', $schedule->id)->get() : collect();
+                                                } else {
+                                                    // Pegawai belum punya schedule, jadwal kosong
+                                                    $scheduledays = collect();
+                                                }
+
+                                                $attendancesQuery = \App\Models\Attendance::where('enhancer', $ids);
+
+                                                if (request()->start_date && request()->end_date) {
+                                                    $attendancesQuery->whereBetween('created_at', [
+                                                        \Carbon\Carbon::parse(request()->start_date)->startOfDay(),
+                                                        \Carbon\Carbon::parse(request()->end_date)->endOfDay()
+                                                    ]);
+                                                }
+
+                                                $attendances = $attendancesQuery->get();
+                                                // dd($attendances);
+                                                foreach ($attendances as $att) {
+                                                    $dayName = Carbon\Carbon::parse($att->created_at)->locale('id')->dayName;
+
+                                                    $scheduleDay = $scheduledays->firstWhere('days', $dayName);
+
+                                                    // Jika gak ada jadwal hari ini, anggap skip saja
+                                                    if (!$scheduleDay) continue;
+
+                                                    $attendanceTime = Carbon\Carbon::parse($att->created_at)->format('H:i:s');
+
+                                                    if ($att->status == '0') {
+                                                        $countMasuk++;
+                                                        if ($attendanceTime > $scheduleDay->clock_in) {
+                                                            $terlambat++;
+                                                        }
+                                                    } elseif ($att->status == '1') {
+                                                        $countPulang++;
+                                                        if ($attendanceTime < $scheduleDay->clock_out) {
+                                                            $lebihAwal++;
+                                                        }
+                                                    }
+                                                }
+
+                                                $createdAt = \App\Models\Attendance::where('enhancer', $ids)->latest()->value('created_at');
+                                                @endphp
+
                                             <tr>
+                                                <td class="d-none created-at">{{ $createdAt }}</td>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $name }}</td>
-                                                <td>{{ $countMasuk }}</td>
-                                                <td>{{ $countPulang }}</td>
-                                                <td>{{ $lebihAwal }}</td>
-                                                <td>{{ $terlambat }}</td>
+                                                <td>{{ $pegawai->name }}</td>
+                                                <td id="countMasuk">{{ $countMasuk }}</td>
+                                                <td id="countPulang">{{ $countPulang }}</td>
+                                                <td id="lebihAwal">{{ $lebihAwal }}</td>
+                                                <td id="terlambat">{{ $terlambat }}</td>
                                                 <td>0</td> {{-- Default tidak hadir --}}
-                                                <td>{{ $cuti }}</td>
+                                                <td id="cuti">{{ $cuti }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
