@@ -154,7 +154,7 @@
                                     </thead>
                                     <tbody>
                                         @foreach ($calon as $index => $pegawai)
-                                           @php
+                                            @php
 
                                                 $ids = $pegawai->id;
                                                 $scheduleId = $pegawai->schedule;
@@ -163,6 +163,7 @@
                                                 $countPulang = 0;
                                                 $lebihAwal = 0;
                                                 $terlambat = 0;
+                                                $tidakHadir = 0;
 
                                                 $cuti = \App\Models\Leave::where('enhancer', $ids)
                                                     ->where('status', '0');
@@ -174,11 +175,11 @@
                                                     ]);
                                                 }
                                                 $cuti = $cuti->count();
+
                                                 if ($scheduleId) {
                                                     $schedule = \App\Models\Schedule::find($scheduleId);
                                                     $scheduledays = $schedule ? \App\Models\ScheduleDayM::where('schedule_id', $schedule->id)->get() : collect();
                                                 } else {
-                                                    // Pegawai belum punya schedule, jadwal kosong
                                                     $scheduledays = collect();
                                                 }
 
@@ -192,32 +193,58 @@
                                                 }
 
                                                 $attendances = $attendancesQuery->get();
-                                                // dd($attendances);
-                                                foreach ($attendances as $att) {
-                                                    $dayName = Carbon\Carbon::parse($att->created_at)->locale('id')->dayName;
 
+                                                // Group berdasarkan tanggal
+                                                $attendancesByDate = $attendances->groupBy(function ($item) {
+                                                    return \Carbon\Carbon::parse($item->created_at)->format('Y-m-d');
+                                                });
+
+                                                // Buat array semua tanggal kerja dalam rentang waktu
+                                                $start = request()->start_date ? \Carbon\Carbon::parse(request()->start_date) : now()->startOfMonth();
+                                                $end = request()->end_date ? \Carbon\Carbon::parse(request()->end_date) : now()->endOfMonth();
+
+                                                $workDays = [];
+                                                while ($start <= $end) {
+                                                    $dayName = $start->locale('id')->dayName;
+                                                    if ($scheduledays->where('days', $dayName)->count()) {
+                                                        $workDays[] = $start->format('Y-m-d');
+                                                    }
+                                                    $start->addDay();
+                                                }
+
+                                                foreach ($attendancesByDate as $date => $records) {
+                                                    $masuk = $records->where('status', '0')->sortBy('created_at')->first();
+                                                    $pulang = $records->where('status', '1')->sortByDesc('created_at')->first();
+
+                                                    $dayName = \Carbon\Carbon::parse($date)->locale('id')->dayName;
                                                     $scheduleDay = $scheduledays->firstWhere('days', $dayName);
 
-                                                    // Jika gak ada jadwal hari ini, anggap skip saja
                                                     if (!$scheduleDay) continue;
 
-                                                    $attendanceTime = Carbon\Carbon::parse($att->created_at)->format('H:i:s');
-
-                                                    if ($att->status == '0') {
+                                                    if ($masuk) {
                                                         $countMasuk++;
-                                                        if ($attendanceTime > $scheduleDay->clock_in) {
+                                                        $jamMasuk = \Carbon\Carbon::parse($masuk->created_at)->format('H:i:s');
+                                                        if ($jamMasuk > $scheduleDay->clock_in) {
                                                             $terlambat++;
                                                         }
-                                                    } elseif ($att->status == '1') {
-                                                        $countPulang++;
-                                                        if ($attendanceTime < $scheduleDay->clock_out) {
+                                                    }
+
+                                                    if ($pulang) {
+                                                        $jamPulang = \Carbon\Carbon::parse($pulang->created_at)->format('H:i:s');
+                                                        // dd($jamPulang < $scheduleDay->clock_out);
+                                                        if ($jamPulang < $scheduleDay->clock_out) {
                                                             $lebihAwal++;
+                                                        } else {
+                                                            $countPulang++;
                                                         }
                                                     }
                                                 }
 
+                                                $totalHariKerja = count($workDays);
+                                                $tidakHadir = $totalHariKerja - $countMasuk - $cuti;
+
                                                 $createdAt = \App\Models\Attendance::where('enhancer', $ids)->latest()->value('created_at');
-                                                @endphp
+                                            @endphp
 
                                             <tr>
                                                 <td class="d-none created-at">{{ $createdAt }}</td>
@@ -227,10 +254,12 @@
                                                 <td id="countPulang">{{ $countPulang }}</td>
                                                 <td id="lebihAwal">{{ $lebihAwal }}</td>
                                                 <td id="terlambat">{{ $terlambat }}</td>
-                                                <td>0</td> {{-- Default tidak hadir --}}
+                                                <td id="tidakHadir">{{ $tidakHadir < 0 ? 0 : $tidakHadir }}</td>
                                                 <td id="cuti">{{ $cuti }}</td>
                                             </tr>
                                         @endforeach
+
+
                                     </tbody>
                                 </table>
                             </div>

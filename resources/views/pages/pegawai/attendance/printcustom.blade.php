@@ -75,8 +75,9 @@
         <tbody>
             @forelse ($attendance as $key => $item)
                 <tr>
-                    <td>{{ $key + 1 }}</td>
-                    <td>{{ $item->date }}</td>
+                    <td>{{ $item->id }}</td>
+                    <td>{{ \Carbon\Carbon::parse($item->date)->locale('id')->isoFormat('dddd, D MMMM YYYY') }}
+</td>
                     <td>
                         @if ($item->status == '0')
                             {{ \Carbon\Carbon::parse($item->time)->format('H:i:s') }}
@@ -102,7 +103,22 @@
         </tbody>
 
     </table>
-
+    <p>Summary</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Total Terlambat</th>
+                <th>Total Tidak Masuk</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{$terlambat}}</td>
+                <td>{{$tidakMasuk}}</td>
+            </tr>
+                
+        </tbody>
+    </table>
     <div class="footer">
         <p>Dicetak pada: {{ \Carbon\Carbon::now()->format('d-m-Y H:i:s') }}</p>
     </div>
