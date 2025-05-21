@@ -21,14 +21,14 @@ class UserSeeder extends Seeder
             ],
             [
                 'name' => 'Admin',
-                'email' => 'admin@polsub',
+                'email' => 'admin@gmail.com',
                 'email_verified_at' => now(),
                 'password' => Hash::make('admin'),
                 'role' => 1, // Pastikan ini adalah role_id yang benar
-                'avatar' => 'admin.jpg',
+                // 'avatar' => 'admin.jpg',
                 'status' => '0', // Pastikan ini sesuai dengan tipe data di database
-                'schedule' => 1, // Pastikan ini adalah schedule_id yang benar
-                'delete' => '0', // Jika ini adalah boolean, sesuaikan dengan tipe data di database
+                // 'schedule' => 1, // Pastikan ini adalah schedule_id yang benar
+                // 'delete' => '0', // Jika ini adalah boolean, sesuaikan dengan tipe data di database
                 'token' => Str::random(10),
             ]
         );
@@ -40,14 +40,14 @@ class UserSeeder extends Seeder
             ],
             [
                 'name' => 'Faldi Reza',
-                'email' => 'faldi@polsub',
+                'email' => 'apisedit09@gmail.com',
                 'email_verified_at' => now(),
-                'password' => Hash::make('12345'),
+                'password' => Hash::make('Faldi123@'),
                 'role' => 2, // Pastikan ini adalah role_id yang benar
-                'avatar' => 'faldi.jpg',
+                // 'avatar' => 'faldi.jpg',
                 'status' => '1',
-                'schedule' => 1, // Pastikan ini adalah schedule_id yang benar
-                'delete' => '0',
+                // 'schedule' => , // Pastikan ini adalah schedule_id yang benar
+                // 'delete' => '0',
                 'token' => Str::random(10),
             ]
         );

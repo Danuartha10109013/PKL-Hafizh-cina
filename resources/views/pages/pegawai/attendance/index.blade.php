@@ -44,37 +44,56 @@
                         <div class="nk-block-head-content">
                             <!-- Tombol Absen Masuk/Pulang -->
                             @php
-                                use Carbon\Carbon;
 
-                                // Mengambil data hari ini
-                                $today = Carbon::today();
-                                $days = Carbon::parse($today)->locale('id')->dayName;
+                                // Ambil tanggal dan hari ini
+                                $now = \Carbon\Carbon::now();
+                                // $now = \Carbon\Carbon::parse('2025-05-21 18:00:00');
+                                $today = $now->toDateString();
+                                $dayName = $now->locale('id')->dayName;
 
-                                $jadwalin = $jadwal_detail->where('days', $days)->first();
+                                // Jika hari Sabtu atau Minggu, tidak menampilkan tombol
+                                if (!in_array($dayName, ['Sabtu', 'Minggu'])) {
+                                    $jadwalHariIni = $jadwal_detail->where('days', $dayName)->first();
 
-                                if ($jadwalin) {
-                                    // Mengambil jam clock-in dan clock-out sebagai objek Carbon
-                                    $clockin = Carbon::parse($jadwalin->clock_in);
-                                    $clockout = Carbon::parse($jadwalin->clock_out);
-                                    $now = Carbon::now();
+                                    if ($jadwalHariIni) {
+                                        $clockIn = \Carbon\Carbon::parse($jadwalHariIni->clock_in);
+                                        $clockOut = \Carbon\Carbon::parse($jadwalHariIni->clock_out);
 
-                                    // Hitung batas waktu terlambat (clock-in + 1 jam)
-                                    $lateLimit = $clockin->copy()->addHour(5);
+                                        // Range waktu absensi masuk (1 jam sebelum sampai 1 jam setelah)
+                                        $absenMasukStart = $clockIn->copy()->subHour();
+                                        $absenMasukEnd = $clockIn->copy()->addHour();
 
-                                    // Menampilkan tombol berdasarkan kondisi waktu
-                                    if ($now <= $lateLimit) {
-                                        // Menampilkan tombol untuk absen masuk jika waktu belum lewat dari clock-in
-                                        echo '<li><a id="attendance-btn" href="' .
-                                            route('pegawai.tambah-attendance') .
-                                            '" class="btn btn-secondary d-inline-block setup-cek" onclick="checkLate()">Absen Masuk</a></li>';
-                                    } elseif ($now >= $clockout) {
-                                        // Menampilkan tombol untuk absen pulang jika sudah lebih dari clock-out dengan toleransi 30 menit
-                                        echo '<li><a id="attendance-btn" href="' .
-                                            route('pegawai.tambah-attendance') .
-                                            '" class="btn btn-secondary d-inline-block setup-cek">Absen Pulang</a></li>';
+                                        // Range waktu absensi pulang (15 menit sebelum sampai 2 jam setelah)
+                                        $absenPulangStart = $clockOut->copy()->subMinutes(15);
+                                        $absenPulangEnd = $clockOut->copy()->addHour(2);
+
+                                        // Cek apakah sudah absen masuk atau pulang
+                                        $sudahAbsenMasuk =
+                                            $attendances->where('date', $today)->where('status', 'in')->count() > 0;
+                                        $sudahAbsenPulang =
+                                            $attendances->where('date', $today)->where('status', 'out')->count() > 0;
+
+                                        // Tampilkan tombol absen masuk
+                                        if (!$sudahAbsenMasuk && $now->between($absenMasukStart, $absenMasukEnd)) {
+                                            echo '<li><a id="attendance-btn" href="' .
+                                                route('pegawai.tambah-attendance') .
+                                                '?status=in" class="btn btn-secondary d-inline-block setup-cek" onclick="checkLate()">Absen Masuk</a></li>';
+                                        }
+                                        $sudahAbsenMasuk = 1;
+                                        // Tampilkan tombol absen pulang
+                                        if (
+                                            !$sudahAbsenPulang &&
+                                            $sudahAbsenMasuk &&
+                                            $now->between($absenPulangStart, $absenPulangEnd)
+                                        ) {
+                                            echo '<li><a id="attendance-btn" href="' .
+                                                route('pegawai.tambah-attendance') .
+                                                '?status=out" class="btn btn-secondary d-inline-block setup-cek">Absen Pulang</a></li>';
+                                        }
                                     }
                                 }
                             @endphp
+
                         </div>
                         <script>
                             document.addEventListener("DOMContentLoaded", function() {
@@ -222,82 +241,107 @@
                 </div>
             </div>
         </div>
-@php
+    </div>
+    @php
 
-    $user = Auth::user();
-    $jadwalMasuk = \Carbon\Carbon::createFromTime(8, 0); // default
-    $jadwalPulang = \Carbon\Carbon::createFromTime(16, 0); // default
-    // $dayName = now()->locale('id')->dayName; // e.g., "Senin", "Selasa"
-    $dayName = now()->translatedFormat('l');
+        $user = Auth::user();
+        $jadwalMasuk = \Carbon\Carbon::createFromTime(8, 0); // Default jadwal masuk
+        $jadwalPulang = \Carbon\Carbon::createFromTime(16, 0); // Default jadwal pulang
+        $dayName = now()->locale('id')->dayName; // Contoh: "Senin", "Selasa"
 
-    if ($user && $user->schedule) {
-        $schedule = \App\Models\Schedule::find($user->schedule);
-        if ($schedule) {
-            $scheduleDay = \App\Models\ScheduleDayM::where('schedule_id', $schedule->id)
-                ->where('days', $dayName)
-                ->first();
+        // Ambil jadwal sesuai schedule_id dan nama hari
+        if ($user && $user->schedule) {
+            $schedule = \App\Models\Schedule::find($user->schedule);
 
-            if ($scheduleDay && $scheduleDay->clock_in && $scheduleDay->clock_out) {
-                $jadwalMasuk = \Carbon\Carbon::createFromFormat('H:i:s', $scheduleDay->clock_in);
-                $jadwalPulang = \Carbon\Carbon::createFromFormat('H:i:s', $scheduleDay->clock_out);
+            if ($schedule) {
+                $scheduleDay = \App\Models\ScheduleDayM::where('schedule_id', $schedule->id)
+                    ->where('days', $dayName)
+                    ->first();
+
+                if ($scheduleDay && $scheduleDay->clock_in && $scheduleDay->clock_out) {
+                    $jadwalMasuk = \Carbon\Carbon::createFromFormat('H:i:s', $scheduleDay->clock_in);
+                    $jadwalPulang = \Carbon\Carbon::createFromFormat('H:i:s', $scheduleDay->clock_out);
+                }
             }
         }
-    }
 
-    $events = $attendances->map(function ($att) use ($jadwalMasuk, $jadwalPulang) {
-    $time = \Carbon\Carbon::parse($att->time);
-    $formattedTime = $time->format('H:i:s');
+        // Map ke dalam events untuk kalender
+        $events = $attendances
+            ->map(function ($att) use ($jadwalMasuk, $jadwalPulang) {
+                $time = \Carbon\Carbon::parse($att->time);
+                $formattedTime = $time->format('H:i');
 
-    $indicator = '';
+                // Pastikan tanggalnya sama untuk dibandingkan
+                $date = \Carbon\Carbon::parse($att->date)->format('Y-m-d');
+                $jadwalMasukFull = \Carbon\Carbon::createFromFormat(
+                    'Y-m-d H:i:s',
+                    $date . ' ' . $jadwalMasuk->format('H:i:s'),
+                );
+                $jadwalPulangFull = \Carbon\Carbon::createFromFormat(
+                    'Y-m-d H:i:s',
+                    $date . ' ' . $jadwalPulang->format('H:i:s'),
+                );
 
-    if ($att->status == 0 && $jadwalMasuk && $time->gt($jadwalMasuk)) {
-        $indicator = ' (Terlambat)';
-    } elseif ($att->status == 1 && $jadwalPulang && $time->lt($jadwalPulang)) {
-        $indicator = ' (Lebih Awal)';
-    }
+                $indicator = '';
 
-    return [
-        'title' => $formattedTime . $indicator,
-        'start' => $att->date,
-        'backgroundColor' => $att->status == 0 ? '#28a745' : '#fd7e14',
-        'borderColor' => $att->status == 0 ? '#28a745' : '#fd7e14',
-        'textColor' => '#fff',
-        'id' => $att->id, // Tambahkan ID agar bisa digunakan untuk print
-    ];
-})->values()->toArray();
+                if ($att->status == 0) {
+                    // Absen Masuk
+                    if ($time->lte($jadwalMasukFull)) {
+                        $indicator = ' (Tepat Waktu)';
+                    } else {
+                        $indicator = ' (Terlambat)';
+                    }
+                } elseif ($att->status == 1) {
+                    // Absen Pulang
+                    if ($time->lt($jadwalPulangFull)) {
+                        $indicator = ' (Lebih Awal)';
+                    }
+                }
 
-@endphp
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js"></script>
-<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+                return [
+                    'title' => $formattedTime . $indicator,
+                    'start' => $att->date,
+                    'backgroundColor' => $att->status == 0 ? '#28a745' : '#fd7e14',
+                    'borderColor' => $att->status == 0 ? '#28a745' : '#fd7e14',
+                    'textColor' => str_contains($indicator, 'Terlambat') ? '#000000' : '#ffffff', // merah jika terlambat
+                    'id' => $att->id,
+                ];
+            })
+            ->values()
+            ->toArray();
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var calendarEl = document.getElementById('calendar');
+    @endphp
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
 
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            events: @json($events),
-            eventClick: function(info) {
-                printAttendance(info.event.id);
-            }
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: @json($events),
+                eventClick: function(info) {
+                    printAttendance(info.event.id);
+                }
+            });
+
+            calendar.render();
         });
 
-        calendar.render();
-    });
+        function printAttendance(id) {
+            var attendanceData = @json($attendances->keyBy('id'));
+            var data = attendanceData[id];
 
-    function printAttendance(id) {
-        var attendanceData = @json($attendances->keyBy('id'));
-        var data = attendanceData[id];
+            if (!data) {
+                alert("Data tidak ditemukan.");
+                return;
+            }
 
-        if (!data) {
-            alert("Data tidak ditemukan.");
-            return;
-        }
+            let statusText = data.status == 0 ? 'Masuk' : (data.status == 1 ? 'Pulang' : 'Tidak Diketahui');
 
-        let statusText = data.status == 0 ? 'Masuk' : (data.status == 1 ? 'Pulang' : 'Tidak Diketahui');
-
-        let printContent = `
+            let printContent = `
             <h2>Detail Kehadiran</h2>
             <p><strong>Tanggal:</strong> ${data.date}</p>
             <p><strong>Waktu:</strong> ${data.time}</p>
@@ -306,23 +350,22 @@
             <div id="mapPrint" style="height: 300px; margin-top: 10px;"></div>
         `;
 
-        document.getElementById('printContent').innerHTML = printContent;
-        document.getElementById('printModal').style.display = 'block';
+            document.getElementById('printContent').innerHTML = printContent;
+            document.getElementById('printModal').style.display = 'block';
 
-        // Delay to ensure modal renders before map initializes
-        setTimeout(() => {
-            var map = L.map('mapPrint').setView([data.latitude, data.longitude], 16);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-            }).addTo(map);
-            L.marker([data.latitude, data.longitude]).addTo(map);
-        }, 300);
+            // Delay to ensure modal renders before map initializes
+            setTimeout(() => {
+                var map = L.map('mapPrint').setView([data.latitude, data.longitude], 16);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                }).addTo(map);
+                L.marker([data.latitude, data.longitude]).addTo(map);
+            }, 300);
 
-        setTimeout(() => {
-            window.print();
-            document.getElementById('printModal').style.display = 'none';
-        }, 1000);
-    }
-</script>
-
-    @endsection
+            setTimeout(() => {
+                window.print();
+                document.getElementById('printModal').style.display = 'none';
+            }, 1000);
+        }
+    </script>
+@endsection

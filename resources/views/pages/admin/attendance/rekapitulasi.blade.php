@@ -160,7 +160,6 @@
                                     <tbody>
                                         @foreach ($calon as $index => $pegawai)
                                             @php
-
                                                 $ids = $pegawai->id;
                                                 $scheduleId = $pegawai->schedule;
 
@@ -170,6 +169,7 @@
                                                 $terlambat = 0;
                                                 $tidakHadir = 0;
 
+                                                // Hitung jumlah cuti
                                                 $cuti = \App\Models\Leave::where('enhancer', $ids)->where(
                                                     'status',
                                                     '0',
@@ -181,8 +181,10 @@
                                                         \Carbon\Carbon::parse(request()->end_date)->endOfDay(),
                                                     ]);
                                                 }
+
                                                 $cuti = $cuti->count();
 
+                                                // Ambil jadwal
                                                 if ($scheduleId) {
                                                     $schedule = \App\Models\Schedule::find($scheduleId);
                                                     $scheduledays = $schedule
@@ -195,6 +197,7 @@
                                                     $scheduledays = collect();
                                                 }
 
+                                                // Ambil absensi pegawai
                                                 $attendancesQuery = \App\Models\Attendance::where('enhancer', $ids);
 
                                                 if (request()->start_date && request()->end_date) {
@@ -211,14 +214,16 @@
                                                     return \Carbon\Carbon::parse($item->created_at)->format('Y-m-d');
                                                 });
 
-                                                // Buat array semua tanggal kerja dalam rentang waktu
-                                                $start = request()->start_date
-                                                    ? \Carbon\Carbon::parse(request()->start_date)
+                                                // Tentukan rentang tanggal kerja (dari absensi pertama hingga hari ini)
+                                                $firstAttendance = \App\Models\Attendance::where('enhancer', $ids)
+                                                    ->orderBy('created_at')
+                                                    ->first();
+                                                $start = $firstAttendance
+                                                    ? $firstAttendance->created_at->copy()->startOfDay()
                                                     : now()->startOfMonth();
-                                                $end = request()->end_date
-                                                    ? \Carbon\Carbon::parse(request()->end_date)
-                                                    : now()->endOfMonth();
+                                                $end = now()->endOfDay(); // hanya sampai hari ini
 
+                                                // Buat array tanggal kerja berdasarkan jadwal
                                                 $workDays = [];
                                                 while ($start <= $end) {
                                                     $dayName = $start->locale('id')->dayName;
@@ -228,6 +233,7 @@
                                                     $start->addDay();
                                                 }
 
+                                                // Proses absensi
                                                 foreach ($attendancesByDate as $date => $records) {
                                                     $masuk = $records
                                                         ->where('status', '0')
@@ -259,7 +265,6 @@
                                                         $jamPulang = \Carbon\Carbon::parse($pulang->created_at)->format(
                                                             'H:i:s',
                                                         );
-                                                        // dd($jamPulang < $scheduleDay->clock_out);
                                                         if ($jamPulang < $scheduleDay->clock_out) {
                                                             $lebihAwal++;
                                                         } else {
@@ -268,13 +273,16 @@
                                                     }
                                                 }
 
+                                                // Hitung total hari kerja dan ketidakhadiran
                                                 $totalHariKerja = count($workDays);
                                                 $tidakHadir = $totalHariKerja - $countMasuk - $cuti;
 
+                                                // Ambil tanggal absen terakhir
                                                 $createdAt = \App\Models\Attendance::where('enhancer', $ids)
                                                     ->latest()
                                                     ->value('created_at');
                                             @endphp
+
 
                                             <tr>
                                                 <td class="d-none created-at">{{ $createdAt }}</td>
@@ -323,8 +331,8 @@
                                                 <h6 class="mb-0">🥈 Rank 2</h6>
                                             </div>
                                             <div class="card-body text-center">
-                                                <p class="font-weight-bold">{{ $secondUser->name }}</p>
-                                                <p class="mb-0 text-muted">{{ $secondUser->email }}</p>
+                                                <p class="font-weight-bold">{{ $secondUser->name ?? null }}</p>
+                                                <p class="mb-0 text-muted">{{ $secondUser->email ?? null }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -349,8 +357,8 @@
                                                 <h6 class="mb-0">🥉 Rank 3</h6>
                                             </div>
                                             <div class="card-body text-center">
-                                                <p class="font-weight-bold">{{ $thirdUser->name }}</p>
-                                                <p class="mb-0 text-muted">{{ $thirdUser->email }}</p>
+                                                <p class="font-weight-bold">{{ $thirdUser->name ?? null }}</p>
+                                                <p class="mb-0 text-muted">{{ $thirdUser->email ?? null }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -360,18 +368,23 @@
                     </div>
 
                     @php
-                        // Ubah koleksi ke collection jika belum
                         $sortedResults = collect($result)->sortByDesc('absent_count')->values();
 
                         $topAbsentUser = (object) ($sortedResults[0] ?? []);
                         $secondAbsentUser = (object) ($sortedResults[1] ?? []);
                         $thirdAbsentUser = (object) ($sortedResults[2] ?? []);
 
-                        $name1 = \App\Models\User::find($topAbsentUser->user_id);
-                        $name2 = \App\Models\User::find($secondAbsentUser->user_id);
-                        $name3 = \App\Models\User::find($thirdAbsentUser->user_id);
-                        // dd($name1);
+                        $name1 = isset($topAbsentUser->user_id)
+                            ? \App\Models\User::find($topAbsentUser->user_id)
+                            : null;
+                        $name2 = isset($secondAbsentUser->user_id)
+                            ? \App\Models\User::find($secondAbsentUser->user_id)
+                            : null;
+                        $name3 = isset($thirdAbsentUser->user_id)
+                            ? \App\Models\User::find($thirdAbsentUser->user_id)
+                            : null;
                     @endphp
+
 
 
                     <!-- Ranking Tidak Masuk (kanan) -->
@@ -387,8 +400,8 @@
                                                 <h6 class="mb-0">🥈 Rank 2</h6>
                                             </div>
                                             <div class="card-body text-center">
-                                                <p class="font-weight-bold">{{ $name2->name }}</p>
-                                                <p class="mb-0 text-muted">{{ $name2->email }}</p>
+                                                <p class="font-weight-bold">{{ $name2->name ?? null }}</p>
+                                                <p class="mb-0 text-muted">{{ $name2->email ?? null }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -413,8 +426,8 @@
                                                 <h6 class="mb-0">🥉 Rank 3</h6>
                                             </div>
                                             <div class="card-body text-center">
-                                                <p class="font-weight-bold">{{ $name3->name }}</p>
-                                                <p class="mb-0 text-muted">{{ $name3->email }}</p>
+                                                <p class="font-weight-bold">{{ $name3->name ?? null }}</p>
+                                                <p class="mb-0 text-muted">{{ $name3->email ?? null }}</p>
                                             </div>
                                         </div>
                                     </div>

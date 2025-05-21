@@ -95,64 +95,26 @@ class AttendanceController extends Controller
 
 
 
-    public function rekap( Request $request)
+    public function rekap(Request $request)
     {
+        // Ambil semua pegawai kecuali admin
+        $calon = User::where('role', '!=', 1)->get();
 
-        // Ambil semua data pegawai
-        $calon = User::where('role', '!=', 1)->get(); // Sesuaikan atribut untuk mengecualikan admin
+        $userLateCounts = []; // Untuk menyimpan jumlah keterlambatan tiap user
 
-        // Inisialisasi data absensi pegawai
-        $userAbsenceCounts = [];
-        foreach ($calon as $c) {
-            $id = $c->id;
-
-            // Ambil data absensi masuk sebelum jam 08:00
-            $seleksi = Attendance::where('enhancer', $id)
-                ->where('status', 0)
-                ->where('time', '<=', Carbon::parse('08:00:00')->toDateTimeString())
-                ->get();
-
-            // Hitung jumlah absensi
-            $absenceCount = $seleksi->count();
-
-            // Simpan jumlah absensi ke array
-            $userAbsenceCounts[$id] = $absenceCount;
-        }
-
-        // Sorting berdasarkan absensi terbanyak (desc)
-        arsort($userAbsenceCounts);
-
-        // Ambil top 3 pengguna dengan absensi terbanyak
-        $topUsers = array_slice($userAbsenceCounts, 0, 3, true);
-
-        $topUser = isset($topUsers[array_key_first($topUsers)]) ? User::find(array_key_first($topUsers)) : null;
-        $secondUser = isset(array_slice($topUsers, 1, 1, true)[array_key_first(array_slice($topUsers, 1, 1, true))]) ? User::find(array_key_first(array_slice($topUsers, 1, 1, true))) : null;
-        $thirdUser = isset(array_slice($topUsers, 2, 1, true)[array_key_first(array_slice($topUsers, 2, 1, true))]) ? User::find(array_key_first(array_slice($topUsers, 2, 1, true))) : null;
-
-        $now = Carbon::now();
-        $startOfMonth = $now->copy()->startOfMonth();
-        $today = $now->copy()->startOfDay();
-
-        $users = User::with('schedule')->get();
-        // dd($users);
-        $result = collect();
-
-        foreach ($users as $user) {
+        foreach ($calon as $user) {
             if (!$user->schedule) {
-                continue; // Lewati jika tidak punya jadwal
-            }
-
-            // Ambil hari kerja dari schedule_day
-            $scheduleDays = ScheduleDayM::where('schedule_id', $user->schedule)->get();
-            // dd($scheduleDays);
-            if ($scheduleDays->isEmpty()) {
+                $userLateCounts[$user->id] = 0;
                 continue;
             }
 
-            $workdays = collect();
-            $clockInMap = [];
+            // Ambil jadwal hari kerja user
+            $scheduleDays = ScheduleDayM::where('schedule_id', $user->schedule)->get();
+            if ($scheduleDays->isEmpty()) {
+                $userLateCounts[$user->id] = 0;
+                continue;
+            }
 
-            // Siapkan list hari kerja (e.g. ['Senin', 'Selasa', ...])
             $dayNames = [
                 0 => 'Minggu',
                 1 => 'Senin',
@@ -163,7 +125,105 @@ class AttendanceController extends Controller
                 6 => 'Sabtu'
             ];
 
-            for ($date = $startOfMonth->copy(); $date <= $today; $date->addDay()) {
+            // Cari tanggal pertama user absen (datang) agar hitungannya mulai dari sini
+            $firstAttendance = Attendance::where('enhancer', $user->id)
+                ->orderBy('created_at', 'asc')
+                ->first();
+
+            if (!$firstAttendance) {
+                $userLateCounts[$user->id] = 0; // Tidak ada absen sama sekali
+                continue;
+            }
+
+            $startDate = Carbon::parse($firstAttendance->created_at)->startOfDay();
+            $today = Carbon::now()->startOfDay();
+
+            $lateCount = 0;
+
+            // Ambil semua absensi user mulai dari firstAttendance sampai hari ini, grouped by tanggal
+            $attendances = Attendance::where('enhancer', $user->id)
+                ->whereBetween('created_at', [$startDate, $today])
+                ->get()
+                ->groupBy(fn($a) => Carbon::parse($a->created_at)->format('Y-m-d'));
+
+            // Loop dari tanggal pertama absen sampai hari ini
+            for ($date = $startDate->copy(); $date <= $today; $date->addDay()) {
+                $dayName = $dayNames[$date->dayOfWeek];
+                $matchedDay = $scheduleDays->firstWhere('days', $dayName);
+
+                if (!$matchedDay) {
+                    // Hari bukan hari kerja user, skip
+                    continue;
+                }
+
+                $scheduledClockIn = $matchedDay->clock_in; // Jam masuk dari jadwal user (format 'H:i:s')
+
+                $dateStr = $date->format('Y-m-d');
+                $attendance = $attendances->get($dateStr);
+
+                if ($attendance && $attendance->count() > 0) {
+                    // Ambil jam absen pertama (clock in)
+                    $actualTime = Carbon::parse($attendance->first()->time)->format('H:i:s');
+
+                    if ($actualTime > $scheduledClockIn) {
+                        $lateCount++;
+                    }
+                }
+                // Jika tidak absen sama sekali, tidak dihitung untuk top keterlambatan
+            }
+
+            $userLateCounts[$user->id] = $lateCount;
+        }
+
+        // Urutkan dari keterlambatan terbanyak desc
+        arsort($userLateCounts);
+
+        // Ambil top 3 user dengan keterlambatan terbanyak
+        $topUsers = array_slice($userLateCounts, 0, 3, true);
+
+        $topUser = isset($topUsers[array_key_first($topUsers)]) ? User::find(array_key_first($topUsers)) : null;
+        $secondUser = isset(array_slice($topUsers, 1, 1, true)[array_key_first(array_slice($topUsers, 1, 1, true))]) ? User::find(array_key_first(array_slice($topUsers, 1, 1, true))) : null;
+        $thirdUser = isset(array_slice($topUsers, 2, 1, true)[array_key_first(array_slice($topUsers, 2, 1, true))]) ? User::find(array_key_first(array_slice($topUsers, 2, 1, true))) : null;
+
+        // Sekarang buat hasil rekap untuk semua user (late + absent), mulai dari tanggal pertama absen user
+
+        $result = collect();
+
+        $now = Carbon::now();
+        $today = $now->copy()->startOfDay();
+
+        foreach ($calon as $user) {
+            if (!$user->schedule) {
+                continue;
+            }
+
+            $scheduleDays = ScheduleDayM::where('schedule_id', $user->schedule)->get();
+            if ($scheduleDays->isEmpty()) {
+                continue;
+            }
+
+            $dayNames = [
+                0 => 'Minggu',
+                1 => 'Senin',
+                2 => 'Selasa',
+                3 => 'Rabu',
+                4 => 'Kamis',
+                5 => 'Jumat',
+                6 => 'Sabtu'
+            ];
+
+            $firstAttendance = Attendance::where('enhancer', $user->id)
+                ->orderBy('created_at', 'asc')
+                ->first();
+
+            if (!$firstAttendance) {
+                continue; // Kalau belum pernah absen, skip
+            }
+
+            $startDate = Carbon::parse($firstAttendance->created_at)->startOfDay();
+
+            $workdays = collect();
+            for ($date = $startDate->copy(); $date <= $today; $date->addDay()) {
                 $dayName = $dayNames[$date->dayOfWeek];
                 $matchedDay = $scheduleDays->firstWhere('days', $dayName);
 
@@ -175,9 +235,8 @@ class AttendanceController extends Controller
                 }
             }
 
-            // Ambil absensi user bulan ini
             $attendances = Attendance::where('enhancer', $user->id)
-                ->whereBetween('created_at', [$startOfMonth, $today])
+                ->whereBetween('created_at', [$startDate, $today])
                 ->get()
                 ->groupBy(fn($a) => Carbon::parse($a->created_at)->format('Y-m-d'));
 
@@ -191,7 +250,6 @@ class AttendanceController extends Controller
 
                 if ($attendance && $attendance->count() > 0) {
                     $actualTime = Carbon::parse($attendance->first()->time)->format('H:i:s');
-
                     if ($actualTime > $scheduledClockIn) {
                         $lateCount++;
                     }
@@ -211,12 +269,9 @@ class AttendanceController extends Controller
             }
         }
 
-        // return response()->json($result);
-        // return $usersWithLateCount;
-
-        // dd($result);
-        return view('pages.admin.attendance.rekapitulasi', compact('calon', 'topUser', 'secondUser', 'thirdUser', 'result','request'));
+        return view('pages.admin.attendance.rekapitulasi', compact('calon', 'topUser', 'secondUser', 'thirdUser', 'result', 'request'));
     }
+
 
 
     public function cetakrekap()
@@ -540,98 +595,105 @@ class AttendanceController extends Controller
         // Tampilkan tampilan print
         return view('pages.pegawai.attendance.print', compact('attendance', 'latitude', 'longitude', 'name'));
     }
-public function printcustom(Request $request)
-{
-    $request->validate([
-        'month' => 'required|date_format:Y-m',
-        'year' => 'required|integer|min:1900|max:2099',
-    ]);
+    public function printcustom(Request $request)
+    {
+        $request->validate([
+            'month' => 'required|date_format:Y-m',
+            'year' => 'required|integer|min:1900|max:2099',
+        ]);
 
-    $month = date('m', strtotime($request->input('month')));
-    $year = $request->input('year');
-    $id_user = Auth::id();
+        $month = date('m', strtotime($request->input('month')));
+        $year = $request->input('year');
+        $id_user = Auth::id();
 
-    $user = Auth::user();
-    $name = $user->name;
-    $scheduleId = $user->schedule;
+        $user = Auth::user();
+        $name = $user->name;
+        $scheduleId = $user->schedule;
 
-    $attendanceMain = Attendance::where('enhancer', $id_user)
-        ->whereYear('date', $year)
-        ->whereMonth('date', $month)
-        ->get();
+        $attendanceMain = Attendance::where('enhancer', $id_user)
+            ->whereYear('date', $year)
+            ->whereMonth('date', $month)
+            ->get();
 
-    $attendance = $attendanceMain;
-    $firstAttendance = $attendance->first();
-    $latitude = $firstAttendance ? explode(',', $firstAttendance->coordinate)[0] ?? null : null;
-    $longitude = $firstAttendance ? explode(',', $firstAttendance->coordinate)[1] ?? null : null;
+        $attendance = $attendanceMain;
+        $firstAttendance = $attendance->first();
+        $latitude = $firstAttendance ? explode(',', $firstAttendance->coordinate)[0] ?? null : null;
+        $longitude = $firstAttendance ? explode(',', $firstAttendance->coordinate)[1] ?? null : null;
 
-    // Ambil jadwal harian
-    $scheduledays = collect();
-    if ($scheduleId) {
-        $schedule = Schedule::find($scheduleId);
-        $scheduledays = $schedule ? ScheduleDayM::where('schedule_id', $schedule->id)->get() : collect();
-    }
-
-    $countMasuk = 0;
-    $countPulang = 0;
-    $terlambat = 0;
-    $lebihAwal = 0;
-    $tidakMasuk = 0;
-
-    // Ambil seluruh absensi bulan ini
-    $attendances = Attendance::where('enhancer', $id_user)
-        ->whereYear('date', $year)
-        ->whereMonth('date', $month)
-        ->get();
-
-    // Kelompokkan absensi berdasarkan tanggal (untuk pencocokan tidak masuk)
-    $groupedAttendances = $attendances->groupBy(function($item) {
-        return Carbon::parse($item->date)->format('Y-m-d');
-    });
-
-    // Loop semua hari di bulan tersebut
-    $startOfMonth = Carbon::createFromDate($year, $month, 1);
-    $endOfMonth = $startOfMonth->copy()->endOfMonth();
-
-    for ($date = $startOfMonth->copy(); $date->lte($endOfMonth); $date->addDay()) {
-        $dayName = $date->locale('id')->dayName;
-
-        // Cek apakah hari ini ada jadwal
-        $scheduleDay = $scheduledays->firstWhere('days', $dayName);
-        if (!$scheduleDay) {
-            continue; // Hari ini tidak ada jadwal masuk
+        // Ambil jadwal harian
+        $scheduledays = collect();
+        if ($scheduleId) {
+            $schedule = Schedule::find($scheduleId);
+            $scheduledays = $schedule ? ScheduleDayM::where('schedule_id', $schedule->id)->get() : collect();
         }
 
-        // Cek apakah ada absensi pada tanggal ini
-        $attendancesOnDate = $groupedAttendances[$date->format('Y-m-d')] ?? collect();
+        $countMasuk = 0;
+        $countPulang = 0;
+        $terlambat = 0;
+        $lebihAwal = 0;
+        $tidakMasuk = 0;
 
-        $masukToday = $attendancesOnDate->firstWhere('status', '0');
-        $pulangToday = $attendancesOnDate->firstWhere('status', '1');
+        // Ambil seluruh absensi bulan ini
+        $attendances = Attendance::where('enhancer', $id_user)
+            ->whereYear('date', $year)
+            ->whereMonth('date', $month)
+            ->get();
 
-        if ($masukToday) {
-            $countMasuk++;
-            $attendanceTime = Carbon::parse($masukToday->created_at)->format('H:i:s');
-            if ($attendanceTime > $scheduleDay->clock_in) {
-                $terlambat++;
+        // Kelompokkan absensi berdasarkan tanggal (untuk pencocokan tidak masuk)
+        $groupedAttendances = $attendances->groupBy(function ($item) {
+            return Carbon::parse($item->date)->format('Y-m-d');
+        });
+
+        // Loop semua hari di bulan tersebut
+        $startOfMonth = Carbon::createFromDate($year, $month, 1);
+        $endOfMonth = $startOfMonth->copy()->endOfMonth();
+
+        for ($date = $startOfMonth->copy(); $date->lte($endOfMonth); $date->addDay()) {
+            $dayName = $date->locale('id')->dayName;
+
+            // Cek apakah hari ini ada jadwal
+            $scheduleDay = $scheduledays->firstWhere('days', $dayName);
+            if (!$scheduleDay) {
+                continue; // Hari ini tidak ada jadwal masuk
             }
-        } else {
-            $tidakMasuk++;
-        }
 
-        if ($pulangToday) {
-            $countPulang++;
-            $attendanceTime = Carbon::parse($pulangToday->created_at)->format('H:i:s');
-            if ($attendanceTime < $scheduleDay->clock_out) {
-                $lebihAwal++;
+            // Cek apakah ada absensi pada tanggal ini
+            $attendancesOnDate = $groupedAttendances[$date->format('Y-m-d')] ?? collect();
+
+            $masukToday = $attendancesOnDate->firstWhere('status', '0');
+            $pulangToday = $attendancesOnDate->firstWhere('status', '1');
+
+            if ($masukToday) {
+                $countMasuk++;
+                $attendanceTime = Carbon::parse($masukToday->created_at)->format('H:i:s');
+                if ($attendanceTime > $scheduleDay->clock_in) {
+                    $terlambat++;
+                }
+            } else {
+                $tidakMasuk++;
+            }
+
+            if ($pulangToday) {
+                $countPulang++;
+                $attendanceTime = Carbon::parse($pulangToday->created_at)->format('H:i:s');
+                if ($attendanceTime < $scheduleDay->clock_out) {
+                    $lebihAwal++;
+                }
             }
         }
-    }
 
-    return view('pages.pegawai.attendance.printcustom', compact(
-        'attendance', 'latitude', 'longitude', 'name',
-        'countMasuk', 'countPulang', 'terlambat', 'lebihAwal', 'tidakMasuk'
-    ));
-}
+        return view('pages.pegawai.attendance.printcustom', compact(
+            'attendance',
+            'latitude',
+            'longitude',
+            'name',
+            'countMasuk',
+            'countPulang',
+            'terlambat',
+            'lebihAwal',
+            'tidakMasuk'
+        ));
+    }
 
 
 
@@ -800,7 +862,7 @@ public function printcustom(Request $request)
 
             $filename = 'Surat_Peringatan_SP-' . $peringatan->status . '_' . $user->name . '.pdf';
             // Kirim email dengan attachment
-            Mail::to($user->email)->send(new AttendanceReminder($user, $pdfContent, $filename,$data));
+            Mail::to($user->email)->send(new AttendanceReminder($user, $pdfContent, $filename, $data));
 
             return redirect()->back()->with('success', 'Email dengan lampiran PDF telah dikirim');
         } else {
