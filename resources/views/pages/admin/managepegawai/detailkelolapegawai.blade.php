@@ -25,8 +25,8 @@
                                             <div class="img-fluid rounded-circle shadow-sm"
                                                 style="width: 150px; height: 150px; background-color: #2c3e50; display: flex; align-items: center; justify-content: center; margin: 0 auto; overflow: hidden;">
                                                 @if ($item->avatar)
-                                                    <img src="{{ asset('storage/'.$item->avatar) }}" alt="{{ $item->name }}'s avatar"
-                                                        class="img-fluid text-white"
+                                                    <img src="{{ asset('storage/' . $item->avatar) }}"
+                                                        alt="{{ $item->name }}'s avatar" class="img-fluid text-white"
                                                         style="width: 100%; height: 100%; object-fit: cover;">
                                                 @else
                                                     <span>
@@ -39,15 +39,12 @@
                                         </div>
                                         <div class="text-center mb-4">
                                             <div class="img-fluid rounded-circle shadow-sm"
-                                                style="width: 150px; height: 150px; background-color: #2c3e50; display: flex; align-items: center; justify-content: center; margin: 0 auto; overflow: hidden;">
-                                                @if ($item->avatar)
-                                                    <img src="{{ asset('storage/'.$item->acuan) }}" alt="{{ $item->acuan }}'s avatar"
-                                                        class="img-fluid text-white"
-                                                        style="width: 100%; height: 100%; object-fit: cover;">
+                                                style="width: 150px; height: 150px; background-color: #2c3e50; overflow: hidden; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                                                @if ($item->acuan)
+                                                    <img src="{{ asset('storage/' . $item->acuan) }}" alt="Acuan Absensi"
+                                                        style="width: 150px; height: 150px; object-fit: cover; object-position: center;">
                                                 @else
-                                                    <span>
-                                                        No image
-                                                    </span>
+                                                    <span>No image</span>
                                                 @endif
                                             </div>
                                             <h5 class="mt-3">Acuan Absensi</h5>

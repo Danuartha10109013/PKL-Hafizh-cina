@@ -22,28 +22,33 @@
                                                     class="btn btn-secondary" target="_blank"><em
                                                         class="icon ni ni-printer"></em><span>Cetak</span></a></li> --}}
                                             <!-- Button to open the modal for selecting month and year -->
-                                            <form action="{{ route('admin.rekapitulasi') }}" method="GET" class="d-flex align-items-end ">
-                                            <li class="d-flex align-items-center gap-2">
+                                            <form action="{{ route('admin.rekapitulasi') }}" method="GET"
+                                                class="d-flex align-items-end ">
+                                                <li class="d-flex align-items-center gap-2">
 
-                                            <label for="start_date" class="mb-0 me-1">Dari :</label>
-                                            <input type="date" id="start_date" name="start_date" value="{{$request->start_date}}" class="form-control form-control-sm" style="width: 140px;" />
+                                                    <label for="start_date" class="mb-0 me-1">Dari :</label>
+                                                    <input type="date" id="start_date" name="start_date"
+                                                        value="{{ $request->start_date }}"
+                                                        class="form-control form-control-sm" style="width: 140px;" />
 
-                                            <label for="end_date" class="mb-0 ms-2 me-1">Sampai :</label>
-                                            <input type="date" id="end_date" name="end_date" value="{{$request->end_date}}" class="form-control form-control-sm" style="width: 140px;" />
+                                                    <label for="end_date" class="mb-0 ms-2 me-1">Sampai :</label>
+                                                    <input type="date" id="end_date" name="end_date"
+                                                        value="{{ $request->end_date }}"
+                                                        class="form-control form-control-sm" style="width: 140px;" />
 
-                                            <button type="submit" class="btn btn-sm btn-dark ms-3">
-                                                <em class="icon ni ni-filter"></em> Filter
-                                            </button>
-                                            
-                                        </form>
+                                                    <button type="submit" class="btn btn-sm btn-secondary ms-3">
+                                                        <em class="icon ni ni-filter"></em> Filter
+                                                    </button>
+
+                                            </form>
                                             </li>
 
 
                                             <li>
                                                 <button class="btn btn-sm btn-secondary ms-3" data-bs-toggle="modal"
-                                                data-bs-target="#selectMonthYearModal">
-                                                <em class="icon ni ni-printer"></em><span>Cetak</span>
-                                            </button>
+                                                    data-bs-target="#selectMonthYearModal">
+                                                    <em class="icon ni ni-printer"></em><span>Cetak</span>
+                                                </button>
                                             </li>
                                         </ul>
 
@@ -165,20 +170,27 @@
                                                 $terlambat = 0;
                                                 $tidakHadir = 0;
 
-                                                $cuti = \App\Models\Leave::where('enhancer', $ids)
-                                                    ->where('status', '0');
+                                                $cuti = \App\Models\Leave::where('enhancer', $ids)->where(
+                                                    'status',
+                                                    '0',
+                                                );
 
                                                 if (request()->start_date || request()->end_date) {
                                                     $cuti->whereBetween('created_at', [
                                                         \Carbon\Carbon::parse(request()->start_date)->startOfDay(),
-                                                        \Carbon\Carbon::parse(request()->end_date)->endOfDay()
+                                                        \Carbon\Carbon::parse(request()->end_date)->endOfDay(),
                                                     ]);
                                                 }
                                                 $cuti = $cuti->count();
 
                                                 if ($scheduleId) {
                                                     $schedule = \App\Models\Schedule::find($scheduleId);
-                                                    $scheduledays = $schedule ? \App\Models\ScheduleDayM::where('schedule_id', $schedule->id)->get() : collect();
+                                                    $scheduledays = $schedule
+                                                        ? \App\Models\ScheduleDayM::where(
+                                                            'schedule_id',
+                                                            $schedule->id,
+                                                        )->get()
+                                                        : collect();
                                                 } else {
                                                     $scheduledays = collect();
                                                 }
@@ -188,7 +200,7 @@
                                                 if (request()->start_date && request()->end_date) {
                                                     $attendancesQuery->whereBetween('created_at', [
                                                         \Carbon\Carbon::parse(request()->start_date)->startOfDay(),
-                                                        \Carbon\Carbon::parse(request()->end_date)->endOfDay()
+                                                        \Carbon\Carbon::parse(request()->end_date)->endOfDay(),
                                                     ]);
                                                 }
 
@@ -200,8 +212,12 @@
                                                 });
 
                                                 // Buat array semua tanggal kerja dalam rentang waktu
-                                                $start = request()->start_date ? \Carbon\Carbon::parse(request()->start_date) : now()->startOfMonth();
-                                                $end = request()->end_date ? \Carbon\Carbon::parse(request()->end_date) : now()->endOfMonth();
+                                                $start = request()->start_date
+                                                    ? \Carbon\Carbon::parse(request()->start_date)
+                                                    : now()->startOfMonth();
+                                                $end = request()->end_date
+                                                    ? \Carbon\Carbon::parse(request()->end_date)
+                                                    : now()->endOfMonth();
 
                                                 $workDays = [];
                                                 while ($start <= $end) {
@@ -213,24 +229,36 @@
                                                 }
 
                                                 foreach ($attendancesByDate as $date => $records) {
-                                                    $masuk = $records->where('status', '0')->sortBy('created_at')->first();
-                                                    $pulang = $records->where('status', '1')->sortByDesc('created_at')->first();
+                                                    $masuk = $records
+                                                        ->where('status', '0')
+                                                        ->sortBy('created_at')
+                                                        ->first();
+                                                    $pulang = $records
+                                                        ->where('status', '1')
+                                                        ->sortByDesc('created_at')
+                                                        ->first();
 
                                                     $dayName = \Carbon\Carbon::parse($date)->locale('id')->dayName;
                                                     $scheduleDay = $scheduledays->firstWhere('days', $dayName);
 
-                                                    if (!$scheduleDay) continue;
+                                                    if (!$scheduleDay) {
+                                                        continue;
+                                                    }
 
                                                     if ($masuk) {
                                                         $countMasuk++;
-                                                        $jamMasuk = \Carbon\Carbon::parse($masuk->created_at)->format('H:i:s');
+                                                        $jamMasuk = \Carbon\Carbon::parse($masuk->created_at)->format(
+                                                            'H:i:s',
+                                                        );
                                                         if ($jamMasuk > $scheduleDay->clock_in) {
                                                             $terlambat++;
                                                         }
                                                     }
 
                                                     if ($pulang) {
-                                                        $jamPulang = \Carbon\Carbon::parse($pulang->created_at)->format('H:i:s');
+                                                        $jamPulang = \Carbon\Carbon::parse($pulang->created_at)->format(
+                                                            'H:i:s',
+                                                        );
                                                         // dd($jamPulang < $scheduleDay->clock_out);
                                                         if ($jamPulang < $scheduleDay->clock_out) {
                                                             $lebihAwal++;
@@ -243,7 +271,9 @@
                                                 $totalHariKerja = count($workDays);
                                                 $tidakHadir = $totalHariKerja - $countMasuk - $cuti;
 
-                                                $createdAt = \App\Models\Attendance::where('enhancer', $ids)->latest()->value('created_at');
+                                                $createdAt = \App\Models\Attendance::where('enhancer', $ids)
+                                                    ->latest()
+                                                    ->value('created_at');
                                             @endphp
 
                                             <tr>
@@ -499,7 +529,7 @@
                                             </td>
 
                                             <td>
-                                                <button type="submit" class="btn btn-dark">Kirim Peringatan</button>
+                                                <button type="submit" class="btn btn-secondary">Kirim Peringatan</button>
                                             </td>
                                         </form>
 
