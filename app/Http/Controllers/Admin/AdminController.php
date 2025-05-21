@@ -107,7 +107,7 @@ class AdminController extends Controller
             ->groupBy('gender')
             ->pluck('total', 'gender')->toArray();
 
-        $maleCount = $genderCounts['Laki - laki'] ?? 0;
+        $maleCount = $genderCounts['Laki - Laki'] ?? 0;
         $femaleCount = $genderCounts['Perempuan'] ?? 0;
 
         // Gather all attendance stats for the chart
@@ -179,26 +179,26 @@ class AdminController extends Controller
     public function koordinat()
     {
         $data = Koordinat::find(1);
-        return view('pages.admin.koordinat.index',compact('data'));
+        return view('pages.admin.koordinat.index', compact('data'));
     }
 
-public function updateKordinat(Request $request)
-{
-    $request->validate([
-        'id' => 'required|integer|exists:koordinat,id',
-        'field' => 'required|in:latitude,longitude',
-        'value' => 'required|string',
-    ]);
+    public function updateKordinat(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer|exists:koordinat,id',
+            'field' => 'required|in:latitude,longitude',
+            'value' => 'required|string',
+        ]);
 
-    $koordinat = Koordinat::find($request->id);
+        $koordinat = Koordinat::find($request->id);
 
-    if (!$koordinat) {
-        return response()->json(['success' => false, 'message' => 'Data tidak ditemukan.']);
+        if (!$koordinat) {
+            return response()->json(['success' => false, 'message' => 'Data tidak ditemukan.']);
+        }
+
+        $koordinat->{$request->field} = $request->value;
+        $koordinat->save();
+
+        return response()->json(['success' => true]);
     }
-
-    $koordinat->{$request->field} = $request->value;
-    $koordinat->save();
-
-    return response()->json(['success' => true]);
-}
 }

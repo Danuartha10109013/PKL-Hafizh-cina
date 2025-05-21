@@ -36,21 +36,8 @@ Route::get('/qrcode/{id}', [readQrController::class, 'index'])->name('read.qr');
 //auto Logout
 Route::middleware([AutoLogout::class])->group(function () {
 
-    Route::get('/download/{filename}', function ($filename) {
-        // Decode filename if necessary
-        $filename = urldecode($filename);
+    Route::get('/download/{filename}', [AttendanceController::class, 'download'])->name('download');
 
-        // Path to the file in the storage/app/public folder
-        $filePath = 'lampiran_cuti/' . $filename;
-
-        // Check if the file exists
-        if (!Storage::disk('public')->exists($filePath)) {
-            abort(Response::HTTP_NOT_FOUND, 'File not found');
-        }
-
-        // Return the file for download
-        return Storage::disk('public')->download($filePath);
-    })->name('download');
 
     // Admin routes group with middleware and prefix
     Route::group(['prefix' => 'admin', 'middleware' => ['admin'], 'as' => 'admin.'], function () {

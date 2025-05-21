@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\Response;
 
 class AttendanceController extends Controller
 {
@@ -919,5 +920,22 @@ class AttendanceController extends Controller
         $filename = 'Surat_Peringatan_SP-' . $data->status . '_' . $user->name . '.pdf';
 
         return $pdf->download($filename);
+    }
+
+    public function download($filename)
+    {
+        // Decode filename if necessary
+        $filename = urldecode($filename);
+
+        // Path to the file in the storage/app/public folder
+        $filePath = 'lampiran_cuti/' . $filename;
+
+        // Check if the file exists
+        if (!Storage::disk('public')->exists($filePath)) {
+            abort(Response::HTTP_NOT_FOUND, 'File not found');
+        }
+
+        // Return the file for download
+        return Storage::disk('public')->download($filePath);
     }
 }
