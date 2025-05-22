@@ -214,23 +214,49 @@
                                                     return \Carbon\Carbon::parse($item->created_at)->format('Y-m-d');
                                                 });
 
-                                                // Tentukan rentang tanggal kerja (dari absensi pertama hingga hari ini)
+                                                // Ambil tanggal absensi pertama
                                                 $firstAttendance = \App\Models\Attendance::where('enhancer', $ids)
                                                     ->orderBy('created_at')
                                                     ->first();
-                                                $start = $firstAttendance
-                                                    ? $firstAttendance->created_at->copy()->startOfDay()
-                                                    : now()->startOfMonth();
-                                                $end = now()->endOfDay(); // hanya sampai hari ini
 
-                                                // Buat array tanggal kerja berdasarkan jadwal
+                                                // Rentang hanya dari absensi pertama hingga hari ini
+                                                $start = $firstAttendance
+                                                    ? \Carbon\Carbon::parse($firstAttendance->created_at)->startOfDay()
+                                                    : now()->startOfMonth();
+                                                $end = now()->endOfDay(); // tidak termasuk masa depan
+
+                                                // Buat array tanggal kerja sesuai jadwal (hanya hari kerja)
+                                                // Ambil tanggal absensi pertama
+                                                $firstAttendance = \App\Models\Attendance::where('enhancer', $ids)
+                                                    ->orderBy('created_at')
+                                                    ->first();
+                                                $firstAbsenceDate = $firstAttendance
+                                                    ? \Carbon\Carbon::parse($firstAttendance->created_at)->startOfDay()
+                                                    : null;
+
+                                                // Gunakan tanggal dari request atau fallback
+                                                $start = request()->start_date
+                                                    ? \Carbon\Carbon::parse(request()->start_date)->startOfDay()
+                                                    : $firstAbsenceDate ?? now()->startOfMonth();
+
+                                                $end = request()->end_date
+                                                    ? \Carbon\Carbon::parse(request()->end_date)->endOfDay()
+                                                    : now()->endOfDay();
+
+                                                // Jika filter lebih awal dari absensi pertama, set start dari absensi pertama
+                                                if ($firstAbsenceDate && $start < $firstAbsenceDate) {
+                                                    $start = $firstAbsenceDate->copy();
+                                                }
+
+                                                // Buat array tanggal kerja sesuai jadwal (hanya hari kerja)
                                                 $workDays = [];
-                                                while ($start <= $end) {
-                                                    $dayName = $start->locale('id')->dayName;
+                                                $current = $start->copy();
+                                                while ($current <= $end) {
+                                                    $dayName = $current->locale('id')->dayName;
                                                     if ($scheduledays->where('days', $dayName)->count()) {
-                                                        $workDays[] = $start->format('Y-m-d');
+                                                        $workDays[] = $current->format('Y-m-d');
                                                     }
-                                                    $start->addDay();
+                                                    $current->addDay();
                                                 }
 
                                                 // Proses absensi
@@ -265,23 +291,28 @@
                                                         $jamPulang = \Carbon\Carbon::parse($pulang->created_at)->format(
                                                             'H:i:s',
                                                         );
+
+                                                        // Hitung total pulang (semua)
+                                                        $countPulang++;
+
+                                                        // Cek jika pulangnya lebih awal dari jadwal
                                                         if ($jamPulang < $scheduleDay->clock_out) {
                                                             $lebihAwal++;
-                                                        } else {
-                                                            $countPulang++;
                                                         }
                                                     }
                                                 }
 
-                                                // Hitung total hari kerja dan ketidakhadiran
+                                                // Hitung ketidakhadiran
                                                 $totalHariKerja = count($workDays);
+                                                // dd($totalHariKerja);
                                                 $tidakHadir = $totalHariKerja - $countMasuk - $cuti;
 
-                                                // Ambil tanggal absen terakhir
+                                                // Tanggal terakhir absen
                                                 $createdAt = \App\Models\Attendance::where('enhancer', $ids)
                                                     ->latest()
                                                     ->value('created_at');
                                             @endphp
+
 
 
                                             <tr>

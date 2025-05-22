@@ -191,7 +191,8 @@ class AttendanceController extends Controller
         $result = collect();
 
         $now = Carbon::now();
-        $today = $now->copy()->startOfDay();
+        // $today = $now->copy()->startOfDay();
+        $today = $now->copy()->startOfDay()->addDay();
 
         foreach ($calon as $user) {
             if (!$user->schedule) {
@@ -240,7 +241,7 @@ class AttendanceController extends Controller
                 ->whereBetween('created_at', [$startDate, $today])
                 ->get()
                 ->groupBy(fn($a) => Carbon::parse($a->created_at)->format('Y-m-d'));
-
+            // dd($attendances);
             $lateCount = 0;
             $absentDates = [];
 
@@ -264,7 +265,7 @@ class AttendanceController extends Controller
                     'user_id' => $user->id,
                     'name' => $user->name,
                     'late_count' => $lateCount,
-                    'absent_count' => count($absentDates),
+                    'absent_count' => count($absentDates) - 1,
                     'missing_dates' => $absentDates,
                 ]);
             }
@@ -611,15 +612,60 @@ class AttendanceController extends Controller
         $name = $user->name;
         $scheduleId = $user->schedule;
 
-        $attendanceMain = Attendance::where('enhancer', $id_user)
+        // Ambil absensi pertama user secara keseluruhan (untuk batas bawah global)
+        $firstAttendanceGlobal = Attendance::where('enhancer', $id_user)
+            ->orderBy('date')
+            ->first();
+
+        if (!$firstAttendanceGlobal) {
+            // Tidak ada absensi sama sekali
+            return view('pages.pegawai.attendance.printcustom', [
+                'attendance' => collect(),
+                'latitude' => null,
+                'longitude' => null,
+                'name' => $name,
+                'countMasuk' => 0,
+                'countPulang' => 0,
+                'terlambat' => 0,
+                'lebihAwal' => 0,
+                'tidakMasuk' => 0,
+            ]);
+        }
+
+        $firstAttendanceGlobalDate = Carbon::parse($firstAttendanceGlobal->date);
+
+        // Tentukan awal dan akhir bulan input
+        $startOfMonth = Carbon::createFromDate($year, $month, 1)->startOfDay();
+        $endOfMonth = $startOfMonth->copy()->endOfMonth()->endOfDay();
+
+        // Ambil absensi di bulan dan tahun input
+        $attendances = Attendance::where('enhancer', $id_user)
             ->whereYear('date', $year)
             ->whereMonth('date', $month)
             ->get();
 
-        $attendance = $attendanceMain;
-        $firstAttendance = $attendance->first();
-        $latitude = $firstAttendance ? explode(',', $firstAttendance->coordinate)[0] ?? null : null;
-        $longitude = $firstAttendance ? explode(',', $firstAttendance->coordinate)[1] ?? null : null;
+        // Jika tidak ada absensi di bulan ini, maka 0 semua
+        if ($attendances->isEmpty()) {
+            return view('pages.pegawai.attendance.printcustom', [
+                'attendance' => collect(),
+                'latitude' => null,
+                'longitude' => null,
+                'name' => $name,
+                'countMasuk' => 0,
+                'countPulang' => 0,
+                'terlambat' => 0,
+                'lebihAwal' => 0,
+                'tidakMasuk' => 0,
+            ]);
+        }
+
+        // Ambil tanggal absensi pertama di bulan ini
+        $firstAttendanceInMonth = $attendances->sortBy('date')->first();
+        $firstAttendanceInMonthDate = Carbon::parse($firstAttendanceInMonth->date);
+
+        // Ambil koordinat dari absensi pertama di bulan ini
+        $latitude = $firstAttendanceInMonth ? explode(',', $firstAttendanceInMonth->coordinate)[0] ?? null : null;
+        $longitude = $firstAttendanceInMonth ? explode(',', $firstAttendanceInMonth->coordinate)[1] ?? null : null;
 
         // Ambil jadwal harian
         $scheduledays = collect();
@@ -628,38 +674,29 @@ class AttendanceController extends Controller
             $scheduledays = $schedule ? ScheduleDayM::where('schedule_id', $schedule->id)->get() : collect();
         }
 
+        // Kelompokkan absensi per tanggal
+        $groupedAttendances = $attendances->groupBy(function ($item) {
+            return Carbon::parse($item->date)->format('Y-m-d');
+        });
+
         $countMasuk = 0;
         $countPulang = 0;
         $terlambat = 0;
         $lebihAwal = 0;
         $tidakMasuk = 0;
 
-        // Ambil seluruh absensi bulan ini
-        $attendances = Attendance::where('enhancer', $id_user)
-            ->whereYear('date', $year)
-            ->whereMonth('date', $month)
-            ->get();
-
-        // Kelompokkan absensi berdasarkan tanggal (untuk pencocokan tidak masuk)
-        $groupedAttendances = $attendances->groupBy(function ($item) {
-            return Carbon::parse($item->date)->format('Y-m-d');
-        });
-
-        // Loop semua hari di bulan tersebut
-        $startOfMonth = Carbon::createFromDate($year, $month, 1);
-        $endOfMonth = $startOfMonth->copy()->endOfMonth();
-
+        // Loop dari awal bulan sampai akhir bulan
         for ($date = $startOfMonth->copy(); $date->lte($endOfMonth); $date->addDay()) {
             $dayName = $date->locale('id')->dayName;
 
-            // Cek apakah hari ini ada jadwal
+            // Cek ada jadwal hari ini?
             $scheduleDay = $scheduledays->firstWhere('days', $dayName);
             if (!$scheduleDay) {
-                continue; // Hari ini tidak ada jadwal masuk
+                continue; // Tidak ada jadwal hari ini
             }
 
-            // Cek apakah ada absensi pada tanggal ini
-            $attendancesOnDate = $groupedAttendances[$date->format('Y-m-d')] ?? collect();
+            $dateStr = $date->format('Y-m-d');
+            $attendancesOnDate = $groupedAttendances[$dateStr] ?? collect();
 
             $masukToday = $attendancesOnDate->firstWhere('status', '0');
             $pulangToday = $attendancesOnDate->firstWhere('status', '1');
@@ -671,7 +708,10 @@ class AttendanceController extends Controller
                     $terlambat++;
                 }
             } else {
-                $tidakMasuk++;
+                // Jangan hitung tidakMasuk kalau tanggal ini lebih kecil dari tanggal absensi pertama di bulan itu
+                if ($date->gte($firstAttendanceInMonthDate)) {
+                    $tidakMasuk++;
+                }
             }
 
             if ($pulangToday) {
@@ -684,7 +724,7 @@ class AttendanceController extends Controller
         }
 
         return view('pages.pegawai.attendance.printcustom', compact(
-            'attendance',
+            'attendances',
             'latitude',
             'longitude',
             'name',
@@ -695,6 +735,8 @@ class AttendanceController extends Controller
             'tidakMasuk'
         ));
     }
+
+
 
 
 
@@ -735,8 +777,8 @@ class AttendanceController extends Controller
 
     public function send(Request $request, $id)
     {
+        // dd($request->All());
         $user = User::find($id);
-
         if ($user) {
             // Simpan data peringatan
             $peringatan = new PeringatanM();
@@ -745,16 +787,18 @@ class AttendanceController extends Controller
             $peringatan->user_id = $id;
             $peringatan->save(); // Simpan dulu agar id muncul
 
+            // dd($peringatan);
             // Sekarang $peringatan->id sudah ada, baru generate QR
             $qrContent = "Surat Peringatan\n"
                 . "Nomor: " . $peringatan->id . "\n"
                 . "Ditujukan untuk : " . $user->name . "\n"
-                . "PT Pratama Solusi Teknologi";
+                . "PT XYZ";
 
             // Generate dan simpan QR
             $fileName = 'qr_' . $peringatan->id . '.png';
             $filePath = 'public/qrSP/' . $fileName;
 
+            // dd($fileName);
             $result = Builder::create()
                 ->writer(new PngWriter())
                 ->data($qrContent)
@@ -915,8 +959,10 @@ class AttendanceController extends Controller
     {
         $data = PeringatanM::findOrFail($id);
         $user = User::findOrFail($data->user_id);
-
-        $pdf = Pdf::loadView('pages.admin.attendance.contohsuratperingatan1', compact('data', 'user'));
+        $qrPath = storage_path('app/public/qrSP/' . $data->qr);
+        $qrBase64 = base64_encode(file_get_contents($qrPath));
+        $qrImage = 'data:image/png;base64,' . $qrBase64;
+        $pdf = Pdf::loadView('pages.admin.attendance.contohsuratperingatan2', compact('data', 'user', 'qrImage'));
         $filename = 'Surat_Peringatan_SP-' . $data->status . '_' . $user->name . '.pdf';
 
         return $pdf->download($filename);

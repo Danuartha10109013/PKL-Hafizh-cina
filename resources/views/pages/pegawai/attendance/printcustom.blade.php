@@ -73,11 +73,11 @@
             </tr>
         </thead>
         <tbody>
-            @forelse ($attendance as $key => $item)
+            @forelse ($attendances as $key => $item)
                 <tr>
                     <td>{{ $item->id }}</td>
                     <td>{{ \Carbon\Carbon::parse($item->date)->locale('id')->isoFormat('dddd, D MMMM YYYY') }}
-</td>
+                    </td>
                     <td>
                         @if ($item->status == '0')
                             {{ \Carbon\Carbon::parse($item->time)->format('H:i:s') }}
@@ -113,10 +113,9 @@
         </thead>
         <tbody>
             <tr>
-                <td>{{$terlambat}}</td>
-                <td>{{$tidakMasuk}}</td>
+                <td>{{ $terlambat }}</td>
+                <td>{{ $tidakMasuk }}</td>
             </tr>
-                
         </tbody>
     </table>
     <div class="footer">
