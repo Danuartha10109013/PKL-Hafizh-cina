@@ -47,7 +47,7 @@
 
                                 // Ambil tanggal dan hari ini
                                 $now = \Carbon\Carbon::now();
-                                // $now = \Carbon\Carbon::parse('2025-05-21 18:00:00');
+                                $now = \Carbon\Carbon::parse('2025-05-22 18:00:00');
                                 $today = $now->toDateString();
                                 $dayName = $now->locale('id')->dayName;
 

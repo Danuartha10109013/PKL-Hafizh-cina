@@ -1,7 +1,9 @@
 @extends('layout.pegawai.main')
+
 @section('title')
     Pengajuan Cuti
 @endsection
+
 @section('content-pegawai')
     <div class="nk-content nk-content-fluid">
         <div class="container-xl wide-lg">
@@ -40,24 +42,23 @@
                                                 <input type="text" name="enhancer" value="{{ Auth::user()->id }}" hidden>
                                                 <label class="form-label" for="kategori">Kategori Cuti</label>
                                                 <div class="form-control-wrap">
-                                                    <select class="form-select js-select2 select2-hidden-accesible valid"
-                                                        id="kategori" name="category" required>
+                                                    <select class="form-select js-select2" id="kategori" name="category"
+                                                        required>
                                                         <option value="annual">Cuti Tahunan</option>
                                                         <option value="other">Cuti Lain-lain</option>
                                                     </select>
                                                 </div>
                                             </div>
                                         </div>
+
                                         <!-- Form untuk Cuti Lain-lain -->
                                         <div id="form-lain" style="display: none;">
                                             <div class="col-sm-12">
                                                 <div class="form-group">
                                                     <label class="form-label" for="subkategori">Subkategori</label>
                                                     <div class="form-control-wrap">
-                                                        <select
-                                                            class="form-select js-select2 select2-hidden-accesible valid"
-                                                            id="subkategori" name="subcategory">
-
+                                                        <select class="form-select js-select2" id="subkategori"
+                                                            name="subcategory">
                                                             <option value="sick">Sakit</option>
                                                             <option value="married">Menikah</option>
                                                             <option value="important_reason">Beralasan Penting</option>
@@ -77,6 +78,7 @@
                                                 </div>
                                             </div>
                                         </div>
+
                                         <!-- Field Alasan Cuti (Ditampilkan pada kedua kategori) -->
                                         <div id="form-alasan" style="display: none;">
                                             <div class="col-sm-12">
@@ -89,6 +91,7 @@
                                                 </div>
                                             </div>
                                         </div>
+
                                         <!-- Form untuk Mulai dan Berakhir -->
                                         <div id="form-tanggal" style="display: none;">
                                             <div class="row">
@@ -135,18 +138,23 @@
         </div>
     </div>
 
+    <!-- Tambahkan CDN Datepicker jika belum ada -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
     <script>
         $(document).ready(function() {
-            $('#kategori').select2(); // Inisialisasi Select2
+            $('#kategori').select2();
+            $('#subkategori').select2();
 
-            // Mendapatkan elemen-elemen form
+            // Elemen form
             var formAlasan = document.getElementById('form-alasan');
             var formLain = document.getElementById('form-lain');
             var formTanggal = document.getElementById('form-tanggal');
 
-            // Menampilkan form berdasarkan pilihan kategori
             $('#kategori').on('change', function() {
-                var kategori = $(this).val(); // Menggunakan jQuery untuk mendapatkan nilai
+                var kategori = $(this).val();
 
                 if (kategori === 'annual') {
                     formAlasan.style.display = 'block';
@@ -162,25 +170,15 @@
                     formTanggal.style.display = 'none';
                 }
             });
+
+            // Konfigurasi datepicker agar tidak bisa memilih tanggal di masa lalu
+            var today = new Date();
+            $('.date-picker').datepicker({
+                format: 'dd M yyyy',
+                startDate: today,
+                autoclose: true,
+                todayHighlight: true
+            });
         });
     </script>
-    {{-- 
-    @if ($errors->any())
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    html: `
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            `,
-                    showConfirmButton: true,
-                });
-            });
-        </script>
-    @endif --}}
 @endsection

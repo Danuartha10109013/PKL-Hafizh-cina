@@ -343,133 +343,126 @@
                     <div class="nk-block-head-content">
                         <h3 class="nk-block-title page-title">Daftar Pegawai Bermasalah</h3>
                     </div>
-                </div><!-- .nk-block-between -->
-            </div><!-- .nk-block-head -->
+                </div>
+            </div>
 
             <div class="nk-block nk-block-lg">
 
+                @php
+                    // Data Terlambat
+                    $topUser = $topUser ?? null;
+                    $secondUser = $secondUser ?? null;
+                    $thirdUser = $thirdUser ?? null;
+
+                    // Data Tidak Masuk
+                    $sortedResults = collect($result)->sortByDesc('absent_count')->values();
+
+                    $topAbsentUser = (object) ($sortedResults[0] ?? []);
+                    $secondAbsentUser = (object) ($sortedResults[1] ?? []);
+                    $thirdAbsentUser = (object) ($sortedResults[2] ?? []);
+
+                    $name1 = isset($topAbsentUser->user_id) ? \App\Models\User::find($topAbsentUser->user_id) : null;
+                    $name2 = isset($secondAbsentUser->user_id)
+                        ? \App\Models\User::find($secondAbsentUser->user_id)
+                        : null;
+                    $name3 = isset($thirdAbsentUser->user_id)
+                        ? \App\Models\User::find($thirdAbsentUser->user_id)
+                        : null;
+                @endphp
+
                 <div class="row">
-                    <!-- Ranking Terlambat (kiri) -->
-                    <div class="col-lg-6">
+                    {{-- Tabel Masuk Terlambat --}}
+                    <div class="col-lg-6 mb-4">
                         <div class="card card-bordered card-preview">
                             <div class="card-inner">
-                                <h4 class="mb-3">Masuk Terlambat</h4>
-                                <div class="row align-items-center">
-                                    <!-- Rank 2 Terlambat -->
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card shadow-sm">
-                                            <div class="card-header bg-light text-primary">
-                                                <h6 class="mb-0">🥈 Rank 2</h6>
-                                            </div>
-                                            <div class="card-body text-center">
-                                                <p class="font-weight-bold">{{ $secondUser->name ?? null }}</p>
-                                                <p class="mb-0 text-muted">{{ $secondUser->email ?? null }}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Rank 1 Terlambat -->
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card shadow-lg border-secondary">
-                                            <div class="card-header bg-secondary text-white">
-                                                <h5 class="mb-0">🥇 Rank 1</h5>
-                                            </div>
-                                            <div class="card-body text-center">
-                                                <p class="font-weight-bold">{{ $topUser->name }}</p>
-                                                <p class="mb-0 text-muted">{{ $topUser->email }}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Rank 3 Terlambat -->
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card shadow-sm">
-                                            <div class="card-header bg-light text-primary">
-                                                <h6 class="mb-0">🥉 Rank 3</h6>
-                                            </div>
-                                            <div class="card-body text-center">
-                                                <p class="font-weight-bold">{{ $thirdUser->name ?? null }}</p>
-                                                <p class="mb-0 text-muted">{{ $thirdUser->email ?? null }}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <h4 class="mb-3">Top 3 Pegawai Masuk Terlambat</h4>
+                                <table id="dataTable" class="datatable-init table">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Nama</th>
+                                            <th>Email</th>
+                                            <th>Jumlah Terlambat</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if ($topUser)
+                                            <tr>
+                                                <td>1</td>
+                                                <td>{{ $topUser->name }}</td>
+                                                <td>{{ $topUser->email }}</td>
+                                                <td>{{ $topUser->late_count ?? '-' }}</td>
+                                            </tr>
+                                        @endif
+                                        @if ($secondUser)
+                                            <tr>
+                                                <td>2</td>
+                                                <td>{{ $secondUser->name }}</td>
+                                                <td>{{ $secondUser->email }}</td>
+                                                <td>{{ $secondUser->late_count ?? '-' }}</td>
+                                            </tr>
+                                        @endif
+                                        @if ($thirdUser)
+                                            <tr>
+                                                <td>3</td>
+                                                <td>{{ $thirdUser->name }}</td>
+                                                <td>{{ $thirdUser->email }}</td>
+                                                <td>{{ $thirdUser->late_count ?? '-' }}</td>
+                                            </tr>
+                                        @endif
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
 
-                    @php
-                        $sortedResults = collect($result)->sortByDesc('absent_count')->values();
-
-                        $topAbsentUser = (object) ($sortedResults[0] ?? []);
-                        $secondAbsentUser = (object) ($sortedResults[1] ?? []);
-                        $thirdAbsentUser = (object) ($sortedResults[2] ?? []);
-
-                        $name1 = isset($topAbsentUser->user_id)
-                            ? \App\Models\User::find($topAbsentUser->user_id)
-                            : null;
-                        $name2 = isset($secondAbsentUser->user_id)
-                            ? \App\Models\User::find($secondAbsentUser->user_id)
-                            : null;
-                        $name3 = isset($thirdAbsentUser->user_id)
-                            ? \App\Models\User::find($thirdAbsentUser->user_id)
-                            : null;
-                    @endphp
-
-
-
-                    <!-- Ranking Tidak Masuk (kanan) -->
-                    <div class="col-lg-6">
+                    {{-- Tabel Tidak Masuk --}}
+                    <div class="col-lg-6 mb-4">
                         <div class="card card-bordered card-preview">
                             <div class="card-inner">
-                                <h4 class="mb-3">Tidak Masuk</h4>
-                                <div class="row align-items-center">
-                                    <!-- Rank 2 Tidak Masuk -->
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card shadow-sm">
-                                            <div class="card-header bg-light text-primary">
-                                                <h6 class="mb-0">🥈 Rank 2</h6>
-                                            </div>
-                                            <div class="card-body text-center">
-                                                <p class="font-weight-bold">{{ $name2->name ?? null }}</p>
-                                                <p class="mb-0 text-muted">{{ $name2->email ?? null }}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Rank 1 Tidak Masuk -->
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card shadow-lg border-secondary">
-                                            <div class="card-header bg-secondary text-white">
-                                                <h5 class="mb-0">🥇 Rank 1</h5>
-                                            </div>
-                                            <div class="card-body text-center">
-                                                <p class="font-weight-bold">{{ $name1->name }}</p>
-                                                <p class="mb-0 text-muted">{{ $name1->email }}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Rank 3 Tidak Masuk -->
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card shadow-sm">
-                                            <div class="card-header bg-light text-primary">
-                                                <h6 class="mb-0">🥉 Rank 3</h6>
-                                            </div>
-                                            <div class="card-body text-center">
-                                                <p class="font-weight-bold">{{ $name3->name ?? null }}</p>
-                                                <p class="mb-0 text-muted">{{ $name3->email ?? null }}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <h4 class="mb-3">Top 3 Pegawai Tidak Masuk</h4>
+                                <table id="dataTable" class="datatable-init table">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Nama</th>
+                                            <th>Email</th>
+                                            <th>Jumlah Tidak Masuk</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if ($name1)
+                                            <tr>
+                                                <td>1</td>
+                                                <td>{{ $name1->name }}</td>
+                                                <td>{{ $name1->email }}</td>
+                                                <td>{{ $topAbsentUser->absent_count ?? '-' }}</td>
+                                            </tr>
+                                        @endif
+                                        @if ($name2)
+                                            <tr>
+                                                <td>2</td>
+                                                <td>{{ $name2->name }}</td>
+                                                <td>{{ $name2->email }}</td>
+                                                <td>{{ $secondAbsentUser->absent_count ?? '-' }}</td>
+                                            </tr>
+                                        @endif
+                                        @if ($name3)
+                                            <tr>
+                                                <td>3</td>
+                                                <td>{{ $name3->name }}</td>
+                                                <td>{{ $name3->email }}</td>
+                                                <td>{{ $thirdAbsentUser->absent_count ?? '-' }}</td>
+                                            </tr>
+                                        @endif
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-                    </div> <!-- end col kanan -->
+                    </div>
                 </div>
-                {{-- </div> --}}
-                {{-- </div><!-- .card-preview --> --}}
             </div>
+
 
 
 
@@ -480,26 +473,13 @@
                     <div class="nk-block-head-content">
                         <h3 class="nk-block-title page-title">Peringatan Sanksi</h3>
                     </div>
-                    <div class="nk-block-head-content">
-                        <div class="toggle-wrap nk-block-tools-toggle">
-                            <a href="#" class="btn btn-icon btn-trigger toggle-expand me-n1"
-                                data-target="pageMenu"><em class="icon ni ni-menu-alt-r"></em></a>
-                            <div class="toggle-expand-content" data-content="pageMenu">
-                                <ul class="nk-block-tools g-3">
-                                    {{-- <li><a href="{{ route('admin.print-cetakrekapitulasi') }}" class="btn btn-secondary"
-                                            target="_blank"><em class="icon ni ni-printer"></em><span>Cetak</span></a>
-                                    </li> --}}
-                                </ul>
-                            </div>
-                        </div><!-- .toggle-wrap -->
-                    </div><!-- .nk-block-head-content -->
                 </div><!-- .nk-block-between -->
             </div><!-- .nk-block-head -->
             <div class="nk-block nk-block-lg">
                 <div class="card card-bordered card-preview">
                     <div class="card-inner">
-                        <table class="datatable-init table">
-                            <thead>
+                        <table id="dataTable" class="datatable-init table">
+                            <thead class="thead-light">
                                 <tr>
                                     <th>No</th>
                                     <th>Nama Pegawai</th>
@@ -576,19 +556,13 @@
                                                 <button type="submit" class="btn btn-secondary">Kirim Peringatan</button>
                                             </td>
                                         </form>
-
-
                                     </tr>
                                 @endforeach
-
-
                             </tbody>
                         </table>
                     </div>
                 </div><!-- .card-preview -->
             </div>
-
-
         </div>
     </div>
     <script>
