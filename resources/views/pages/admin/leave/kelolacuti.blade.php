@@ -14,6 +14,8 @@
                             <h3 class="nk-block-title page-title">Kelola Cuti atau Izin Pegawai</h3>
                             <div class="nk-block-des text-soft">
                                 <p>Kamu mempunyai {{ count($leaves) }} Pengajuan Cuti atau Izin.</p>
+                                <p>User yang cuti di minggu sekarang {{ $totalcuti }} Pengajuan Cuti atau Izin. dari {{$totaluser}}</p>
+                                <p>Presentasi Cuti Pegawai {{$persentaseCuti}}%</p>
                             </div>
                         </div><!-- .nk-block-head-content -->
                         <div class="nk-block-head-content">

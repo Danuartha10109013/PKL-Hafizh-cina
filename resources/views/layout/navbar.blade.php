@@ -90,6 +90,13 @@
                             </a>
 
                         </li><!-- .nk-menu-item -->
+                        <li class="nk-menu-item">
+                            <a href="{{ route('admin.attendance-button') }}" class="nk-menu-link">
+                                <span class="nk-menu-icon"><em class="icon ni ni-check"></em></span>
+                                <span class="nk-menu-text">Show Atendance Button</span>
+                            </a>
+
+                        </li><!-- .nk-menu-item -->
                 </div><!-- .nk-sidebar-menu -->
                 {{-- <div class="nk-sidebar-footer">
                     <ul class="nk-menu nk-menu-footer">

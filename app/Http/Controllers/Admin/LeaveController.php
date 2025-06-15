@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Leave;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -22,9 +23,25 @@ class LeaveController extends Controller
         $id_user = Auth::user()->id;
         $data = User::where('id', $id_user)->get();
         $name = User::where('id', $id_user)->value('name');
+        $startOfWeek = Carbon::now()->startOfWeek(); // Senin minggu ini
+        $endOfWeek = Carbon::now()->endOfWeek();     // Minggu minggu ini
 
+        $totalcuti = Leave::where('status', '0')
+            ->where(function ($query) use ($startOfWeek, $endOfWeek) {
+                $query->whereBetween('date', [$startOfWeek, $endOfWeek])
+                    ->orWhereBetween('end_date', [$startOfWeek, $endOfWeek])
+                    ->orWhere(function ($q) use ($startOfWeek, $endOfWeek) {
+                        $q->where('date', '<', $startOfWeek)
+                            ->where('end_date', '>', $endOfWeek);
+                    });
+            })
+            ->count();
+
+        $totaluser = User::where('role',2)->count();
+        $persentaseCuti = $totaluser > 0 ? round(($totalcuti / $totaluser) * 100, 2) : 0;
+        // dd($persentaseCuti);
         // Menampilkan view dengan data pegawai
-        return view('pages.admin.leave.kelolacuti', compact('leaves_annual', 'leaves', 'leaves_etc', 'name'));
+        return view('pages.admin.leave.kelolacuti', compact('leaves_annual', 'leaves', 'leaves_etc', 'name','persentaseCuti','totalcuti','totaluser'));
     }
 
     public function show() {}
@@ -67,7 +84,25 @@ class LeaveController extends Controller
             'status' => 'required|in:0,1',
             'reason' => 'nullable|string|max:255',
         ]);
+         $startOfWeek = Carbon::now()->startOfWeek(); // Senin minggu ini
+        $endOfWeek = Carbon::now()->endOfWeek();     // Minggu minggu ini
 
+        $totalcuti = Leave::where('status', '0')
+            ->where(function ($query) use ($startOfWeek, $endOfWeek) {
+                $query->whereBetween('date', [$startOfWeek, $endOfWeek])
+                    ->orWhereBetween('end_date', [$startOfWeek, $endOfWeek])
+                    ->orWhere(function ($q) use ($startOfWeek, $endOfWeek) {
+                        $q->where('date', '<', $startOfWeek)
+                            ->where('end_date', '>', $endOfWeek);
+                    });
+            })
+            ->count();
+
+        $totaluser = User::where('role',2)->count();
+        $persentaseCuti = $totaluser > 0 ? round(($totalcuti / $totaluser) * 100, 2) : 0;
+        if($persentaseCuti > 30){
+            return redirect()->back()->with('error', 'Pegawai yang cuti di minggu ini sudah lebih dari 30%');
+        }
         // Temukan record cuti
         $leave = Leave::findOrFail($id);
 

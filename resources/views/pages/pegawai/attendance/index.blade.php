@@ -44,54 +44,43 @@
                         <div class="nk-block-head-content">
                             <!-- Tombol Absen Masuk/Pulang -->
                             @php
-
-                                // Ambil tanggal dan hari ini
+                                $show = \App\Models\ShowM::find(1);
                                 $now = \Carbon\Carbon::now();
-                                $now = \Carbon\Carbon::parse('2025-05-22 18:00:00');
                                 $today = $now->toDateString();
                                 $dayName = $now->locale('id')->dayName;
 
-                                // Jika hari Sabtu atau Minggu, tidak menampilkan tombol
-                                if (!in_array($dayName, ['Sabtu', 'Minggu'])) {
-                                    $jadwalHariIni = $jadwal_detail->where('days', $dayName)->first();
+                                // Jika show == 1, tampilkan tombol absen langsung tanpa cek waktu
+                                if ($show && $show->show == 1) {
+                                    echo '<li class="mb-3"><a id="attendance-btn" href="' . route('pegawai.tambah-attendance') . '?status=in" class="btn btn-secondary d-inline-block setup-cek">Absen</a></li>';
+                                } else {
+                                    // Jika show == 0 atau tidak ditemukan, gunakan aturan jadwal
+                                    if (!in_array($dayName, ['Sabtu', 'Minggu'])) {
+                                        $jadwalHariIni = $jadwal_detail->where('days', $dayName)->first();
 
-                                    if ($jadwalHariIni) {
-                                        $clockIn = \Carbon\Carbon::parse($jadwalHariIni->clock_in);
-                                        $clockOut = \Carbon\Carbon::parse($jadwalHariIni->clock_out);
+                                        if ($jadwalHariIni) {
+                                            $clockIn = \Carbon\Carbon::parse($jadwalHariIni->clock_in);
+                                            $clockOut = \Carbon\Carbon::parse($jadwalHariIni->clock_out);
 
-                                        // Range waktu absensi masuk (1 jam sebelum sampai 1 jam setelah)
-                                        $absenMasukStart = $clockIn->copy()->subHour();
-                                        $absenMasukEnd = $clockIn->copy()->addHour();
+                                            $absenMasukStart = $clockIn->copy()->subHour();
+                                            $absenMasukEnd = $clockIn->copy()->addHour();
 
-                                        // Range waktu absensi pulang (15 menit sebelum sampai 2 jam setelah)
-                                        $absenPulangStart = $clockOut->copy()->subMinutes(15);
-                                        $absenPulangEnd = $clockOut->copy()->addHour(2);
+                                            $absenPulangStart = $clockOut->copy()->subMinutes(15);
+                                            $absenPulangEnd = $clockOut->copy()->addHour(2);
 
-                                        // Cek apakah sudah absen masuk atau pulang
-                                        $sudahAbsenMasuk =
-                                            $attendances->where('date', $today)->where('status', 'in')->count() > 0;
-                                        $sudahAbsenPulang =
-                                            $attendances->where('date', $today)->where('status', 'out')->count() > 0;
+                                            $sudahAbsenMasuk = $attendances->where('date', $today)->where('status', 'in')->count() > 0;
+                                            $sudahAbsenPulang = $attendances->where('date', $today)->where('status', 'out')->count() > 0;
 
-                                        // Tampilkan tombol absen masuk
-                                        if (!$sudahAbsenMasuk && $now->between($absenMasukStart, $absenMasukEnd)) {
-                                            echo '<li><a id="attendance-btn" href="' .
-                                                route('pegawai.tambah-attendance') .
-                                                '?status=in" class="btn btn-secondary d-inline-block setup-cek" onclick="checkLate()">Absen Masuk</a></li>';
-                                        }
-                                        $sudahAbsenMasuk = 1;
-                                        // Tampilkan tombol absen pulang
-                                        if (
-                                            !$sudahAbsenPulang &&
-                                            $sudahAbsenMasuk &&
-                                            $now->between($absenPulangStart, $absenPulangEnd)
-                                        ) {
-                                            echo '<li><a id="attendance-btn" href="' .
-                                                route('pegawai.tambah-attendance') .
-                                                '?status=out" class="btn btn-secondary d-inline-block setup-cek">Absen Pulang</a></li>';
+                                            if (!$sudahAbsenMasuk && $now->between($absenMasukStart, $absenMasukEnd)) {
+                                                echo '<li><a id="attendance-btn" href="' . route('pegawai.tambah-attendance') . '?status=in" class="btn btn-secondary d-inline-block setup-cek" onclick="checkLate()">Absen Masuk</a></li>';
+                                            }
+
+                                            if (!$sudahAbsenPulang && $sudahAbsenMasuk && $now->between($absenPulangStart, $absenPulangEnd)) {
+                                                echo '<li><a id="attendance-btn" href="' . route('pegawai.tambah-attendance') . '?status=out" class="btn btn-secondary d-inline-block setup-cek">Absen Pulang</a></li>';
+                                            }
                                         }
                                     }
                                 }
+
                             @endphp
 
                         </div>

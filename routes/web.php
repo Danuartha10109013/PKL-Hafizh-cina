@@ -113,6 +113,11 @@ Route::middleware([AutoLogout::class])->group(function () {
             Route::get('/', [AdminController::class, 'koordinat'])->name('kordinat');
             Route::post('/update', [AdminController::class, 'updateKordinat'])->name('kordinat.update');
         });
+        Route::prefix('attendance-button')->group(function () {
+
+            Route::get('/', [AdminController::class, 'attendanceb'])->name('attendance-button');
+            Route::put('/update/{id}', [AdminController::class, 'attendancebupdate'])->name('attendance-button.update');
+        });
 
         Route::prefix('trashed.kelolasampah')->group(function () {
             Route::get('/', [DeletedController::class, 'index'])->name('trashed');

@@ -7,12 +7,39 @@ use App\Models\Attendance;
 use App\Models\Leave;
 use App\Models\User;
 use App\Models\Koordinat;
+use App\Models\ShowM;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Intervention\Image\Colors\Rgb\Channels\Red;
 
 class AdminController extends Controller
 {
+
+    public function attendanceb(){
+        $data = ShowM::find(1);
+        return view('pages.admin.show.index',compact('data'));
+    }
+    public function attendancebupdate(Request $request,$id){
+          // Validasi input
+        $request->validate([
+            'show' => 'required|in:0,1'
+        ]);
+
+        // Cari data berdasarkan ID
+        $show = ShowM::find($id);
+
+        if (!$show) {
+            return redirect()->back()->with('error', 'Data tidak ditemukan.');
+        }
+
+        // Update data
+        $show->show = $request->show;
+        $show->save();
+
+        return redirect()->back()->with('success', 'Visibilitas tombol absensi berhasil diperbarui.');
+    }
+
     public function index()
     {
         // // Mengambil data pegawai dari database
