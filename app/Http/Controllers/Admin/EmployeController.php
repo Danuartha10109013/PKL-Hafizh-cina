@@ -86,16 +86,30 @@ class EmployeController extends Controller
     {
         // Validate the request data
         // dd($request->all());
-        $validatedData = $request->validate([
-            // 'username' => 'nullable|string|max:5|unique:users,username',
-            'name' => 'required|string|regex:/^[A-Za-z\s]+$/|max:80',
-            'role' => 'required|integer|exists:roles,id',
-            'email' => 'nullable|string|email|max:80|unique:users,email',
-            'password' => 'required|string',
-            'position' => 'required|string',
-            'nip' => 'required',
-            // 'password' => 'required|string|min:8|regex:/[A-Z]/|regex:/[0-9]/|regex:/[\W_]/',
-        ]);
+        $validatedData = $request->validate(
+            [
+                // 'username' => 'nullable|string|max:5|unique:users,username',
+                'name' => 'required|string|regex:/^[A-Za-z\s]+$/|max:80',
+                'role' => 'required|integer|exists:roles,id',
+                'email' => 'nullable|string|email|max:80|unique:users,email',
+                'password' => 'required|string',
+                'position' => 'required|string',
+                'nip' => 'required',
+                // 'password' => 'required|string|min:8|regex:/[A-Z]/|regex:/[0-9]/|regex:/[\W_]/',
+            ],
+            [
+                'email.unique' => 'Email sudah digunakan.',
+                'email.email' => 'Format email tidak valid.',
+                'email.max' => 'Email tidak boleh lebih dari 80 karakter.',
+                'name.required' => 'Nama tidak boleh kosong.',
+                'name.regex' => 'Nama hanya boleh huruf dan spasi.',
+                'role.required' => 'Role wajib dipilih.',
+                'role.exists' => 'Role tidak valid.',
+                'password.required' => 'Password tidak boleh kosong.',
+                'position.required' => 'Jabatan harus diisi.',
+                'nip.required' => 'NIP tidak boleh kosong.',
+            ]
+        );
         // Hitung jumlah user yang ada untuk menentukan username
         $lastUsername = User::where('username', '!=', 'admin')->orderBy('username', 'desc')->value('username');
         // dd($lastUsername);

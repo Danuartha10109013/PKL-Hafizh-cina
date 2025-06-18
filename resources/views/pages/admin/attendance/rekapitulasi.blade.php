@@ -104,8 +104,8 @@
                                                             <!-- Submit Button -->
                                                             <div class="modal-footer p-0 d-flex justify-content-between">
                                                                 <button type="submit"
-                                                                    class="btn btn-primary">Cetak</button>
-                                                                <button type="button" class="btn btn-secondary"
+                                                                    class="btn btn-secondary">Cetak</button>
+                                                                <button type="button" class="btn btn-danger"
                                                                     data-bs-dismiss="modal">Batal</button>
                                                             </div>
                                                         </form>
@@ -490,102 +490,117 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            @foreach ($result as $ul)
-                                @php
-                                    $name = \App\Models\User::where('id', $ul['user_id'])->value('name');
-                                    $peringatan = \App\Models\PeringatanM::where('user_id', $ul['user_id'])
-                                        ->orderBy('created_at', 'desc')
-                                        ->first();
-                                    $status = $peringatan->status ?? -1;
-                                @endphp
-                                <tr data-user-id="{{ $ul['user_id'] }}" data-late="{{ $ul['late_count'] }}" data-absent="{{ $ul['absent_count'] }}">
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td class="pegawai-nama">{{ $name }}</td>
-                                    <td class="late-count">{{ $ul['late_count'] }}</td>
-                                    <td class="absent-count">{{ $ul['absent_count'] }}</td>
-                                    <td>
-                                        <div class="d-flex gap-2">
-                                            @foreach ([0, 1, 2, 3] as $sp)
-                                                @php
-                                                    $colors = [
-                                                        0 => 'btn-success',
-                                                        1 => 'btn-warning',
-                                                        2 => 'btn-orange',
-                                                        3 => 'btn-danger',
-                                                    ];
-                                                    $isDisabled = $status >= $sp || $sp === 0;
-                                                    $btnClass = $isDisabled ? $colors[$sp] : 'btn-outline-secondary';
-                                                @endphp
+                                @foreach ($result as $ul)
+                                    @php
+                                        $name = \App\Models\User::where('id', $ul['user_id'])->value('name');
+                                        $peringatan = \App\Models\PeringatanM::where('user_id', $ul['user_id'])
+                                            ->orderBy('created_at', 'desc')
+                                            ->first();
+                                        $status = $peringatan->status ?? -1;
+                                    @endphp
+                                    <tr data-user-id="{{ $ul['user_id'] }}" data-late="{{ $ul['late_count'] }}"
+                                        data-absent="{{ $ul['absent_count'] }}">
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td class="pegawai-nama">{{ $name }}</td>
+                                        <td class="late-count">{{ $ul['late_count'] }}</td>
+                                        <td class="absent-count">{{ $ul['absent_count'] }}</td>
+                                        <td>
+                                            <div class="d-flex gap-2">
+                                                @foreach ([0, 1, 2, 3] as $sp)
+                                                    @php
+                                                        $colors = [
+                                                            0 => 'btn-success',
+                                                            1 => 'btn-warning',
+                                                            2 => 'btn-orange',
+                                                            3 => 'btn-danger',
+                                                        ];
+                                                        $isDisabled = $status >= $sp || $sp === 0;
+                                                        $btnClass = $isDisabled
+                                                            ? $colors[$sp]
+                                                            : 'btn-outline-secondary';
+                                                    @endphp
 
-                                                <form action="{{ route('admin.kelolakehadiranpegawai.send', ['id' => $ul['user_id']]) }}" method="POST" class="sp-form d-inline">
-                                                    @csrf
-                                                    <input type="hidden" name="totalDays" value="{{ $ul['late_count'] }}">
-                                                    <input type="hidden" name="sp" value="{{ $sp }}">
-                                                    <input type="checkbox" class="btn-check sp-checkbox"
-                                                        id="sp_{{ $ul['user_id'] }}_{{ $sp }}"
-                                                        data-user="{{ $ul['user_id'] }}" data-sp="{{ $sp }}"
-                                                        {{ $isDisabled ? 'checked disabled' : '' }}>
-                                                    <label class="btn btn-sm {{ $btnClass }}" for="sp_{{ $ul['user_id'] }}_{{ $sp }}">SP {{ $sp }}</label>
-                                                </form>
-                                            @endforeach
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <form action="{{ route('admin.kelolakehadiranpegawai.send', ['id' => $ul['user_id']]) }}" method="POST">
-                                            @csrf
-                                            <input type="hidden" name="totalDays" value="{{ $ul['late_count'] }}">
-                                            <button type="submit" class="btn btn-secondary">Kirim Manual</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach
+                                                    <form
+                                                        action="{{ route('admin.kelolakehadiranpegawai.send', ['id' => $ul['user_id']]) }}"
+                                                        method="POST" class="sp-form d-inline">
+                                                        @csrf
+                                                        <input type="hidden" name="totalDays"
+                                                            value="{{ $ul['late_count'] }}">
+                                                        <input type="hidden" name="sp"
+                                                            value="{{ $sp }}">
+                                                        <input type="checkbox" class="btn-check sp-checkbox"
+                                                            id="sp_{{ $ul['user_id'] }}_{{ $sp }}"
+                                                            data-user="{{ $ul['user_id'] }}"
+                                                            data-sp="{{ $sp }}"
+                                                            {{ $isDisabled ? 'checked disabled' : '' }}>
+                                                        <label class="btn btn-sm {{ $btnClass }}"
+                                                            for="sp_{{ $ul['user_id'] }}_{{ $sp }}">SP
+                                                            {{ $sp }}</label>
+                                                    </form>
+                                                @endforeach
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <form
+                                                action="{{ route('admin.kelolakehadiranpegawai.send', ['id' => $ul['user_id']]) }}"
+                                                method="POST">
+                                                @csrf
+                                                <input type="hidden" name="totalDays" value="{{ $ul['late_count'] }}">
+                                                <button type="submit" class="btn btn-secondary">Kirim
+                                                    Peringatan</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
 
                     </div>
                 </div>
-</div>
+            </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const rows = document.querySelectorAll('tr[data-user-id]');
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const rows = document.querySelectorAll('tr[data-user-id]');
 
-    rows.forEach(row => {
-        try {
-            const userId = row.dataset.userId;
-            const late = parseInt(row.dataset.late || '0');
-            const absent = parseInt(row.dataset.absent || '0');
-            const total = late + absent;
+                    rows.forEach(row => {
+                        try {
+                            const userId = row.dataset.userId;
+                            const late = parseInt(row.dataset.late || '0');
+                            const absent = parseInt(row.dataset.absent || '0');
+                            const total = late + absent;
 
-            let maxSP = -1;
-            if (total >= 6) maxSP = 3;
-            else if (total >= 4) maxSP = 2;
-            else if (total >= 2) maxSP = 1;
+                            let maxSP = -1;
+                            if (total >= 6) maxSP = 3;
+                            else if (total >= 4) maxSP = 2;
+                            else if (total >= 2) maxSP = 1;
 
-            if (maxSP > 0) {
-                console.log(`🔍 Cek user ${userId}, total: ${total}, target SP: ${maxSP}`);
+                            if (maxSP > 0) {
+                                console.log(`🔍 Cek user ${userId}, total: ${total}, target SP: ${maxSP}`);
 
-                for (let sp = 1; sp <= maxSP; sp++) {
-                    const checkbox = row.querySelector(`#sp_${userId}_${sp}`);
-                    if (checkbox && !checkbox.disabled) {
-                        checkbox.checked = true;
-                        const form = checkbox.closest('form');
-                        setTimeout(() => {
-                            console.log(`✅ Submit SP ${sp} untuk user ID: ${userId}`);
-                            form.submit();
-                        }, 100);
-                        break; // hanya kirim 1 SP per load
-                    } else {
-                        console.log(`⚠️ SP ${sp} untuk user ID ${userId} sudah dikirim atau checkbox tidak ditemukan`);
-                    }
-                }
-            }
-        } catch (err) {
-            console.error(`❌ Error SP otomatis user ${userId}:`, err);
-        }
-    });
-});
-</script>
+                                for (let sp = 1; sp <= maxSP; sp++) {
+                                    const checkbox = row.querySelector(`#sp_${userId}_${sp}`);
+                                    if (checkbox && !checkbox.disabled) {
+                                        checkbox.checked = true;
+                                        const form = checkbox.closest('form');
+                                        setTimeout(() => {
+                                            console.log(`✅ Submit SP ${sp} untuk user ID: ${userId}`);
+                                            form.submit();
+                                        }, 100);
+                                        break; // hanya kirim 1 SP per load
+                                    } else {
+                                        console.log(
+                                            `⚠️ SP ${sp} untuk user ID ${userId} sudah dikirim atau checkbox tidak ditemukan`
+                                        );
+                                    }
+                                }
+                            }
+                        } catch (err) {
+                            console.error(`❌ Error SP otomatis user ${userId}:`, err);
+                        }
+                    });
+                });
+            </script>
 
 
         </div>

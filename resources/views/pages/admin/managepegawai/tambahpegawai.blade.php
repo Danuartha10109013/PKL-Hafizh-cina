@@ -20,13 +20,21 @@
                         <div class="card card-bordered card-preview">
                             <div class="card-inner">
                                 @if ($errors->any())
-                                    <div class="alert alert-danger">
-                                        <ul>
-                                            @foreach ($errors->all() as $error)
-                                                <li>{{ $error }}</li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
+                                    <script>
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Terjadi Kesalahan!',
+                                            html: `
+                                            <ul style="text-align:left; margin:0; padding-left:1.2em;">
+                                                @foreach ($errors->all() as $error)
+                                                    <li>{{ $error }}</li>
+                                                @endforeach
+                                            </ul>
+                                        `,
+                                            showConfirmButton: true,
+                                            confirmButtonColor: '#364d65'
+                                        });
+                                    </script>
                                 @endif
                                 <form action="{{ route('admin.tambahpegawaistore') }}" method="POST"
                                     enctype="multipart/form-data">
@@ -86,7 +94,7 @@
                                                             @endforeach
                                                         </select>
                                                     </div>
-                                                    
+
                                                 </div>
                                             </div>
                                             <div class="col-sm-6">
@@ -101,14 +109,13 @@
                                             <div class="col-sm-6">
                                                 <div class="form-group">
                                                     <label class="form-label" for="position">Jabatan</label>
-                                                    <select
-                                                            class="form-select js-select2 select2-hidden-accesible valid"
-                                                            id="role" name="position" placeholder="Pilih Role">
-                                                            <option  selected disabled>-- Pilih Jabatan --</option>
-                                                            <option value="Web Developer">Web Developer</option>
-                                                            <option value="Quality Assurance">Quality Assurance</option>
-                                                            <option value="Software Enginer">Software Enginer</option>
-                                                        </select>
+                                                    <select class="form-select js-select2 select2-hidden-accesible valid"
+                                                        id="role" name="position" placeholder="Pilih Role">
+                                                        <option selected disabled>-- Pilih Jabatan --</option>
+                                                        <option value="Web Developer">Web Developer</option>
+                                                        <option value="Quality Assurance">Quality Assurance</option>
+                                                        <option value="Software Enginer">Software Enginer</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>

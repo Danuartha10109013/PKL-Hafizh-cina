@@ -17,7 +17,8 @@
                         Swal.fire({
                             icon: 'success',
                             title: 'Berhasil',
-                            text: '{{ session('success') }}'
+                            text: '{{ session('success') }}',
+                            confirmButtonColor: '#364d65'
                         });
                     </script>
                 @endif
@@ -27,7 +28,8 @@
                         Swal.fire({
                             icon: 'error',
                             title: 'Gagal',
-                            text: '{{ session('error') }}'
+                            text: '{{ session('error') }}',
+                            confirmButtonColor: '#364d65'
                         });
                     </script>
                 @endif
@@ -65,55 +67,56 @@
                                                 <a href="{{ route('admin.userrestore', $userd->id) }}"
                                                     class="btn btn-sm btn-success me-2"> <em
                                                         class="icon ni ni-undo"></em><span>Restore</span></a>
-                                                
+
                                                 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-                                                                    <!-- Tombol untuk memicu SweetAlert -->
-                                                                        <!-- Tombol Hapus yang tampak seperti link -->
-                                                                        <a class="btn btn-danger" href="javascript:void(0)" onclick="showDeleteConfirmationCuti({{ $userd->id }})">
-                                                                            <em
-                                                                                class="icon ni ni-na"></em><span>Delete
-                                                                                Permanantly</span>
-                                                                        </a>
-                                                                    
-                                                                <script>
-                                                                    function showDeleteConfirmationCuti(id) {
-                                                                        Swal.fire({
-                                                                            title: 'Apakah Anda yakin?',
-                                                                            text: "Data yang dihapus tidak bisa dikembalikan!",
-                                                                            icon: 'warning',
-                                                                            showCancelButton: true,
-                                                                            confirmButtonColor: '#d33',
-                                                                            cancelButtonColor: '#3085d6',
-                                                                            confirmButtonText: 'Hapus',
-                                                                            cancelButtonText: 'Batal'
-                                                                        }).then((result) => {
-                                                                            if (result.isConfirmed) {
-                                                                                // Membuat form dinamis dan submit
-                                                                                var form = document.createElement('form');
-                                                                                form.method = 'POST';
-                                                                                form.action = '{{ route("admin.userdestroyed", ":id") }}'.replace(':id', id); // Replace :id with actual ID
-                                                                                
-                                                                                // Menambahkan input CSRF token
-                                                                                var csrfToken = document.createElement('input');
-                                                                                csrfToken.type = 'hidden';
-                                                                                csrfToken.name = '_token';
-                                                                                csrfToken.value = '{{ csrf_token() }}';
-                                                                                form.appendChild(csrfToken);
-                                                                                
-                                                                                // Menambahkan input method DELETE
-                                                                                var methodInput = document.createElement('input');
-                                                                                methodInput.type = 'hidden';
-                                                                                methodInput.name = '_method';
-                                                                                methodInput.value = 'DELETE';
-                                                                                form.appendChild(methodInput);
-                                                                                
-                                                                                // Menambahkan form ke body dan submit
-                                                                                document.body.appendChild(form);
-                                                                                form.submit();
-                                                                            }
-                                                                        });
-                                                                    }
-                                                                </script>
+                                                <!-- Tombol untuk memicu SweetAlert -->
+                                                <!-- Tombol Hapus yang tampak seperti link -->
+                                                <a class="btn btn-danger" href="javascript:void(0)"
+                                                    onclick="showDeleteConfirmationCuti({{ $userd->id }})">
+                                                    <em class="icon ni ni-na"></em><span>Delete
+                                                        Permanantly</span>
+                                                </a>
+
+                                                <script>
+                                                    function showDeleteConfirmationCuti(id) {
+                                                        Swal.fire({
+                                                            title: 'Apakah Anda yakin?',
+                                                            text: "Data yang dihapus tidak bisa dikembalikan!",
+                                                            icon: 'warning',
+                                                            showCancelButton: true,
+                                                            confirmButtonColor: '#d33',
+                                                            cancelButtonColor: '#3085d6',
+                                                            confirmButtonText: 'Hapus',
+                                                            cancelButtonText: 'Batal'
+                                                        }).then((result) => {
+                                                            if (result.isConfirmed) {
+                                                                // Membuat form dinamis dan submit
+                                                                var form = document.createElement('form');
+                                                                form.method = 'POST';
+                                                                form.action = '{{ route('admin.userdestroyed', ':id') }}'.replace(':id',
+                                                                    id); // Replace :id with actual ID
+
+                                                                // Menambahkan input CSRF token
+                                                                var csrfToken = document.createElement('input');
+                                                                csrfToken.type = 'hidden';
+                                                                csrfToken.name = '_token';
+                                                                csrfToken.value = '{{ csrf_token() }}';
+                                                                form.appendChild(csrfToken);
+
+                                                                // Menambahkan input method DELETE
+                                                                var methodInput = document.createElement('input');
+                                                                methodInput.type = 'hidden';
+                                                                methodInput.name = '_method';
+                                                                methodInput.value = 'DELETE';
+                                                                form.appendChild(methodInput);
+
+                                                                // Menambahkan form ke body dan submit
+                                                                document.body.appendChild(form);
+                                                                form.submit();
+                                                            }
+                                                        });
+                                                    }
+                                                </script>
                                             </div>
                                         </td>
                                     </tr>
@@ -168,52 +171,53 @@
                                                 <a href="{{ route('admin.kelolakehadiranpegawai.restore', $attendance->id) }}"
                                                     class="btn btn-sm btn-success me-2"> <em
                                                         class="icon ni ni-undo"></em><span>Restore</span></a>
-                                                
-                                                <a class="btn btn-danger d-inline" href="javascript:void(0)" onclick="showDeleteConfirmation({{ $attendance->id }})">
-                                                    <em
-                                                        class="icon ni ni-na"></em><span>Delete
+
+                                                <a class="btn btn-danger d-inline" href="javascript:void(0)"
+                                                    onclick="showDeleteConfirmation({{ $attendance->id }})">
+                                                    <em class="icon ni ni-na"></em><span>Delete
                                                         Permanantly</span>
                                                 </a>
-                                            
-                                        <script>
-                                            function showDeleteConfirmation(id) {
-                                                Swal.fire({
-                                                    title: 'Apakah Anda yakin?',
-                                                    text: "Data yang dihapus tidak bisa dikembalikan!",
-                                                    icon: 'warning',
-                                                    showCancelButton: true,
-                                                    confirmButtonColor: '#d33',
-                                                    cancelButtonColor: '#3085d6',
-                                                    confirmButtonText: 'Hapus',
-                                                    cancelButtonText: 'Batal'
-                                                }).then((result) => {
-                                                    if (result.isConfirmed) {
-                                                        // Membuat form dinamis dan submit
-                                                        var form = document.createElement('form');
-                                                        form.method = 'POST';
-                                                        form.action = '{{ route("admin.kelolakehadiranpegawai.forcedelete", ":id") }}'.replace(':id', id); // Replace :id with actual ID
-                                                        
-                                                        // Menambahkan input CSRF token
-                                                        var csrfToken = document.createElement('input');
-                                                        csrfToken.type = 'hidden';
-                                                        csrfToken.name = '_token';
-                                                        csrfToken.value = '{{ csrf_token() }}';
-                                                        form.appendChild(csrfToken);
-                                                        
-                                                        // Menambahkan input method DELETE
-                                                        var methodInput = document.createElement('input');
-                                                        methodInput.type = 'hidden';
-                                                        methodInput.name = '_method';
-                                                        methodInput.value = 'DELETE';
-                                                        form.appendChild(methodInput);
-                                                        
-                                                        // Menambahkan form ke body dan submit
-                                                        document.body.appendChild(form);
-                                                        form.submit();
+
+                                                <script>
+                                                    function showDeleteConfirmation(id) {
+                                                        Swal.fire({
+                                                            title: 'Apakah Anda yakin?',
+                                                            text: "Data yang dihapus tidak bisa dikembalikan!",
+                                                            icon: 'warning',
+                                                            showCancelButton: true,
+                                                            confirmButtonColor: '#d33',
+                                                            cancelButtonColor: '#3085d6',
+                                                            confirmButtonText: 'Hapus',
+                                                            cancelButtonText: 'Batal'
+                                                        }).then((result) => {
+                                                            if (result.isConfirmed) {
+                                                                // Membuat form dinamis dan submit
+                                                                var form = document.createElement('form');
+                                                                form.method = 'POST';
+                                                                form.action = '{{ route('admin.kelolakehadiranpegawai.forcedelete', ':id') }}'.replace(':id',
+                                                                    id); // Replace :id with actual ID
+
+                                                                // Menambahkan input CSRF token
+                                                                var csrfToken = document.createElement('input');
+                                                                csrfToken.type = 'hidden';
+                                                                csrfToken.name = '_token';
+                                                                csrfToken.value = '{{ csrf_token() }}';
+                                                                form.appendChild(csrfToken);
+
+                                                                // Menambahkan input method DELETE
+                                                                var methodInput = document.createElement('input');
+                                                                methodInput.type = 'hidden';
+                                                                methodInput.name = '_method';
+                                                                methodInput.value = 'DELETE';
+                                                                form.appendChild(methodInput);
+
+                                                                // Menambahkan form ke body dan submit
+                                                                document.body.appendChild(form);
+                                                                form.submit();
+                                                            }
+                                                        });
                                                     }
-                                                });
-                                            }
-                                        </script>
+                                                </script>
                                             </div>
                                         </td>
                                     </tr>
@@ -293,52 +297,53 @@
                                                 <a href="{{ route('admin.restore-jadwal', $schedule->id) }}"
                                                     class="btn btn-sm btn-success me-2"> <em
                                                         class="icon ni ni-undo"></em><span>Restore</span></a>
-                                                
-                                                <a class="btn btn-danger d-inline" href="javascript:void(0)" onclick="showDeleteConfirmationJadwal({{ $schedule->id }})">
-                                                    <em
-                                                        class="icon ni ni-na"></em><span>Delete
+
+                                                <a class="btn btn-danger d-inline" href="javascript:void(0)"
+                                                    onclick="showDeleteConfirmationJadwal({{ $schedule->id }})">
+                                                    <em class="icon ni ni-na"></em><span>Delete
                                                         Permanantly</span>
                                                 </a>
-                                            
-                                        <script>
-                                            function showDeleteConfirmationJadwal(id) {
-                                                Swal.fire({
-                                                    title: 'Apakah Anda yakin?',
-                                                    text: "Data yang dihapus tidak bisa dikembalikan!",
-                                                    icon: 'warning',
-                                                    showCancelButton: true,
-                                                    confirmButtonColor: '#d33',
-                                                    cancelButtonColor: '#3085d6',
-                                                    confirmButtonText: 'Hapus',
-                                                    cancelButtonText: 'Batal'
-                                                }).then((result) => {
-                                                    if (result.isConfirmed) {
-                                                        // Membuat form dinamis dan submit
-                                                        var form = document.createElement('form');
-                                                        form.method = 'POST';
-                                                        form.action = '{{ route("admin.forcedelete-jadwal", ":id") }}'.replace(':id', id); // Replace :id with actual ID
-                                                        
-                                                        // Menambahkan input CSRF token
-                                                        var csrfToken = document.createElement('input');
-                                                        csrfToken.type = 'hidden';
-                                                        csrfToken.name = '_token';
-                                                        csrfToken.value = '{{ csrf_token() }}';
-                                                        form.appendChild(csrfToken);
-                                                        
-                                                        // Menambahkan input method DELETE
-                                                        var methodInput = document.createElement('input');
-                                                        methodInput.type = 'hidden';
-                                                        methodInput.name = '_method';
-                                                        methodInput.value = 'DELETE';
-                                                        form.appendChild(methodInput);
-                                                        
-                                                        // Menambahkan form ke body dan submit
-                                                        document.body.appendChild(form);
-                                                        form.submit();
+
+                                                <script>
+                                                    function showDeleteConfirmationJadwal(id) {
+                                                        Swal.fire({
+                                                            title: 'Apakah Anda yakin?',
+                                                            text: "Data yang dihapus tidak bisa dikembalikan!",
+                                                            icon: 'warning',
+                                                            showCancelButton: true,
+                                                            confirmButtonColor: '#d33',
+                                                            cancelButtonColor: '#3085d6',
+                                                            confirmButtonText: 'Hapus',
+                                                            cancelButtonText: 'Batal'
+                                                        }).then((result) => {
+                                                            if (result.isConfirmed) {
+                                                                // Membuat form dinamis dan submit
+                                                                var form = document.createElement('form');
+                                                                form.method = 'POST';
+                                                                form.action = '{{ route('admin.forcedelete-jadwal', ':id') }}'.replace(':id',
+                                                                    id); // Replace :id with actual ID
+
+                                                                // Menambahkan input CSRF token
+                                                                var csrfToken = document.createElement('input');
+                                                                csrfToken.type = 'hidden';
+                                                                csrfToken.name = '_token';
+                                                                csrfToken.value = '{{ csrf_token() }}';
+                                                                form.appendChild(csrfToken);
+
+                                                                // Menambahkan input method DELETE
+                                                                var methodInput = document.createElement('input');
+                                                                methodInput.type = 'hidden';
+                                                                methodInput.name = '_method';
+                                                                methodInput.value = 'DELETE';
+                                                                form.appendChild(methodInput);
+
+                                                                // Menambahkan form ke body dan submit
+                                                                document.body.appendChild(form);
+                                                                form.submit();
+                                                            }
+                                                        });
                                                     }
-                                                });
-                                            }
-                                        </script>
+                                                </script>
                                             </div>
                                         </td>
                                     </tr>
@@ -392,52 +397,53 @@
                                                 <a href="{{ route('admin.restore-satuancuti', $leave->id) }}"
                                                     class="btn btn-sm btn-success me-2"> <em
                                                         class="icon ni ni-undo"></em><span>Restore</span></a>
-                                                
-                                                <a class="btn btn-danger d-inline" href="javascript:void(0)" onclick="showDeleteConfirmationLeave({{ $leave->id }})">
-                                                    <em
-                                                        class="icon ni ni-na"></em><span>Delete
+
+                                                <a class="btn btn-danger d-inline" href="javascript:void(0)"
+                                                    onclick="showDeleteConfirmationLeave({{ $leave->id }})">
+                                                    <em class="icon ni ni-na"></em><span>Delete
                                                         Permanantly</span>
                                                 </a>
-                                            
-                                        <script>
-                                            function showDeleteConfirmationLeave(id) {
-                                                Swal.fire({
-                                                    title: 'Apakah Anda yakin?',
-                                                    text: "Data yang dihapus tidak bisa dikembalikan!",
-                                                    icon: 'warning',
-                                                    showCancelButton: true,
-                                                    confirmButtonColor: '#d33',
-                                                    cancelButtonColor: '#3085d6',
-                                                    confirmButtonText: 'Hapus',
-                                                    cancelButtonText: 'Batal'
-                                                }).then((result) => {
-                                                    if (result.isConfirmed) {
-                                                        // Membuat form dinamis dan submit
-                                                        var form = document.createElement('form');
-                                                        form.method = 'POST';
-                                                        form.action = '{{ route("admin.forcedelete-satuancuti", ":id") }}'.replace(':id', id); // Replace :id with actual ID
-                                                        
-                                                        // Menambahkan input CSRF token
-                                                        var csrfToken = document.createElement('input');
-                                                        csrfToken.type = 'hidden';
-                                                        csrfToken.name = '_token';
-                                                        csrfToken.value = '{{ csrf_token() }}';
-                                                        form.appendChild(csrfToken);
-                                                        
-                                                        // Menambahkan input method DELETE
-                                                        var methodInput = document.createElement('input');
-                                                        methodInput.type = 'hidden';
-                                                        methodInput.name = '_method';
-                                                        methodInput.value = 'DELETE';
-                                                        form.appendChild(methodInput);
-                                                        
-                                                        // Menambahkan form ke body dan submit
-                                                        document.body.appendChild(form);
-                                                        form.submit();
+
+                                                <script>
+                                                    function showDeleteConfirmationLeave(id) {
+                                                        Swal.fire({
+                                                            title: 'Apakah Anda yakin?',
+                                                            text: "Data yang dihapus tidak bisa dikembalikan!",
+                                                            icon: 'warning',
+                                                            showCancelButton: true,
+                                                            confirmButtonColor: '#d33',
+                                                            cancelButtonColor: '#3085d6',
+                                                            confirmButtonText: 'Hapus',
+                                                            cancelButtonText: 'Batal'
+                                                        }).then((result) => {
+                                                            if (result.isConfirmed) {
+                                                                // Membuat form dinamis dan submit
+                                                                var form = document.createElement('form');
+                                                                form.method = 'POST';
+                                                                form.action = '{{ route('admin.forcedelete-satuancuti', ':id') }}'.replace(':id',
+                                                                    id); // Replace :id with actual ID
+
+                                                                // Menambahkan input CSRF token
+                                                                var csrfToken = document.createElement('input');
+                                                                csrfToken.type = 'hidden';
+                                                                csrfToken.name = '_token';
+                                                                csrfToken.value = '{{ csrf_token() }}';
+                                                                form.appendChild(csrfToken);
+
+                                                                // Menambahkan input method DELETE
+                                                                var methodInput = document.createElement('input');
+                                                                methodInput.type = 'hidden';
+                                                                methodInput.name = '_method';
+                                                                methodInput.value = 'DELETE';
+                                                                form.appendChild(methodInput);
+
+                                                                // Menambahkan form ke body dan submit
+                                                                document.body.appendChild(form);
+                                                                form.submit();
+                                                            }
+                                                        });
                                                     }
-                                                });
-                                            }
-                                        </script>
+                                                </script>
                                             </div>
                                         </td>
                                     </tr>

@@ -151,7 +151,7 @@
                         title: 'Data tidak boleh kosong',
                         text: 'Harap isi username atau password anda.',
                         icon: 'warning',
-                        confirmButtonColor: '#364a63'
+                        confirmButtonColor: '#364d65'
                     });
                     return; // Hentikan eksekusi
                 }
@@ -162,10 +162,10 @@
                 Swal.fire({
                     title: '{{ $message }}',
                     icon: 'success',
-                    confirmButtonColor: '#364a63'
+                    confirmButtonColor: '#364d65'
                 }).then(() => {
-                    loginButton.style.backgroundColor = '#364a63'; // Secondary
-                    loginButton.style.borderColor = '#364a63';
+                    loginButton.style.backgroundColor = '#364d65'; // Secondary
+                    loginButton.style.borderColor = '#364d65';
                 });
             @endif
 
@@ -173,10 +173,10 @@
                 Swal.fire({
                     title: '{{ $message }}',
                     icon: 'error',
-                    confirmButtonColor: '#364a63'
+                    confirmButtonColor: '#364d65'
                 }).then(() => {
-                    loginButton.style.backgroundColor = '#364a63'; // Secondary
-                    loginButton.style.borderColor = '#364a63';
+                    loginButton.style.backgroundColor = '#364d65'; // Secondary
+                    loginButton.style.borderColor = '#364d65';
                 });
             @endif
         });
