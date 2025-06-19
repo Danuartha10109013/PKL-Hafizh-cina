@@ -69,8 +69,8 @@
                         <div class="form-group">
                             <div class="form-label-group">
                                 <label class="form-label" for="password">Password</label>
-                                <a class="link link-primary link-sm" href="{{ route('resetpassword') }}">Forgot
-                                    Password?</a>
+                                {{-- <a class="link link-primary link-sm" href="{{ route('resetpassword') }}">Forgot
+                                    Password?</a> --}}
                             </div>
                             <div class="form-control-wrap">
                                 <a href="#" class="form-icon form-icon-right passcode-switch lg"
@@ -92,7 +92,7 @@
                 </div><!-- .nk-block -->
                 <div class="nk-block nk-auth-footer">
                     <div class="mt-3">
-                        <p>&copy; 2024 Sistem Kehadiran Pegawai. All Rights Reserved.</p>
+                        <p>&copy; <span id="year"></span> Sistem Kehadiran dan Cuti Pegawai</p>
                     </div>
                 </div><!-- .nk-block -->
             </div><!-- .nk-split-content -->
@@ -114,6 +114,9 @@
     <!-- JavaScript -->
     <script src="./assets/js/bundle.js?ver=3.0.3"></script>
     <script src="./assets/js/scripts.js?ver=3.0.3"></script>
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const togglePassword = document.querySelector('.passcode-switch');

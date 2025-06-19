@@ -349,25 +349,19 @@
             <div class="nk-block nk-block-lg">
 
                 @php
-                    // Data Terlambat
-                    $topUser = $topUser ?? null;
-                    $secondUser = $secondUser ?? null;
-                    $thirdUser = $thirdUser ?? null;
+                    // Urutkan berdasarkan keterlambatan
+                    $sortedLate = $result->sortByDesc('late_count')->values();
 
-                    // Data Tidak Masuk
-                    $sortedResults = collect($result)->sortByDesc('absent_count')->values();
+                    $topLate1 = $sortedLate[0] ?? null;
+                    $topLate2 = $sortedLate[1] ?? null;
+                    $topLate3 = $sortedLate[2] ?? null;
 
-                    $topAbsentUser = (object) ($sortedResults[0] ?? []);
-                    $secondAbsentUser = (object) ($sortedResults[1] ?? []);
-                    $thirdAbsentUser = (object) ($sortedResults[2] ?? []);
+                    // Urutkan berdasarkan tidak masuk
+                    $sortedAbsent = $result->sortByDesc('absent_count')->values();
 
-                    $name1 = isset($topAbsentUser->user_id) ? \App\Models\User::find($topAbsentUser->user_id) : null;
-                    $name2 = isset($secondAbsentUser->user_id)
-                        ? \App\Models\User::find($secondAbsentUser->user_id)
-                        : null;
-                    $name3 = isset($thirdAbsentUser->user_id)
-                        ? \App\Models\User::find($thirdAbsentUser->user_id)
-                        : null;
+                    $topAbsent1 = $sortedAbsent[0] ?? null;
+                    $topAbsent2 = $sortedAbsent[1] ?? null;
+                    $topAbsent3 = $sortedAbsent[2] ?? null;
                 @endphp
 
                 <div class="row">
@@ -381,33 +375,30 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Nama</th>
-                                            <th>Email</th>
+                                            {{-- <th>Email</th> --}}
                                             <th>Jumlah Terlambat</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if ($topUser)
+                                        @if ($topLate1)
                                             <tr>
                                                 <td>1</td>
-                                                <td>{{ $topUser->name }}</td>
-                                                <td>{{ $topUser->email }}</td>
-                                                <td>{{ $topUser->late_count ?? '-' }}</td>
+                                                <td>{{ $topLate1['name'] }}</td>
+                                                <td>{{ $topLate1['late_count'] }}</td>
                                             </tr>
                                         @endif
-                                        @if ($secondUser)
+                                        @if ($topLate2)
                                             <tr>
                                                 <td>2</td>
-                                                <td>{{ $secondUser->name }}</td>
-                                                <td>{{ $secondUser->email }}</td>
-                                                <td>{{ $secondUser->late_count ?? '-' }}</td>
+                                                <td>{{ $topLate2['name'] }}</td>
+                                                <td>{{ $topLate2['late_count'] }}</td>
                                             </tr>
                                         @endif
-                                        @if ($thirdUser)
+                                        @if ($topLate3)
                                             <tr>
                                                 <td>3</td>
-                                                <td>{{ $thirdUser->name }}</td>
-                                                <td>{{ $thirdUser->email }}</td>
-                                                <td>{{ $thirdUser->late_count ?? '-' }}</td>
+                                                <td>{{ $topLate3['name'] }}</td>
+                                                <td>{{ $topLate3['late_count'] }}</td>
                                             </tr>
                                         @endif
                                     </tbody>
@@ -426,33 +417,30 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Nama</th>
-                                            <th>Email</th>
+                                            {{-- <th>Email</th> --}}
                                             <th>Jumlah Tidak Masuk</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if ($name1)
+                                        @if ($topAbsent1)
                                             <tr>
                                                 <td>1</td>
-                                                <td>{{ $name1->name }}</td>
-                                                <td>{{ $name1->email }}</td>
-                                                <td>{{ $topAbsentUser->absent_count ?? '-' }}</td>
+                                                <td>{{ $topAbsent1['name'] }}</td>
+                                                <td>{{ $topAbsent1['absent_count'] }}</td>
                                             </tr>
                                         @endif
-                                        @if ($name2)
+                                        @if ($topAbsent2)
                                             <tr>
                                                 <td>2</td>
-                                                <td>{{ $name2->name }}</td>
-                                                <td>{{ $name2->email }}</td>
-                                                <td>{{ $secondAbsentUser->absent_count ?? '-' }}</td>
+                                                <td>{{ $topAbsent2['name'] }}</td>
+                                                <td>{{ $topAbsent2['absent_count'] }}</td>
                                             </tr>
                                         @endif
-                                        @if ($name3)
+                                        @if ($topAbsent3)
                                             <tr>
                                                 <td>3</td>
-                                                <td>{{ $name3->name }}</td>
-                                                <td>{{ $name3->email }}</td>
-                                                <td>{{ $thirdAbsentUser->absent_count ?? '-' }}</td>
+                                                <td>{{ $topAbsent3['name'] }}</td>
+                                                <td>{{ $topAbsent3['absent_count'] }}</td>
                                             </tr>
                                         @endif
                                     </tbody>

@@ -107,7 +107,9 @@
     <script src="{{ asset('demo5/src/assets/js/bundle.js?ver=3.0.3') }}"></script>
     <script src="{{ asset('demo5/src/assets/js/scripts.js?ver=3.0.3') }}"></script>
     <script src="{{ asset('demo5/src/assets/js/charts/gd-default.js?ver=3.0.3') }}"></script>
-
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
 </body>
 
 </html>
