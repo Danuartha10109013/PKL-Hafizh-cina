@@ -13,6 +13,7 @@ use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\Writer\PngWriter;
+
 class LeaveController extends Controller
 {
     public function index()
@@ -37,11 +38,11 @@ class LeaveController extends Controller
             })
             ->count();
 
-        $totaluser = User::where('role',2)->count();
+        $totaluser = User::where('role', 2)->count();
         $persentaseCuti = $totaluser > 0 ? round(($totalcuti / $totaluser) * 100, 2) : 0;
         // dd($persentaseCuti);
         // Menampilkan view dengan data pegawai
-        return view('pages.admin.leave.kelolacuti', compact('leaves_annual', 'leaves', 'leaves_etc', 'name','persentaseCuti','totalcuti','totaluser'));
+        return view('pages.admin.leave.kelolacuti', compact('leaves_annual', 'leaves', 'leaves_etc', 'name', 'persentaseCuti', 'totalcuti', 'totaluser'));
     }
 
     public function show() {}
@@ -84,7 +85,7 @@ class LeaveController extends Controller
             'status' => 'required|in:0,1',
             'reason' => 'nullable|string|max:255',
         ]);
-         $startOfWeek = Carbon::now()->startOfWeek(); // Senin minggu ini
+        $startOfWeek = Carbon::now()->startOfWeek(); // Senin minggu ini
         $endOfWeek = Carbon::now()->endOfWeek();     // Minggu minggu ini
 
         $totalcuti = Leave::where('status', '0')
@@ -98,9 +99,9 @@ class LeaveController extends Controller
             })
             ->count();
 
-        $totaluser = User::where('role',2)->count();
+        $totaluser = User::where('role', 2)->count();
         $persentaseCuti = $totaluser > 0 ? round(($totalcuti / $totaluser) * 100, 2) : 0;
-        if($persentaseCuti > 30){
+        if ($persentaseCuti > 30) {
             return redirect()->back()->with('error', 'Pegawai yang cuti di minggu ini sudah lebih dari 30%');
         }
         // Temukan record cuti
@@ -111,49 +112,49 @@ class LeaveController extends Controller
         $leave->accepted_by = Auth::user()->id;
         $leave->accepted_time = now();
         $leave->reason_verification = $request->status == '1' ? $request->reason : null; // Simpan alasan jika status 'Ditolak'
-        if ($request->status == '0'){
+        if ($request->status == '0') {
 
             $atasan = User::find($leave->accepted_by);
             $qrContent = "Surat Izin Cuti\n"
-            . "Nomor: $leave->no_surat\n"
-            . "Disetujui oleh: $atasan->name\n"
-            . "PT Pratama Solusi Teknologi";
-    
-        // Define file name & path
-        $fileName = 'qr_' . $leave->id . '.png';
-        $filePath = 'public/qrTtd/' . $fileName;
-    
-        // ✅ Generate QR Code using Endroid QR Code
-        $result = Builder::create()
-            ->writer(new PngWriter()) // Save as PNG
-            ->data($qrContent) // QR Code Content
-            ->encoding(new Encoding('UTF-8'))
-            ->errorCorrectionLevel(ErrorCorrectionLevel::High)
-            ->size(300)
-            ->margin(10)
-            ->build();
+                . "Nomor: $leave->no_surat\n"
+                . "Disetujui oleh: $atasan->name\n"
+                . "PT Pratama Solusi Teknologi";
+
+            // Define file name & path
+            $fileName = 'qr_' . $leave->id . '.png';
+            $filePath = 'public/qrTtd/' . $fileName;
+
+            // ✅ Generate QR Code using Endroid QR Code
+            $result = Builder::create()
+                ->writer(new PngWriter()) // Save as PNG
+                ->data($qrContent) // QR Code Content
+                ->encoding(new Encoding('UTF-8'))
+                ->errorCorrectionLevel(ErrorCorrectionLevel::High)
+                ->size(300)
+                ->margin(10)
+                ->build();
             Storage::put($filePath, $result->getString());
-    
+
             // Save the file name to the database
             $leave->qrCode_ttd = $fileName;
 
-        $fName = 'qr_' . $leave->id . '.png';
-        $fPath = 'public/qrApp/' . $fileName;
-        $qrAppContent = "http://127.0.0.1:8000/qrcode/".$leave->id;
-        $appQr = Builder::create()
-            ->writer(new PngWriter()) // Save as PNG
-            ->data($qrAppContent) // QR Code Content
-            ->encoding(new Encoding('UTF-8'))
-            ->errorCorrectionLevel(ErrorCorrectionLevel::High)
-            ->size(300)
-            ->margin(10)
-            ->build();
-    
-        // Save QR code image to storage
-        Storage::put($fPath, $appQr->getString());
-    
-        // Save the file name to the database
-        $leave->qrApp = $fName;
+            $fName = 'qr_' . $leave->id . '.png';
+            $fPath = 'public/qrApp/' . $fileName;
+            $qrAppContent = "http://127.0.0.1:8000/qrcode/" . $leave->id;
+            $appQr = Builder::create()
+                ->writer(new PngWriter()) // Save as PNG
+                ->data($qrAppContent) // QR Code Content
+                ->encoding(new Encoding('UTF-8'))
+                ->errorCorrectionLevel(ErrorCorrectionLevel::High)
+                ->size(300)
+                ->margin(10)
+                ->build();
+
+            // Save QR code image to storage
+            Storage::put($fPath, $appQr->getString());
+
+            // Save the file name to the database
+            $leave->qrApp = $fName;
         }
         $leave->save();
         if ($request->status == 0) {
@@ -169,7 +170,7 @@ class LeaveController extends Controller
             $user->available = $totalday;
             $user->save();
         }
-        
+
         // dd($qrCode);
 
         // Redirect kembali dengan pesan sukses
