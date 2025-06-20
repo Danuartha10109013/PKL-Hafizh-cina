@@ -28,15 +28,18 @@ class LeaveController extends Controller
         $endOfWeek = Carbon::now()->endOfWeek();     // Minggu minggu ini
 
         $totalcuti = Leave::where('status', '0')
-            ->where(function ($query) use ($startOfWeek, $endOfWeek) {
-                $query->whereBetween('date', [$startOfWeek, $endOfWeek])
-                    ->orWhereBetween('end_date', [$startOfWeek, $endOfWeek])
-                    ->orWhere(function ($q) use ($startOfWeek, $endOfWeek) {
-                        $q->where('date', '<', $startOfWeek)
-                            ->where('end_date', '>', $endOfWeek);
-                    });
-            })
-            ->count();
+        ->where(function ($query) use ($startOfWeek, $endOfWeek) {
+            $query->whereBetween('date', [$startOfWeek, $endOfWeek])
+                ->orWhereBetween('end_date', [$startOfWeek, $endOfWeek])
+                ->orWhere(function ($q) use ($startOfWeek, $endOfWeek) {
+                    $q->where('date', '<', $startOfWeek)
+                        ->where('end_date', '>', $endOfWeek);
+                });
+        })
+        ->distinct('enhancer') // hanya menghitung satu kali per enhancer unik
+        ->count('enhancer'); 
+
+        // dd($totalcuti);
 
         $totaluser = User::where('role', 2)->count();
         $persentaseCuti = $totaluser > 0 ? round(($totalcuti / $totaluser) * 100, 2) : 0;
@@ -88,17 +91,19 @@ class LeaveController extends Controller
         $startOfWeek = Carbon::now()->startOfWeek(); // Senin minggu ini
         $endOfWeek = Carbon::now()->endOfWeek();     // Minggu minggu ini
 
-        $totalcuti = Leave::where('status', '0')
-            ->where(function ($query) use ($startOfWeek, $endOfWeek) {
-                $query->whereBetween('date', [$startOfWeek, $endOfWeek])
-                    ->orWhereBetween('end_date', [$startOfWeek, $endOfWeek])
-                    ->orWhere(function ($q) use ($startOfWeek, $endOfWeek) {
-                        $q->where('date', '<', $startOfWeek)
-                            ->where('end_date', '>', $endOfWeek);
-                    });
-            })
-            ->count();
+       $totalcuti = Leave::where('status', '0')
+        ->where(function ($query) use ($startOfWeek, $endOfWeek) {
+            $query->whereBetween('date', [$startOfWeek, $endOfWeek])
+                ->orWhereBetween('end_date', [$startOfWeek, $endOfWeek])
+                ->orWhere(function ($q) use ($startOfWeek, $endOfWeek) {
+                    $q->where('date', '<', $startOfWeek)
+                        ->where('end_date', '>', $endOfWeek);
+                });
+        })
+        ->distinct('enhancer') // hanya menghitung satu kali per enhancer unik
+        ->count('enhancer');   // hitung berdasarkan kolom enhancer
 
+        // dd($totalcuti);
         $totaluser = User::where('role', 2)->count();
         $persentaseCuti = $totaluser > 0 ? round(($totalcuti / $totaluser) * 100, 2) : 0;
         if ($persentaseCuti > 30) {
