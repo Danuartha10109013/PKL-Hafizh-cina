@@ -369,7 +369,7 @@
                     <div class="col-lg-6 mb-4">
                         <div class="card card-bordered card-preview">
                             <div class="card-inner">
-                                <h4 class="mb-3">Top 3 Pegawai Masuk Terlambat</h4>
+                                <h4 class="mb-3">Masuk Terlambat</h4>
                                 <table id="dataTable" class="datatable-init table">
                                     <thead class="thead-light">
                                         <tr>
@@ -411,7 +411,7 @@
                     <div class="col-lg-6 mb-4">
                         <div class="card card-bordered card-preview">
                             <div class="card-inner">
-                                <h4 class="mb-3">Top 3 Pegawai Tidak Masuk</h4>
+                                <h4 class="mb-3">Tidak Masuk</h4>
                                 <table id="dataTable" class="datatable-init table">
                                     <thead class="thead-light">
                                         <tr>
