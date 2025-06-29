@@ -20,25 +20,45 @@ class AdminController extends Controller
         $data = ShowM::find(1);
         return view('pages.admin.show.index',compact('data'));
     }
-    public function attendancebupdate(Request $request,$id){
-          // Validasi input
+    
+
+public function attendancebupdate(Request $request, $id)
+{
+    // Validasi awal: nilai show wajib ada dan harus 0 atau 1
+    $request->validate([
+        'show' => 'required|in:0,1',
+    ]);
+
+    // Cari data berdasarkan ID
+    $show = ShowM::find($id);
+
+    if (!$show) {
+        return redirect()->back()->with('error', 'Data tidak ditemukan.');
+    }
+
+    // Jika show == 1 (selalu terlihat), validasi waktu juga diperlukan
+    if ($request->show == '1') {
         $request->validate([
-            'show' => 'required|in:0,1'
+            'start' => 'required|date_format:H:i',
+            'end' => 'required|date_format:H:i|after:start',
         ]);
 
-        // Cari data berdasarkan ID
-        $show = ShowM::find($id);
-
-        if (!$show) {
-            return redirect()->back()->with('error', 'Data tidak ditemukan.');
-        }
-
-        // Update data
-        $show->show = $request->show;
-        $show->save();
-
-        return redirect()->back()->with('success', 'Visibilitas tombol absensi berhasil diperbarui.');
+        // Simpan jam mulai dan akhir
+        $show->start = $request->start;
+        $show->end = $request->end;
+    } else {
+        // Jika tidak selalu terlihat, kosongkan jam
+        $show->start = null;
+        $show->end = null;
     }
+
+    // Simpan status show
+    $show->show = $request->show;
+    $show->save();
+
+    return redirect()->back()->with('success', 'Visibilitas tombol absensi berhasil diperbarui.');
+}
+
 
     public function index()
     {

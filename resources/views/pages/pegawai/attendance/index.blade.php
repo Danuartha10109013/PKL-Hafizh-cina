@@ -47,11 +47,20 @@
                                 $show = \App\Models\ShowM::find(1);
                                 $now = \Carbon\Carbon::now();
                                 $today = $now->toDateString();
+                                // dd($now);
                                 $dayName = $now->locale('id')->dayName;
-
                                 // Jika show == 1, tampilkan tombol absen langsung tanpa cek waktu
                                 if ($show && $show->show == 1) {
-                                    echo '<li class="mb-3"><a id="attendance-btn" href="' . route('pegawai.tambah-attendance') . '?status=in" class="btn btn-secondary d-inline-block setup-cek">Absen</a></li>';
+                                    $startTime = $now->copy()->setTimeFromTimeString($show->start);
+                                    $endTime = $now->copy()->setTimeFromTimeString($show->end);
+                                    
+                                    if ($now->between($startTime, $endTime)){
+                                        echo '<li class="mb-3">
+                                                <a id="attendance-btn"
+                                                    href="' . route('pegawai.tambah-attendance') . '?status=in"
+                                                    class="btn btn-secondary d-inline-block setup-cek">Absen</a>
+                                            </li>';
+                                    }
                                 } else {
                                     // Jika show == 0 atau tidak ditemukan, gunakan aturan jadwal
                                     if (!in_array($dayName, ['Sabtu', 'Minggu'])) {

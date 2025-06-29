@@ -46,6 +46,7 @@
                                 <label class="form-label fw-bold" style="color: #364d65;">Mode Tampilan Tombol
                                     Absensi</label>
 
+                                {{-- Opsi 1: Selalu terlihat --}}
                                 <div class="border rounded p-3 mb-2 {{ $data->show == 1 ? 'bg-light' : '' }}">
                                     <div class="custom-control custom-radio">
                                         <input type="radio" name="show" value="1" class="custom-control-input"
@@ -56,8 +57,23 @@
                                                 waktu/jadwal.</div>
                                         </label>
                                     </div>
+
+                                    {{-- Tambahan input jam hanya jika "Selalu Terlihat" --}}
+                                    <div id="timeRangeInputs" class="row mt-3" style="display: {{ $data->show == 1 ? 'flex' : 'none' }};">
+                                        <div class="col-md-6">
+                                            <label for="start" class="form-label">Dari Jam</label>
+                                            <input type="time" name="start" id="start" class="form-control"
+                                                value="{{ old('start', $data->start) }}">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="end" class="form-label">Sampai Jam</label>
+                                            <input type="time" name="end" id="end" class="form-control"
+                                                value="{{ old('end', $data->end) }}">
+                                        </div>
+                                    </div>
                                 </div>
 
+                                {{-- Opsi 2: Sesuai jadwal --}}
                                 <div class="border rounded p-3 {{ $data->show == 0 ? 'bg-light' : '' }}">
                                     <div class="custom-control custom-radio">
                                         <input type="radio" name="show" value="0" class="custom-control-input"
@@ -84,4 +100,22 @@
             </div>
         </div>
     </div>
+
+    {{-- JavaScript untuk toggle input jam --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const showAlways = document.getElementById('showAlways');
+            const timeInputs = document.getElementById('timeRangeInputs');
+
+            document.querySelectorAll('input[name="show"]').forEach(radio => {
+                radio.addEventListener('change', function () {
+                    if (showAlways.checked) {
+                        timeInputs.style.display = 'flex';
+                    } else {
+                        timeInputs.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
 @endsection
