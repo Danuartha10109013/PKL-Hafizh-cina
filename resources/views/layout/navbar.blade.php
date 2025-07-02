@@ -77,7 +77,7 @@
                         <li class="nk-menu-item">
                             <a href="{{ route('admin.trashed') }}" class="nk-menu-link">
                                 <span class="nk-menu-icon"><em class="icon ni ni-trash"></em></span>
-                                <span class="nk-menu-text">Recycle Bin</span>
+                                <span class="nk-menu-text">Sampah</span>
                             </a>
                         </li><!-- .nk-menu-item -->
                         <li class="nk-menu-heading">
@@ -86,14 +86,14 @@
                         <li class="nk-menu-item">
                             <a href="{{ route('admin.kordinat') }}" class="nk-menu-link">
                                 <span class="nk-menu-icon"><em class="icon ni ni-location"></em></span>
-                                <span class="nk-menu-text">Coordinate</span>
+                                <span class="nk-menu-text">Kordinat</span>
                             </a>
 
                         </li><!-- .nk-menu-item -->
                         <li class="nk-menu-item">
                             <a href="{{ route('admin.attendance-button') }}" class="nk-menu-link">
                                 <span class="nk-menu-icon"><em class="icon ni ni-check"></em></span>
-                                <span class="nk-menu-text">Show Atendance Button</span>
+                                <span class="nk-menu-text">Tombol Absensi</span>
                             </a>
 
                         </li><!-- .nk-menu-item -->

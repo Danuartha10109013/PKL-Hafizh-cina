@@ -1,7 +1,7 @@
 @extends('layout.main')
 
 @section('title')
-    Recycle Bin
+    Sampah
 @endsection
 
 @section('content')
@@ -66,15 +66,14 @@
                                             <div class="d-flex justify-content-center">
                                                 <a href="{{ route('admin.userrestore', $userd->id) }}"
                                                     class="btn btn-sm btn-success me-2"> <em
-                                                        class="icon ni ni-undo"></em><span>Restore</span></a>
+                                                        class="icon ni ni-undo"></em><span>Pulih</span></a>
 
                                                 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
                                                 <!-- Tombol untuk memicu SweetAlert -->
                                                 <!-- Tombol Hapus yang tampak seperti link -->
                                                 <a class="btn btn-danger" href="javascript:void(0)"
                                                     onclick="showDeleteConfirmationCuti({{ $userd->id }})">
-                                                    <em class="icon ni ni-na"></em><span>Delete
-                                                        Permanantly</span>
+                                                    <em class="icon ni ni-na"></em><span>Hapus Permanen</span>
                                                 </a>
 
                                                 <script>
@@ -170,12 +169,11 @@
                                             <div class="d-flex justify-content-center">
                                                 <a href="{{ route('admin.kelolakehadiranpegawai.restore', $attendance->id) }}"
                                                     class="btn btn-sm btn-success me-2"> <em
-                                                        class="icon ni ni-undo"></em><span>Restore</span></a>
+                                                        class="icon ni ni-undo"></em><span>Pulih</span></a>
 
                                                 <a class="btn btn-danger d-inline" href="javascript:void(0)"
                                                     onclick="showDeleteConfirmation({{ $attendance->id }})">
-                                                    <em class="icon ni ni-na"></em><span>Delete
-                                                        Permanantly</span>
+                                                    <em class="icon ni ni-na"></em><span>Hapus Permanen</span>
                                                 </a>
 
                                                 <script>
@@ -296,12 +294,11 @@
                                             <div class="d-flex justify-content-center">
                                                 <a href="{{ route('admin.restore-jadwal', $schedule->id) }}"
                                                     class="btn btn-sm btn-success me-2"> <em
-                                                        class="icon ni ni-undo"></em><span>Restore</span></a>
+                                                        class="icon ni ni-undo"></em><span>Pulih</span></a>
 
                                                 <a class="btn btn-danger d-inline" href="javascript:void(0)"
                                                     onclick="showDeleteConfirmationJadwal({{ $schedule->id }})">
-                                                    <em class="icon ni ni-na"></em><span>Delete
-                                                        Permanantly</span>
+                                                    <em class="icon ni ni-na"></em><span>Hapus Permanen</span>
                                                 </a>
 
                                                 <script>
@@ -396,12 +393,11 @@
                                             <div class="d-flex justify-content-center">
                                                 <a href="{{ route('admin.restore-satuancuti', $leave->id) }}"
                                                     class="btn btn-sm btn-success me-2"> <em
-                                                        class="icon ni ni-undo"></em><span>Restore</span></a>
+                                                        class="icon ni ni-undo"></em><span>Pulih</span></a>
 
                                                 <a class="btn btn-danger d-inline" href="javascript:void(0)"
                                                     onclick="showDeleteConfirmationLeave({{ $leave->id }})">
-                                                    <em class="icon ni ni-na"></em><span>Delete
-                                                        Permanantly</span>
+                                                    <em class="icon ni ni-na"></em><span>Hapus Permanen</span>
                                                 </a>
 
                                                 <script>

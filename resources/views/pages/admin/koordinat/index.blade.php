@@ -1,6 +1,6 @@
 @extends('layout.main')
 @section('title')
-    Coordinate
+    Kordinat Absensi
 @endsection
 
 @section('content')
@@ -9,7 +9,7 @@
             <div class="nk-content-body">
                 <div class="components-preview wide-md mx-auto">
                     <div class="nk-block-head nk-block-head-lg wide-sm">
-                        <h2 class="nk-block-title fw-semibold ">Koordinat Absensi</h2>
+                        <h2 class="nk-block-title fw-semibold ">Kordinat Absensi</h2>
                     </div>
 
                     <div class="nk-block nk-block-lg">

@@ -1,7 +1,7 @@
 @extends('layout.main')
 
 @section('title')
-    Show Button Attendance
+    Tombol Absensi
 @endsection
 
 @section('content')
@@ -59,7 +59,8 @@
                                     </div>
 
                                     {{-- Tambahan input jam hanya jika "Selalu Terlihat" --}}
-                                    <div id="timeRangeInputs" class="row mt-3" style="display: {{ $data->show == 1 ? 'flex' : 'none' }};">
+                                    <div id="timeRangeInputs" class="row mt-3"
+                                        style="display: {{ $data->show == 1 ? 'flex' : 'none' }};">
                                         <div class="col-md-6">
                                             <label for="start" class="form-label">Dari Jam</label>
                                             <input type="time" name="start" id="start" class="form-control"
@@ -103,12 +104,12 @@
 
     {{-- JavaScript untuk toggle input jam --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const showAlways = document.getElementById('showAlways');
             const timeInputs = document.getElementById('timeRangeInputs');
 
             document.querySelectorAll('input[name="show"]').forEach(radio => {
-                radio.addEventListener('change', function () {
+                radio.addEventListener('change', function() {
                     if (showAlways.checked) {
                         timeInputs.style.display = 'flex';
                     } else {
