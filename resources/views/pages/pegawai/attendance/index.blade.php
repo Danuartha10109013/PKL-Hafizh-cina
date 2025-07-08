@@ -53,11 +53,13 @@
                                 if ($show && $show->show == 1) {
                                     $startTime = $now->copy()->setTimeFromTimeString($show->start);
                                     $endTime = $now->copy()->setTimeFromTimeString($show->end);
-                                    
-                                    if ($now->between($startTime, $endTime)){
+
+                                    if ($now->between($startTime, $endTime)) {
                                         echo '<li class="mb-3">
                                                 <a id="attendance-btn"
-                                                    href="' . route('pegawai.tambah-attendance') . '?status=in"
+                                                    href="' .
+                                            route('pegawai.tambah-attendance') .
+                                            '?status=in"
                                                     class="btn btn-secondary d-inline-block setup-cek">Absen</a>
                                             </li>';
                                     }
@@ -76,15 +78,26 @@
                                             $absenPulangStart = $clockOut->copy()->subMinutes(15);
                                             $absenPulangEnd = $clockOut->copy()->addHour(2);
 
-                                            $sudahAbsenMasuk = $attendances->where('date', $today)->where('status', 'in')->count() > 0;
-                                            $sudahAbsenPulang = $attendances->where('date', $today)->where('status', 'out')->count() > 0;
+                                            $sudahAbsenMasuk =
+                                                $attendances->where('date', $today)->where('status', 'in')->count() > 0;
+                                            $sudahAbsenPulang =
+                                                $attendances->where('date', $today)->where('status', 'out')->count() >
+                                                0;
 
                                             if (!$sudahAbsenMasuk && $now->between($absenMasukStart, $absenMasukEnd)) {
-                                                echo '<li><a id="attendance-btn" href="' . route('pegawai.tambah-attendance') . '?status=in" class="btn btn-secondary d-inline-block setup-cek" onclick="checkLate()">Absen Masuk</a></li>';
+                                                echo '<li><a id="attendance-btn" href="' .
+                                                    route('pegawai.tambah-attendance') .
+                                                    '?status=in" class="btn btn-secondary d-inline-block setup-cek" onclick="checkLate()">Absen Masuk</a></li>';
                                             }
 
-                                            if (!$sudahAbsenPulang && $sudahAbsenMasuk && $now->between($absenPulangStart, $absenPulangEnd)) {
-                                                echo '<li><a id="attendance-btn" href="' . route('pegawai.tambah-attendance') . '?status=out" class="btn btn-secondary d-inline-block setup-cek">Absen Pulang</a></li>';
+                                            if (
+                                                !$sudahAbsenPulang &&
+                                                $sudahAbsenMasuk &&
+                                                $now->between($absenPulangStart, $absenPulangEnd)
+                                            ) {
+                                                echo '<li><a id="attendance-btn" href="' .
+                                                    route('pegawai.tambah-attendance') .
+                                                    '?status=out" class="btn btn-secondary d-inline-block setup-cek">Absen Pulang</a></li>';
                                             }
                                         }
                                     }
@@ -212,7 +225,8 @@
                         <h5 class="modal-title" id="printModalLabel">Cetak Kehadiran</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form id="printForm" action="{{ route('pegawai.printcustom-attendance') }}" method="GET">
+                    <form id="printForm" action="{{ route('pegawai.printcustom-attendance') }}" method="GET"
+                        target="_blank">
                         <div class="modal-body">
                             <!-- Input Bulan -->
                             <div class="form-group">
@@ -222,15 +236,21 @@
                                 </div>
                             </div>
 
-                            <!-- Input Tahun -->
+                            <!-- Dropdown Tahun -->
                             <div class="form-group mt-3">
                                 <label class="form-label">Tahun</label>
                                 <div class="form-control-wrap">
-                                    <input type="number" class="form-control year-picker" name="year"
-                                        placeholder="Masukkan Tahun" min="1900" max="2099" step="1" required>
+                                    <select class="form-control" name="year" required>
+                                        @for ($i = 2021; $i <= 2030; $i++)
+                                            <option value="{{ $i }}" {{ now()->year == $i ? 'selected' : '' }}>
+                                                {{ $i }}
+                                            </option>
+                                        @endfor
+                                    </select>
                                 </div>
                             </div>
                         </div>
+
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                             <button type="submit" class="btn btn-primary">Cetak</button>
@@ -239,6 +259,7 @@
                 </div>
             </div>
         </div>
+
     </div>
     @php
 

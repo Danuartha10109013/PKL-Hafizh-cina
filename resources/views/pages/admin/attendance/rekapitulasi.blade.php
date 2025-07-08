@@ -146,7 +146,7 @@
                                 <table id="dataTable" class="datatable-init table">
                                     <thead>
                                         <tr>
-                                            <th class="d-none">Created At</th>
+                                            {{-- <th class="d-none">Created At</th> --}}
                                             <th>No</th>
                                             <th>Nama Pegawai</th>
                                             <th>Masuk</th>
@@ -316,7 +316,7 @@
 
 
                                             <tr>
-                                                <td class="d-none created-at">{{ $createdAt }}</td>
+                                                {{-- <td class="d-none created-at">{{ $createdAt }}</td> --}}
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $pegawai->name }}</td>
                                                 <td id="countMasuk">{{ $countMasuk }}</td>
@@ -531,12 +531,12 @@
                                         <td>
                                             <form
                                                 action="{{ route('admin.kelolakehadiranpegawai.send', ['id' => $ul['user_id']]) }}"
-                                                method="POST">
+                                                method="POST" onsubmit="return false;">
                                                 @csrf
                                                 <input type="hidden" name="totalDays" value="{{ $ul['late_count'] }}">
-                                                <button type="submit" class="btn btn-secondary">Kirim
-                                                    Peringatan</button>
+                                                <button type="submit" class="btn btn-secondary">Kirim Peringatan</button>
                                             </form>
+
                                         </td>
                                     </tr>
                                 @endforeach
@@ -594,6 +594,11 @@
         </div>
     </div>
 
+    <script>
+        $(document).on('submit', 'form[action*="kelolakehadiranpegawai/send"]', function(e) {
+            e.preventDefault(); // blokir form ini aja
+        });
+    </script>
 
 
 

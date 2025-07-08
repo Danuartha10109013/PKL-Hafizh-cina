@@ -15,9 +15,30 @@
                                     <div class="card-head text-center">
                                         <h6 class="title">Total Pegawai</h6>
                                     </div>
-                                    <div class="nk-ck-sm">
-                                        <canvas class="pie-chart" id="pieChartData"></canvas>
+                                    <div class="nk-ck-sm d-flex align-items-start gap-4">
+                                        <div style="width: 70%;">
+                                            <canvas class="pie-chart" id="pieChartData"></canvas>
+                                        </div>
+                                        <div class="d-flex flex-column justify-content-center gap-1">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="dot bg-primary"
+                                                    style="width:10px; height:10px; border-radius:50%; display:inline-block;"></span>
+                                                <span>Laki-Laki: <strong>{{ $maleCount }}</strong></span>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="dot bg-danger"
+                                                    style="width:10px; height:10px; border-radius:50%; display:inline-block;"></span>
+                                                <span>Perempuan: <strong>{{ $femaleCount }}</strong></span>
+                                            </div>
+                                            <hr class="my-1">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="dot bg-dark"
+                                                    style="width:10px; height:10px; border-radius:50%; display:inline-block;"></span>
+                                                <span>Total Pegawai: <strong>{{ $maleCount + $femaleCount }}</strong></span>
+                                            </div>
+                                        </div>
                                     </div>
+
                                 </div>
                             </div><!-- .card-preview -->
                         </div>
@@ -27,9 +48,34 @@
                                     <div class="card-head text-center">
                                         <h6 class="title">Statistik Kehadiran</h6>
                                     </div>
-                                    <div class="nk-ck-sm">
-                                        <canvas class="pie-chart" id="pieChartData2"></canvas>
+                                    <div class="nk-ck-sm d-flex align-items-start gap-4">
+                                        <div style="width: 70%;">
+                                            <canvas class="pie-chart" id="pieChartData2"></canvas>
+                                        </div>
+                                        <div class="d-flex flex-column justify-content-center gap-1">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="dot bg-purple"
+                                                    style="width:10px; height:10px; border-radius:50%; display:inline-block;"></span>
+                                                <span>Cuti: <strong>{{ $attendanceStats['cuti'] }}</strong></span>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="dot bg-success"
+                                                    style="width:10px; height:10px; border-radius:50%; display:inline-block;"></span>
+                                                <span>Masuk: <strong>{{ $attendanceStats['masuk'] }}</strong></span>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="dot bg-warning"
+                                                    style="width:10px; height:10px; border-radius:50%; display:inline-block;"></span>
+                                                <span>Pulang: <strong>{{ $attendanceStats['pulang'] }}</strong></span>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="dot bg-info"
+                                                    style="width:10px; height:10px; border-radius:50%; display:inline-block;"></span>
+                                                <span>Absen: <strong>{{ $attendanceStats['absen'] }}</strong></span>
+                                            </div>
+                                        </div>
                                     </div>
+
                                 </div>
                             </div><!-- .card-preview -->
                         </div>
@@ -38,6 +84,9 @@
                                 <div class="card-inner">
                                     <div class="card-title-group align-start mb-3">
                                         <div class="card-title">
+                                            @php
+                                                \Carbon\Carbon::setLocale('id');
+                                            @endphp
                                             <h6 class="title">Daftar Pegawai Terlambat :
                                                 {{ \Carbon\Carbon::now()->translatedFormat('l, d F Y', 'id') }}</h6>
 
@@ -84,6 +133,9 @@
                                 <div class="card-inner">
                                     <div class="card-title-group align-start mb-3">
                                         <div class="card-title">
+                                            @php
+                                                \Carbon\Carbon::setLocale('id');
+                                            @endphp
                                             <h6 class="title">Daftar Pegawai Tepat Waktu :
                                                 {{ \Carbon\Carbon::now()->translatedFormat('l, d F Y', 'id') }}</h6>
 

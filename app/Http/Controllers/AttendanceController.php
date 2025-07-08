@@ -620,7 +620,7 @@ class AttendanceController extends Controller
         if (!$firstAttendanceGlobal) {
             // Tidak ada absensi sama sekali
             return view('pages.pegawai.attendance.printcustom', [
-                'attendance' => collect(),
+                'attendances' => collect(),
                 'latitude' => null,
                 'longitude' => null,
                 'name' => $name,
@@ -647,7 +647,7 @@ class AttendanceController extends Controller
         // Jika tidak ada absensi di bulan ini, maka 0 semua
         if ($attendances->isEmpty()) {
             return view('pages.pegawai.attendance.printcustom', [
-                'attendance' => collect(),
+                'attendances' => collect(),
                 'latitude' => null,
                 'longitude' => null,
                 'name' => $name,
