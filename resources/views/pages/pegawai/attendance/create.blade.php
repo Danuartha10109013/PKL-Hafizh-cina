@@ -74,7 +74,7 @@
 
 
             <!-- Map -->
-            <div id="map" style="height: 400px;"></div>
+            <div id="map" style="height: 400px; width: 100%;"></div>
             <input type="hidden" name="coordinate" id="coordinate">
 
             <!-- Tombol submit absensi -->
@@ -90,24 +90,56 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-@php
-    $kordinat = \App\Models\Koordinat::find(1);
-@endphp
+    @php
+        $kordinat = \App\Models\Koordinat::find(1);
+    @endphp
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var map = L.map('map').setView([{{ $kordinat->latitude }}, {{ $kordinat->longitude }}], 18); // Lokasi PT. Pratama Solusi Teknologi
+            var map = L.map('map').setView([{{ $kordinat->latitude }}, {{ $kordinat->longitude }}], 16);
+
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 18,
             }).addTo(map);
+
+            // Lingkaran radius area absensi
             var allowedLatLng = [{{ $kordinat->latitude }}, {{ $kordinat->longitude }}];
-            var allowedRadius = 100;
+            var allowedRadius = 300;
 
             var allowedCircle = L.circle(allowedLatLng, {
                 color: '#32cd32',
                 fillColor: '#32cd32',
-                fillOpacity: 0.5,
+                fillOpacity: 0.4,
                 radius: allowedRadius
-            }).addTo(map);
+            }).addTo(map).bringToBack(); // <== langsung tambah circle setelah tileLayer
+
+            console.log("Latitude & Longitude Circle:", allowedLatLng);
+
+            // Marker merah lokasi perusahaan
+            var redIcon = L.icon({
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+                shadowSize: [41, 41]
+            });
+
+            L.marker(allowedLatLng, {
+                icon: redIcon
+            }).addTo(map).bindPopup("Lokasi Perusahaan");
+
+            // Marker merah untuk lokasi perusahaan
+            var redIcon = L.icon({
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+                shadowSize: [41, 41]
+            });
+            L.marker(allowedLatLng, {
+                icon: redIcon
+            }).addTo(map).bindPopup("Lokasi Perusahaan");
 
             Swal.fire({
                 title: 'Izinkan akses lokasi',
@@ -155,14 +187,39 @@
             function onLocationFound(e) {
                 var radius = e.accuracy;
 
-                var userMarker = L.marker(e.latlng).addTo(map)
-                    .bindPopup("Lokasi Anda dalam radius " + radius + " meter.").openPopup();
+                var userLatLng = e.latlng;
+                var companyLatLng = L.latLng({{ $kordinat->latitude }}, {{ $kordinat->longitude }});
 
-                map.setView(e.latlng, 18);
+                // Set view ke lokasi pegawai
+                map.setView(userLatLng, 18);
 
-                if (allowedCircle.getBounds().contains(e.latlng)) {
-                    document.getElementById('coordinate').value = e.latlng.lat + "," + e.latlng.lng;
+                // Marker biru untuk lokasi user/pegawai
+                var blueIcon = L.icon({
+                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+                    shadowSize: [41, 41]
+                });
 
+                var userMarker = L.marker(userLatLng, {
+                    icon: blueIcon
+                }).addTo(map).bindPopup("Lokasi Anda").openPopup();
+
+                // Garis penghubung antara perusahaan dan pegawai
+                var connectingLine = L.polyline([companyLatLng, userLatLng], {
+                    color: 'green',
+                    weight: 3,
+                    opacity: 0.7,
+                    dashArray: '6, 6'
+                }).addTo(map);
+
+                // Isi input koordinat untuk dikirim ke server
+                document.getElementById('coordinate').value = userLatLng.lat + "," + userLatLng.lng;
+
+                // Cek apakah dalam radius
+                if (companyLatLng.distanceTo(userLatLng) <= allowedRadius) {
                     Swal.close();
                     Swal.fire({
                         icon: 'success',
@@ -174,11 +231,9 @@
 
                     document.getElementById('outOfAreaAlert').style.display = "none";
                     document.getElementById('inAreaAlert').style.display = "block";
-
                     document.getElementById('submitContainer').style.display = "none";
 
                     startFaceVerification();
-
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -189,10 +244,10 @@
 
                     document.getElementById('inAreaAlert').style.display = "none";
                     document.getElementById('outOfAreaAlert').style.display = "block";
-
                     document.getElementById('submitContainer').style.display = "none";
                 }
             }
+
 
             map.on('locationfound', onLocationFound);
 

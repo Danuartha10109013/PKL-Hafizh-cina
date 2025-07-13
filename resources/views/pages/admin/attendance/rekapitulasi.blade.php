@@ -91,16 +91,13 @@
                                                             </div>
                                                             <div class="form-group mb-3">
                                                                 <label for="year">Tahun</label>
-                                                                <select name="year" id="year" class="form-control"
-                                                                    required>
-                                                                    <option value="" selected disabled>-- Pilih Tahun
-                                                                        --</option>
-                                                                    @for ($year = 2020; $year <= 2030; $year++)
-                                                                        <option value="{{ $year }}">
-                                                                            {{ $year }}</option>
-                                                                    @endfor
-                                                                </select>
+                                                                <input type="number" name="year" id="year"
+                                                                    class="form-control"
+                                                                    placeholder="Masukkan Tahun (2020 - 2030)"
+                                                                    min="2020" max="2030" required
+                                                                    oninput="this.value = this.value.slice(0, 4)">
                                                             </div>
+
                                                             <!-- Submit Button -->
                                                             <div class="modal-footer p-0 d-flex justify-content-between">
                                                                 <button type="submit"
@@ -451,10 +448,6 @@
                 </div>
             </div>
 
-
-
-
-
             {{-- Sanksi --}}
             <div class="nk-block-head nk-block-head-sm">
                 <div class="nk-block-between">
@@ -546,53 +539,51 @@
                     </div>
                 </div>
             </div>
-
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    const rows = document.querySelectorAll('tr[data-user-id]');
-
-                    rows.forEach(row => {
-                        try {
-                            const userId = row.dataset.userId;
-                            const late = parseInt(row.dataset.late || '0');
-                            const absent = parseInt(row.dataset.absent || '0');
-                            const total = late + absent;
-
-                            let maxSP = -1;
-                            if (total >= 6) maxSP = 3;
-                            else if (total >= 4) maxSP = 2;
-                            else if (total >= 2) maxSP = 1;
-
-                            if (maxSP > 0) {
-                                console.log(`🔍 Cek user ${userId}, total: ${total}, target SP: ${maxSP}`);
-
-                                for (let sp = 1; sp <= maxSP; sp++) {
-                                    const checkbox = row.querySelector(`#sp_${userId}_${sp}`);
-                                    if (checkbox && !checkbox.disabled) {
-                                        checkbox.checked = true;
-                                        const form = checkbox.closest('form');
-                                        setTimeout(() => {
-                                            console.log(`✅ Submit SP ${sp} untuk user ID: ${userId}`);
-                                            form.submit();
-                                        }, 100);
-                                        break; // hanya kirim 1 SP per load
-                                    } else {
-                                        console.log(
-                                            `⚠️ SP ${sp} untuk user ID ${userId} sudah dikirim atau checkbox tidak ditemukan`
-                                        );
-                                    }
-                                }
-                            }
-                        } catch (err) {
-                            console.error(`❌ Error SP otomatis user ${userId}:`, err);
-                        }
-                    });
-                });
-            </script>
-
-
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const rows = document.querySelectorAll('tr[data-user-id]');
+
+            rows.forEach(row => {
+                try {
+                    const userId = row.dataset.userId;
+                    const late = parseInt(row.dataset.late || '0');
+                    const absent = parseInt(row.dataset.absent || '0');
+                    const total = late + absent;
+
+                    let maxSP = -1;
+                    if (total >= 6) maxSP = 3;
+                    else if (total >= 4) maxSP = 2;
+                    else if (total >= 2) maxSP = 1;
+
+                    if (maxSP > 0) {
+                        console.log(`🔍 Cek user ${userId}, total: ${total}, target SP: ${maxSP}`);
+
+                        for (let sp = 1; sp <= maxSP; sp++) {
+                            const checkbox = row.querySelector(`#sp_${userId}_${sp}`);
+                            if (checkbox && !checkbox.disabled) {
+                                checkbox.checked = true;
+                                const form = checkbox.closest('form');
+                                setTimeout(() => {
+                                    console.log(`✅ Submit SP ${sp} untuk user ID: ${userId}`);
+                                    form.submit();
+                                }, 100);
+                                break; // hanya kirim 1 SP per load
+                            } else {
+                                console.log(
+                                    `⚠️ SP ${sp} untuk user ID ${userId} sudah dikirim atau checkbox tidak ditemukan`
+                                );
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.error(`❌ Error SP otomatis user ${userId}:`, err);
+                }
+            });
+        });
+    </script>
 
     <script>
         $(document).on('submit', 'form[action*="kelolakehadiranpegawai/send"]', function(e) {
