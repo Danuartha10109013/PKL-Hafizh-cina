@@ -325,60 +325,107 @@ class AttendanceController extends Controller
 
     public function cetakrekapbulan(Request $request)
     {
-        // Get the selected month and year from the request
         $month = $request->input('month');
         $year = $request->input('year');
 
-        // Filter users excluding role 1 (admin)
-        $users = User::where('role', '!=', 1)->get();
+        $calon = User::where('role', '!=', 1)->get();
 
-        // Create rekapitulasi data based on month and year filters
-        $rekapData = $users->map(function ($user) use ($month, $year) {
-            // Filter attendance by user and month/year
+        $rekapData = [];
+
+        foreach ($calon as $user) {
+            if (!$user->schedule) continue;
+
+            $scheduleDays = ScheduleDayM::where('schedule_id', $user->schedule)->get();
+            if ($scheduleDays->isEmpty()) continue;
+
+            $dayNames = [
+                0 => 'Minggu',
+                1 => 'Senin',
+                2 => 'Selasa',
+                3 => 'Rabu',
+                4 => 'Kamis',
+                5 => 'Jumat',
+                6 => 'Sabtu'
+            ];
+
             $attendances = Attendance::where('enhancer', $user->id)
-                ->whereMonth('created_at', $month)
                 ->whereYear('created_at', $year)
-                ->get();
+                ->whereMonth('created_at', $month)
+                ->get()
+                ->groupBy(fn($a) => \Carbon\Carbon::parse($a->created_at)->format('Y-m-d'));
 
-            // Count attendance statuses
-            $masuk = $attendances->where('status', 0)->count(); // Kehadiran masuk
-            $pulang = $attendances->where('status', 1)->count(); // Kehadiran pulang
-
-            // Filter for terlambat if time is after 08:00:00
-            $terlambat = $attendances->where('status', 1)->filter(function ($attendance) {
-                return $attendance->time > '08:00:00';
-            })->count();
-
-            // Filter for lebih awal if time is before 17:00:00
-            $lebihAwal = $attendances->where('status', 2)->filter(function ($attendance) {
-                return $attendance->time < '17:00:00';
-            })->count();
-
-            // Filter leave records by user and month/year
             $cuti = Leave::where('enhancer', $user->id)
-                ->whereMonth('created_at', $month)
                 ->whereYear('created_at', $year)
+                ->whereMonth('created_at', $month)
                 ->count();
 
-            // Determine sanction based on conditions
-            $sanksi = $terlambat > 3 ? 'danger' : ($lebihAwal > 1 ? 'warning' : 'success');
-            $sanksiLabel = $terlambat > 3 ? 'Sanksi' : ($lebihAwal > 1 ? 'Perlu Perhatian' : 'Aman');
+            $startDate = \Carbon\Carbon::createFromDate($year, $month, 1)->startOfDay();
+            $endDate = $startDate->copy()->endOfMonth();
 
-            return [
+            $countMasuk = 0;
+            $countPulang = 0;
+            $lebihAwal = 0;
+            $lateCount = 0;
+            $absentDates = [];
+
+            for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
+                $dayName = $dayNames[$date->dayOfWeek];
+                $matchedDay = $scheduleDays->firstWhere('days', $dayName);
+
+                if (!$matchedDay) continue;
+
+                $dateStr = $date->format('Y-m-d');
+                $attendance = $attendances->get($dateStr);
+
+                if ($attendance && $attendance->count() > 0) {
+                    // cari masuk dan pulang
+                    $masuk = $attendance->where('status', 0)->sortBy('created_at')->first();
+                    $pulang = $attendance->where('status', 1)->sortByDesc('created_at')->first();
+
+                    if ($masuk) {
+                        $countMasuk++;
+                        $jamMasuk = \Carbon\Carbon::parse($masuk->time)->format('H:i:s');
+                        if ($jamMasuk > $matchedDay->clock_in) {
+                            $lateCount++;
+                        }
+                    }
+
+                    if ($pulang) {
+                        $countPulang++;
+                        $jamPulang = \Carbon\Carbon::parse($pulang->time)->format('H:i:s');
+                        if ($jamPulang < $matchedDay->clock_out) {
+                            $lebihAwal++;
+                        }
+                    }
+                } else {
+                    $absentDates[] = $dateStr;
+                }
+            }
+
+            $tidakHadir = count($absentDates);
+
+            $sanksi = $lateCount > 3 ? 'danger' : ($tidakHadir > 1 ? 'warning' : 'success');
+            $sanksiLabel = $lateCount > 3 ? 'Sanksi' : ($tidakHadir > 1 ? 'Perlu Perhatian' : 'Aman');
+
+            $rekapData[] = [
                 'nama' => $user->name,
-                'masuk' => $masuk,
-                'pulang' => $pulang,
+                'masuk' => $countMasuk,
+                'pulang' => $countPulang,
                 'lebih_awal' => $lebihAwal,
-                'terlambat' => $terlambat,
+                'terlambat' => $lateCount,
+                'tidak_hadir' => $tidakHadir,
                 'cuti' => $cuti,
                 'sanksi' => $sanksi,
                 'sanksi_label' => $sanksiLabel,
             ];
-        });
+        }
 
-        // Return the rekapitulasi view with filtered data
         return view('pages.admin.attendance.cetakrekapitulasi', compact('rekapData', 'month', 'year'));
     }
+
+
+
+
 
 
     public function filtertanggal() {}

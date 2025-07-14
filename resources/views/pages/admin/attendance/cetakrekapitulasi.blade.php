@@ -29,10 +29,13 @@
                         <span class="overline-title">Report</span>
                         <div class="invoice-contact-info">
                             <h4 class="title">Rekapitulasi Kehadiran Pegawai</h4>
+                            <p class="text-muted">
+                                Bulan: {{ $month }}, Tahun: {{ $year }}
+                            </p>
                         </div>
                     </div>
                 </div><!-- .invoice-head -->
-                <div class="invoice-bills">
+                <div class="invoice-bills mt-4">
                     <div class="table-responsive">
                         <table class="datatable-init table">
                             <thead>
@@ -57,15 +60,20 @@
                                         <td>{{ $data['pulang'] }}</td>
                                         <td>{{ $data['lebih_awal'] }}</td>
                                         <td>{{ $data['terlambat'] }}</td>
-                                        <td>0</td>
+                                        <td>{{ $data['tidak_hadir'] }}</td>
                                         <td>{{ $data['cuti'] }}</td>
                                         <td>
-                                            <span
-                                                class="badge bg-{{ $data['sanksi'] }}">{{ $data['sanksi_label'] }}</span>
+                                            <span class="badge bg-{{ $data['sanksi'] }}">
+                                                {{ $data['sanksi_label'] }}
+                                            </span>
                                         </td>
                                     </tr>
                                 @endforeach
                             </tbody>
+
+
+
+
 
                         </table>
                     </div>
