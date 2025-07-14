@@ -24,6 +24,7 @@ class AdminController extends Controller
 
 public function attendancebupdate(Request $request, $id)
 {
+    // dd($request->all());
     // Validasi awal: nilai show wajib ada dan harus 0 atau 1
     $request->validate([
         'show' => 'required|in:0,1',
@@ -31,7 +32,7 @@ public function attendancebupdate(Request $request, $id)
 
     // Cari data berdasarkan ID
     $show = ShowM::find($id);
-
+    // dd($show);
     if (!$show) {
         return redirect()->back()->with('error', 'Data tidak ditemukan.');
     }

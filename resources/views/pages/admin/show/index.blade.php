@@ -15,26 +15,38 @@
                 </div>
 
                 @if (session('success'))
-                    <script>
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Berhasil',
-                            text: '{{ session('success') }}',
-                            confirmButtonColor: '#364d65'
-                        });
-                    </script>
-                @endif
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil',
+            text: "{{ session('success') }}",
+            confirmButtonColor: '#364d65'
+        });
+    </script>
+@endif
 
-                @if (session('error'))
-                    <script>
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Gagal',
-                            text: '{{ session('error') }}',
-                            confirmButtonColor: '#364d65'
-                        });
-                    </script>
-                @endif
+@if (session('error'))
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal',
+            text: "{{ session('error') }}",
+            confirmButtonColor: '#364d65'
+        });
+    </script>
+@endif
+
+@if ($errors->any())
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Validasi Gagal',
+            html: `{!! implode('<br>', $errors->all()) !!}`,
+            confirmButtonColor: '#364d65'
+        });
+    </script>
+@endif
+
 
                 <div class="card card-bordered card-preview shadow-sm">
                     <div class="card-inner">
