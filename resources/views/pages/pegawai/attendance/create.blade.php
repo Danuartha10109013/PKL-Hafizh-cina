@@ -112,6 +112,7 @@
                 radius: allowedRadius
             }).addTo(map).bringToBack(); // <== langsung tambah circle setelah tileLayer
 
+            map.fitBounds(allowedCircle.getBounds());
             console.log("Latitude & Longitude Circle:", allowedLatLng);
 
             // Marker merah lokasi perusahaan
@@ -217,7 +218,8 @@
 
                 // Isi input koordinat untuk dikirim ke server
                 document.getElementById('coordinate').value = userLatLng.lat + "," + userLatLng.lng;
-
+                console.log("Company LatLng:", companyLatLng);
+                console.log("User LatLng:", userLatLng);
                 // Cek apakah dalam radius
                 if (companyLatLng.distanceTo(userLatLng) <= allowedRadius) {
                     Swal.close();
