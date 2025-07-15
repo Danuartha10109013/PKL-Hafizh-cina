@@ -11649,10 +11649,10 @@ small,
   border-radius: 10px;
 }
 
-svg {
+/* svg {
   height: 100%;
   max-width: 100%;
-}
+} */
 
 .sq {
   height: 40px;

@@ -129,18 +129,18 @@
                 icon: redIcon
             }).addTo(map).bindPopup("Lokasi Perusahaan");
 
-            // Marker merah untuk lokasi perusahaan
-            var redIcon = L.icon({
-                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-                iconSize: [25, 41],
-                iconAnchor: [12, 41],
-                popupAnchor: [1, -34],
-                shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-                shadowSize: [41, 41]
-            });
-            L.marker(allowedLatLng, {
-                icon: redIcon
-            }).addTo(map).bindPopup("Lokasi Perusahaan");
+            // // Marker merah untuk lokasi perusahaan
+            // var redIcon = L.icon({
+            //     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+            //     iconSize: [25, 41],
+            //     iconAnchor: [12, 41],
+            //     popupAnchor: [1, -34],
+            //     shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+            //     shadowSize: [41, 41]
+            // });
+            // L.marker(allowedLatLng, {
+            //     icon: redIcon
+            // }).addTo(map).bindPopup("Lokasi Perusahaan");
 
             Swal.fire({
                 title: 'Izinkan akses lokasi',
